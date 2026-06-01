@@ -1,0 +1,9 @@
+# dropicture/.terraform/gitignore
+.env*
+*.tfvars.json
+!*.tfvars.example
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+crash.log
