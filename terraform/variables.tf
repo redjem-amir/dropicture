@@ -24,7 +24,13 @@ variable "os_image" {
 }
 
 variable "server_type" {
-  description = "Hetzner server type (cpx21 = 3 vCPU / 4 GB, cpx31 = 4 vCPU / 8 GB, cpx41 = 8 vCPU / 16 GB)"
+  description = "Hetzner server type for Nomad servers/masters (cpx21 = 3 vCPU / 4 GB, cpx31 = 4 vCPU / 8 GB, cpx41 = 8 vCPU / 16 GB)"
+  type        = string
+  default     = "cpx31"
+}
+
+variable "client_server_type" {
+  description = "Hetzner server type for Nomad clients/workers (run the actual workloads)"
   type        = string
   default     = "cpx31"
 }
@@ -53,7 +59,7 @@ variable "cloudflare_zone_name" {
 }
 
 variable "admin_ips" {
-  description = "IPs allowed for SSH (22) and the Nomad UI (4646). CIDR format, e.g. ['203.0.113.42/32']. Provided via TF_VAR_admin_ips."
+  description = "IPs allowed for SSH (22) and the Nomad API (4646). CIDR format, e.g. ['203.0.113.42/32']. Provided via TF_VAR_admin_ips."
   type        = list(string)
   default     = []
 
@@ -63,14 +69,25 @@ variable "admin_ips" {
   }
 }
 
-variable "node_count" {
-  description = "Number of Nomad nodes. 1 = single-node (default). Increase to add nodes."
+variable "server_count" {
+  description = "Number of Nomad servers (masters / Raft quorum). MUST be odd (1, 3, 5). 1 = single master (no control-plane HA), 3 = HA."
   type        = number
   default     = 1
 
   validation {
-    condition     = var.node_count >= 1
-    error_message = "node_count must be >= 1."
+    condition     = var.server_count >= 1 && var.server_count % 2 == 1
+    error_message = "server_count must be an odd number (1, 3, 5, ...) to keep a healthy Raft quorum."
+  }
+}
+
+variable "client_count" {
+  description = "Number of Nomad clients (workers). 0 = run workloads on the servers only. Freely scalable up or down."
+  type        = number
+  default     = 0
+
+  validation {
+    condition     = var.client_count >= 0
+    error_message = "client_count must be >= 0."
   }
 }
 

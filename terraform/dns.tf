@@ -8,7 +8,7 @@ data "cloudflare_zone" "dropicture" {
 resource "cloudflare_dns_record" "apex" {
   zone_id = data.cloudflare_zone.dropicture.zone_id
   name    = "@"
-  content = hcloud_server.app[0].ipv4_address
+  content = hcloud_server.server[0].ipv4_address
   type    = "A"
   ttl     = 1
   proxied = true
@@ -19,7 +19,7 @@ resource "cloudflare_dns_record" "apex" {
 resource "cloudflare_dns_record" "www" {
   zone_id = data.cloudflare_zone.dropicture.zone_id
   name    = "www"
-  content = hcloud_server.app[0].ipv4_address
+  content = hcloud_server.server[0].ipv4_address
   type    = "A"
   ttl     = 1
   proxied = true

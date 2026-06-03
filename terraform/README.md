@@ -49,7 +49,7 @@ source .env
 | `TF_VAR_hcloud_token` | Hetzner Cloud API token |
 | `TF_VAR_ssh_public_key_b64` | Public SSH key, base64-encoded |
 | `TF_VAR_admin_ips` | JSON list of CIDRs allowed for SSH and the Nomad UI |
-| `CLOUDFLARE_API_TOKEN` | Cloudflare API token (`Zone:Read` + `DNS:Edit` on `dropicture.com`) |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API token (`Zone:Read`, `DNS:Read`, `DNS:Edit`, `SSL and Certificates:Edit` on `dropicture.com`) |
 
 > `.env` is listed in `.gitignore` — never commit it.
 
@@ -128,6 +128,29 @@ terraform destroy
 
 > Note: the photo volume and the server have no `prevent_destroy` guard in this
 > configuration. Make sure your data is backed up before running `destroy`.
+
+### Clean up the Nomad token after `destroy`
+
+`terraform destroy` only removes Terraform-managed resources. The Nomad ACL
+management token is created by the Ansible playbook and stored in **AWS Secrets
+Manager**, so it is **not** removed by `destroy` and will linger as an orphaned
+secret. Delete it manually after tearing the cluster down:
+
+```bash
+aws secretsmanager delete-secret \
+  --secret-id "nomad/dropicture/management-token" \
+  --region "$AWS_REGION" \
+  --force-delete-without-recovery
+```
+
+If you skip this, the next `ansible-playbook` run finds the stale secret, skips
+the ACL bootstrap (`when: _existing_secret | length == 0`), and then tries to
+talk to the freshly provisioned cluster with a token that no longer exists.
+
+`--force-delete-without-recovery` removes the secret immediately. Drop that flag
+if you prefer the default recovery window (7–30 days) — but note that while a
+secret is pending deletion, a re-deploy **cannot** recreate one with the same
+name until the window expires.
 
 ## License
 
