@@ -9,11 +9,22 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import IORedis from 'ioredis';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import { StorageService } from './services/storage.service';
+import { Account } from './models/account.model';
+import { PassportModule } from '@nestjs/passport';
+import { AuthController } from './controllers/auth.controller';
+import { AuthService } from './services/auth.service';
+import { Role } from './models/role.model';
+import { AccessTokenStrategy } from './guards/access.strategy';
+import { BootstrapService } from './services/bootstrap.service';
 
-const entities = [];
+const entities = [
+  Account,
+  Role,
+];
 
 @Module({
   imports: [
+    PassportModule.register({ defaultStrategy: 'access-token' }),
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot({
       throttlers: [{ limit: 100, ttl: 60_000 }],
@@ -41,17 +52,22 @@ const entities = [];
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 5000,
         acquireTimeoutMillis: 10000,
-        statement_timeout: 30000,
         prepare: false,
       },
     }),
     TypeOrmModule.forFeature(entities),
   ],
-  controllers: [],
+  controllers: [
+    AuthController
+  ],
   providers: [
     { provide: APP_GUARD, useClass: IpThrottlerGuard },
+    BootstrapService,
+    AccessTokenStrategy,
     RedisService,
     StorageService,
+    AuthService,
   ],
 })
-export class AppModule {}
+
+export class AppModule { }

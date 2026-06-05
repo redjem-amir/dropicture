@@ -76,6 +76,8 @@ services:
   dropicture-backend:
     image: ghcr.io/redjem-amir/dropicture/backend:${IMAGE_TAG:-latest}
     environment:
+      DEFAULT_ADMIN_EMAIL: ${DEFAULT_ADMIN_EMAIL}
+      DEFAULT_ADMIN_PASSWORD: ${DEFAULT_ADMIN_PASSWORD}
       POSTGRES_HOST: dropicture-pgbouncer
       POSTGRES_PORT: "5432"
       POSTGRES_DB: ${POSTGRES_DB}
@@ -99,6 +101,8 @@ services:
 
   dropicture-frontend:
     image: ghcr.io/redjem-amir/dropicture/frontend:${IMAGE_TAG:-latest}
+    environment:
+      NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
     ports: ["3000:3000"]
     depends_on:
       - dropicture-backend

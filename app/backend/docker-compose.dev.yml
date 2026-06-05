@@ -3,6 +3,7 @@ services:
   dropicture-db:
     container_name: dropicture-db
     image: postgres:18.4
+    command: ["postgres", "-c", "statement_timeout=30000"]
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
