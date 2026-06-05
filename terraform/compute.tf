@@ -26,25 +26,6 @@ locals {
   ])
 
   cloudflare_all_cidrs = concat(local.cloudflare_ipv4_cidrs, local.cloudflare_ipv6_cidrs)
-
-  server_private_ips = [for i in range(var.server_count) : cidrhost(var.subnet_ip_range, 10 + i)]
-  client_private_ips = [for i in range(var.client_count) : cidrhost(var.subnet_ip_range, 100 + i)]
-}
-
-resource "hcloud_network" "main" {
-  name     = "${var.project_name}-net"
-  ip_range = var.network_ip_range
-
-  labels = {
-    project = var.project_name
-  }
-}
-
-resource "hcloud_network_subnet" "nodes" {
-  network_id   = hcloud_network.main.id
-  type         = "cloud"
-  network_zone = var.network_zone
-  ip_range     = var.subnet_ip_range
 }
 
 resource "hcloud_firewall" "app" {
@@ -59,23 +40,15 @@ resource "hcloud_firewall" "app" {
     direction   = "in"
     protocol    = "tcp"
     port        = "22"
-    source_ips  = var.admin_ips
-    description = "SSH admin"
+    source_ips  = ["0.0.0.0/0", "::/0"]
+    description = "SSH from anywhere (key-only auth enforced by Ansible)"
   }
 
   rule {
     direction   = "in"
     protocol    = "icmp"
-    source_ips  = var.admin_ips
-    description = "ICMP admin (ping)"
-  }
-
-  rule {
-    direction   = "in"
-    protocol    = "tcp"
-    port        = "4646"
-    source_ips  = var.admin_ips
-    description = "Nomad API (admin only)"
+    source_ips  = ["0.0.0.0/0", "::/0"]
+    description = "ICMP (ping)"
   }
 
   rule {
@@ -95,9 +68,8 @@ resource "hcloud_firewall" "app" {
   }
 }
 
-resource "hcloud_server" "server" {
-  count        = var.server_count
-  name         = "${var.project_name}-server-${count.index + 1}"
+resource "hcloud_server" "manager" {
+  name         = "${var.project_name}-manager-1"
   image        = var.os_image
   server_type  = var.server_type
   location     = var.location
@@ -106,85 +78,11 @@ resource "hcloud_server" "server" {
 
   labels = {
     project = var.project_name
-    role    = "nomad-server"
+    role    = "swarm-manager"
   }
 
   public_net {
     ipv4_enabled = true
     ipv6_enabled = true
   }
-
-  network {
-    network_id = hcloud_network.main.id
-    ip         = local.server_private_ips[count.index]
-  }
-
-  depends_on = [hcloud_network_subnet.nodes]
-}
-
-resource "hcloud_server" "client" {
-  count        = var.client_count
-  name         = "${var.project_name}-worker-${count.index + 1}"
-  image        = var.os_image
-  server_type  = var.client_server_type
-  location     = var.location
-  ssh_keys     = [hcloud_ssh_key.deploy.id]
-  firewall_ids = [hcloud_firewall.app.id]
-
-  labels = {
-    project = var.project_name
-    role    = "nomad-client"
-  }
-
-  public_net {
-    ipv4_enabled = true
-    ipv6_enabled = true
-  }
-
-  network {
-    network_id = hcloud_network.main.id
-    ip         = local.client_private_ips[count.index]
-  }
-
-  depends_on = [hcloud_network_subnet.nodes]
-}
-
-resource "hcloud_volume" "server_media" {
-  count    = var.server_count
-  name     = "${var.project_name}-media-server-${count.index + 1}"
-  size     = var.volume_size
-  location = var.location
-  format   = "ext4"
-
-  labels = {
-    project = var.project_name
-    purpose = "object-storage"
-  }
-}
-
-resource "hcloud_volume_attachment" "server_media" {
-  count     = var.server_count
-  volume_id = hcloud_volume.server_media[count.index].id
-  server_id = hcloud_server.server[count.index].id
-  automount = true
-}
-
-resource "hcloud_volume" "client_media" {
-  count    = var.client_count
-  name     = "${var.project_name}-media-worker-${count.index + 1}"
-  size     = var.volume_size
-  location = var.location
-  format   = "ext4"
-
-  labels = {
-    project = var.project_name
-    purpose = "object-storage"
-  }
-}
-
-resource "hcloud_volume_attachment" "client_media" {
-  count     = var.client_count
-  volume_id = hcloud_volume.client_media[count.index].id
-  server_id = hcloud_server.client[count.index].id
-  automount = true
 }

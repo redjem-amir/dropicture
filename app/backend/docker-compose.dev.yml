@@ -1,0 +1,91 @@
+# dropicture/app/backend/docker-compose.dev.yml
+services:
+  dropicture-db:
+    container_name: dropicture-db
+    image: postgres:18.4
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data_dropicture:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  dropicture-pgbouncer:
+    container_name: dropicture-pgbouncer
+    image: edoburu/pgbouncer:v1.24.1-p1
+    depends_on:
+      dropicture-db:
+        condition: service_healthy
+    environment:
+      DB_HOST: dropicture-db
+      DB_PORT: "5432"
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      AUTH_TYPE: scram-sha-256
+      POOL_MODE: transaction
+      DEFAULT_POOL_SIZE: "10"
+      MIN_POOL_SIZE: "1"
+      RESERVE_POOL_SIZE: "2"
+      RESERVE_POOL_TIMEOUT: "3"
+      MAX_CLIENT_CONN: "100"
+      MAX_PREPARED_STATEMENTS: "200"
+      IGNORE_STARTUP_PARAMETERS: extra_float_digits
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-p", "5432"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: always
+
+  dropicture-dragonfly:
+    container_name: dropicture-dragonfly
+    image: ghcr.io/dragonflydb/dragonfly:v1.38.1
+    command:
+      - "--default_lua_flags=allow-undeclared-keys"
+    ulimits:
+      memlock: -1
+    ports:
+      - "6379:6379"
+    volumes:
+      - dragonfly_data_dropicture:/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  dropicture-garage:
+    container_name: dropicture-garage
+    image: dxflrs/garage:v2.3.0
+    command: ["/garage", "server", "--single-node", "--default-bucket"]
+    environment:
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET}
+      GARAGE_DEFAULT_ACCESS_KEY: ${S3_ACCESS_KEY_ID}
+      GARAGE_DEFAULT_SECRET_KEY: ${S3_SECRET_ACCESS_KEY}
+      GARAGE_DEFAULT_BUCKET: ${S3_BUCKET}
+    ports:
+      - "3900:3900"
+    volumes:
+      - ./garage.toml:/etc/garage.toml:ro
+      - garage_meta_dropicture:/var/lib/garage/meta
+      - garage_data_dropicture:/var/lib/garage/data
+    restart: always
+
+volumes:
+  postgres_data_dropicture:
+  dragonfly_data_dropicture:
+  garage_meta_dropicture:
+  garage_data_dropicture:

@@ -1,7 +1,16 @@
 # Dropicture — Infrastructure
 
-Infrastructure as Code for **Dropicture**, a self-hosted photo SaaS running on a
-single Hetzner Cloud server orchestrated with Nomad, fronted by Cloudflare DNS.
+Infrastructure as Code for **Dropicture**, a self-hosted photo SaaS running on
+a single Hetzner Cloud server as a **single-node Docker Swarm** (the server is
+its own manager — `docker swarm init`, no joins), fronted by Cloudflare DNS.
+Media lives on the server's local SSD — no attached volumes.
+
+Security model: SSH (22) is open to the world but key-only (enforced by the
+Ansible playbook), HTTP/HTTPS (80/443) are restricted to the Cloudflare IP
+ranges, and everything else — including the Swarm ports (2377/tcp,
+7946/tcp+udp, 4789/udp) — is blocked by the Hetzner firewall. With a single
+node there is no cluster traffic to carry, so no private network is
+provisioned.
 
 ## Prerequisites
 
@@ -29,9 +38,6 @@ export TF_VAR_ssh_public_key_b64=""   # base64 -w0 ~/.ssh/id_ed25519.pub
 
 # Cloudflare
 export CLOUDFLARE_API_TOKEN=""
-
-# Allowed admin IPs for SSH (22) and the Nomad UI (4646)
-export TF_VAR_admin_ips="[\"$(curl -s ifconfig.me)/32\"]"
 EOF
 ```
 
@@ -47,8 +53,7 @@ source .env
 | `AWS_SECRET_ACCESS_KEY` | AWS secret key |
 | `AWS_REGION` | Primary AWS region (`eu-west-3`) |
 | `TF_VAR_hcloud_token` | Hetzner Cloud API token |
-| `TF_VAR_ssh_public_key_b64` | Public SSH key, base64-encoded |
-| `TF_VAR_admin_ips` | JSON list of CIDRs allowed for SSH and the Nomad UI |
+| `TF_VAR_ssh_public_key_b64` | Public SSH key, base64-encoded — the **only** way into the server |
 | `CLOUDFLARE_API_TOKEN` | Cloudflare API token (`Zone:Read`, `DNS:Read`, `DNS:Edit`, `SSL and Certificates:Edit` on `dropicture.com`) |
 
 > `.env` is listed in `.gitignore` — never commit it.
@@ -117,8 +122,18 @@ aws s3api put-bucket-lifecycle-configuration \
 terraform init      # initialize providers and the S3 backend
 terraform plan      # preview changes
 terraform apply     # provision the infrastructure
-terraform output    # show server IP, SSH command, Nomad UI URL, etc.
+terraform output    # server IP, SSH command, docker context command, etc.
 ```
+
+After `apply`, run the Ansible playbook (see `../ansible/README.md`) to install
+Docker, initialize the single-node Swarm (`docker swarm init`) and install the
+TLS material. Re-run it after any `apply` that recreates the server (e.g. an
+OS image change).
+
+Scaling is vertical only: change `server_type` in `terraform.tfvars`
+(e.g. `cpx32` → `cpx42`) and `apply` — Hetzner resizes the server in place
+with a short power-off/power-on. Once the disk has grown to a larger type, the
+server cannot be downsized back.
 
 To tear everything down:
 
@@ -126,31 +141,27 @@ To tear everything down:
 terraform destroy
 ```
 
-> Note: the photo volume and the server have no `prevent_destroy` guard in this
-> configuration. Make sure your data is backed up before running `destroy`.
+> Note: the server — and the media stored on its local disk — has no
+> `prevent_destroy` guard in this configuration. Make sure your data is
+> backed up before running `destroy`.
 
-### Clean up the Nomad token after `destroy`
+> `terraform destroy` **will be blocked** by `tls_private_key.origin`, which
+> carries a `prevent_destroy` guard (the Origin CA key is meant to survive
+> re-deploys). To destroy everything anyway, drop it from the state first,
+> then revoke the certificate in the Cloudflare dashboard:
+>
+> ```bash
+> terraform state rm tls_private_key.origin
+> terraform destroy
+> ```
 
-`terraform destroy` only removes Terraform-managed resources. The Nomad ACL
-management token is created by the Ansible playbook and stored in **AWS Secrets
-Manager**, so it is **not** removed by `destroy` and will linger as an orphaned
-secret. Delete it manually after tearing the cluster down:
+### Nothing to clean up after `destroy`
 
-```bash
-aws secretsmanager delete-secret \
-  --secret-id "nomad/dropicture/management-token" \
-  --region "$AWS_REGION" \
-  --force-delete-without-recovery
-```
-
-If you skip this, the next `ansible-playbook` run finds the stale secret, skips
-the ACL bootstrap (`when: _existing_secret | length == 0`), and then tries to
-talk to the freshly provisioned cluster with a token that no longer exists.
-
-`--force-delete-without-recovery` removes the secret immediately. Drop that flag
-if you prefer the default recovery window (7–30 days) — but note that while a
-secret is pending deletion, a re-deploy **cannot** recreate one with the same
-name until the window expires.
+Unlike the previous Nomad setup (which left an orphaned ACL token in AWS
+Secrets Manager), the Swarm setup keeps no state outside Terraform and the
+server itself: Swarm configs and secrets live inside the node and disappear
+with it. After `terraform destroy`, only the S3 state bucket remains — by
+design.
 
 ## License
 

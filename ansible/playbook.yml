@@ -1,6 +1,6 @@
 ---
 # dropicture/ansible/playbook.yml
-- name: Discover nodes from Terraform state
+- name: Discover the server from Terraform state
   hosts: localhost
   connection: local
   gather_facts: false
@@ -44,24 +44,21 @@
         path: "{{ tf_state_file.path }}"
         state: absent
 
-    - name: Extract the server and client addresses from the outputs
+    - name: Extract the server address from the outputs
       ansible.builtin.set_fact:
-        _server_public_ips: "{{ _tfstate.outputs.server_public_ips.value }}"
-        _server_private_ips: "{{ _tfstate.outputs.server_private_ips.value }}"
-        _client_public_ips: "{{ _tfstate.outputs.client_public_ips.value }}"
-        _client_private_ips: "{{ _tfstate.outputs.client_private_ips.value }}"
+        _server_public_ip: "{{ _tfstate.outputs.manager_public_ip.value }}"
 
-    - name: Compute the full private address set
+    - name: Extract the Origin CA certificate and key from the outputs
       ansible.builtin.set_fact:
-        _all_private_ips: "{{ _server_private_ips + _client_private_ips }}"
+        _origin_cert: "{{ _tfstate.outputs.origin_cert_pem.value }}"
+        _origin_key: "{{ _tfstate.outputs.origin_key_pem.value }}"
+      no_log: true
 
     - name: Sanity check on the outputs
       ansible.builtin.assert:
         that:
-          - "_server_public_ips | length > 0"
-          - "_server_public_ips | length == (_server_private_ips | length)"
-          - "_client_public_ips | length == (_client_private_ips | length)"
-        fail_msg: "server_/client_ public and private IP lists are missing or misaligned in the state."
+          - "_server_public_ip | length > 0"
+        fail_msg: "manager_public_ip is missing from the Terraform state."
         quiet: true
 
     - name: Materialise the SSH private key
@@ -76,57 +73,52 @@
         content: "{{ lookup('env', 'SSH_PRIVATE_KEY_B64') | b64decode }}"
         mode: "0600"
 
-    - name: Register the Nomad servers
+    - name: Register the Swarm server
       ansible.builtin.add_host:
-        name: "{{ item.0 }}"
-        groups: [nomad, nomad_servers]
-        ansible_host: "{{ item.0 }}"
+        name: "{{ _server_public_ip }}"
+        groups: [swarm]
+        ansible_host: "{{ _server_public_ip }}"
         ansible_user: root
         ansible_ssh_private_key_file: "{{ ssh_key.path }}"
         ansible_ssh_common_args: "-o StrictHostKeyChecking=accept-new"
-        node_private_ip: "{{ item.1 }}"
-        nomad_role: server
-      loop: "{{ _server_public_ips | zip(_server_private_ips) | list }}"
-      loop_control:
-        label: "server {{ item.0 }} (private {{ item.1 }})"
+        node_public_ip: "{{ _server_public_ip }}"
 
-    - name: Register the Nomad clients
-      ansible.builtin.add_host:
-        name: "{{ item.0 }}"
-        groups: [nomad, nomad_clients]
-        ansible_host: "{{ item.0 }}"
-        ansible_user: root
-        ansible_ssh_private_key_file: "{{ ssh_key.path }}"
-        ansible_ssh_common_args: "-o StrictHostKeyChecking=accept-new"
-        node_private_ip: "{{ item.1 }}"
-        nomad_role: client
-      loop: "{{ _client_public_ips | zip(_client_private_ips) | list }}"
-      loop_control:
-        label: "client {{ item.0 }} (private {{ item.1 }})"
-
-- name: Configure the Nomad cluster
-  hosts: nomad
+- name: Provision Docker Engine on the server
+  hosts: swarm
   gather_facts: true
   vars:
-    nomad_datacenter: dc1
-    nomad_region: global
-    nomad_data_dir: /opt/nomad/data
-    nomad_config_dir: /etc/nomad.d
-    nomad_bind_addr: "0.0.0.0"
-    nomad_version: "2.0.2-1"
-    cni_plugins_version: "1.6.2"
-    cni_plugins_baseurl: "https://github.com/containernetworking/plugins/releases/download"
+    dropicture_tls_dir: /opt/dropicture/tls
+    dropicture_data_dir: /opt/dropicture/data
   handlers:
-    - name: Restart nomad
+    - name: Restart docker
       ansible.builtin.service:
-        name: nomad
+        name: docker
+        state: restarted
+
+    - name: Restart ssh
+      ansible.builtin.service:
+        name: ssh
         state: restarted
   tasks:
+    - name: Harden SSH (port 22 is world-open, so enforce key-only auth)
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/10-dropicture-hardening.conf
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          PasswordAuthentication no
+          KbdInteractiveAuthentication no
+          PermitRootLogin prohibit-password
+          MaxAuthTries 3
+      notify: Restart ssh
+
     - name: Install prerequisites
       ansible.builtin.apt:
         name:
-          - gnupg
+          - ca-certificates
           - curl
+          - gnupg
         state: present
         update_cache: true
         cache_valid_time: 3600
@@ -137,50 +129,54 @@
         state: directory
         mode: "0755"
 
-    - name: Add the HashiCorp GPG key
+    - name: Add the Docker GPG key
       ansible.builtin.get_url:
-        url: https://apt.releases.hashicorp.com/gpg
-        dest: /etc/apt/keyrings/hashicorp.asc
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
         mode: "0644"
 
-    - name: Add the HashiCorp apt repository
+    - name: Add the Docker apt repository
       ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/etc/apt/keyrings/hashicorp.asc] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
-        filename: hashicorp
+        repo: "deb [signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        filename: docker
         state: present
 
-    - name: Install Nomad
+    - name: Install Docker Engine (CE) and the Python SDK for the Ansible modules
       ansible.builtin.apt:
-        name: "nomad{{ ('=' + nomad_version) if nomad_version | length > 0 else '' }}"
-        state: "{{ 'present' if nomad_version | length > 0 else 'latest' }}"
-        update_cache: true
-
-    - name: Install Docker (Nomad docker driver)
-      ansible.builtin.apt:
-        name: docker.io
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+          - python3-docker
+          - python3-jsondiff
+          - python3-yaml
         state: present
         update_cache: true
-      notify: Restart nomad
+
+    - name: Deploy the Docker daemon configuration (log rotation)
+      ansible.builtin.copy:
+        dest: /etc/docker/daemon.json
+        owner: root
+        group: root
+        mode: "0644"
+        validate: "dockerd --validate --config-file %s"
+        content: |
+          {
+            "log-driver": "json-file",
+            "log-opts": {
+              "max-size": "10m",
+              "max-file": "3"
+            }
+          }
+      notify: Restart docker
 
     - name: Enable and start Docker
       ansible.builtin.service:
         name: docker
         state: started
         enabled: true
-
-    - name: Ensure the CNI plugins directory exists
-      ansible.builtin.file:
-        path: /opt/cni/bin
-        state: directory
-        mode: "0755"
-
-    - name: Install the CNI reference plugins
-      ansible.builtin.unarchive:
-        src: "{{ cni_plugins_baseurl }}/v{{ cni_plugins_version }}/cni-plugins-linux-amd64-v{{ cni_plugins_version }}.tgz"
-        dest: /opt/cni/bin
-        remote_src: true
-        creates: /opt/cni/bin/bridge
-      notify: Restart nomad
 
     - name: Load the bridge kernel modules now and at boot
       community.general.modprobe:
@@ -195,7 +191,7 @@
       ansible.posix.sysctl:
         name: "{{ item.name }}"
         value: "{{ item.value }}"
-        sysctl_file: /etc/sysctl.d/99-nomad.conf
+        sysctl_file: /etc/sysctl.d/99-docker.conf
         sysctl_set: true
         reload: true
       loop:
@@ -206,176 +202,105 @@
         - name: net.ipv4.ip_forward
           value: "1"
 
-    - name: Ensure the data directory exists
+    - name: Check whether the data path is still the old volume symlink
+      ansible.builtin.stat:
+        path: "{{ dropicture_data_dir }}"
+      register: _data_stat
+
+    - name: Refuse to continue if the old Hetzner volume symlink is in place
+      ansible.builtin.assert:
+        that:
+          - not (_data_stat.stat.islnk | default(false))
+        fail_msg: >-
+          {{ dropicture_data_dir }} is still a symlink to the old Hetzner
+          volume. Migrate the data to the local disk and remove the link
+          before re-running this playbook.
+        quiet: true
+
+    - name: Create the data directory on the local disk
       ansible.builtin.file:
-        path: "{{ nomad_data_dir }}"
+        path: "{{ dropicture_data_dir }}"
         state: directory
         owner: root
         group: root
         mode: "0700"
 
-    - name: Deploy the Nomad configuration
-      ansible.builtin.copy:
-        dest: "{{ nomad_config_dir }}/nomad.hcl"
+    - name: Create the per-service data directories
+      ansible.builtin.file:
+        path: "{{ dropicture_data_dir }}/{{ item }}"
+        state: directory
         owner: root
         group: root
-        mode: "0640"
-        validate: "nomad config validate %s"
-        content: |
-          # Managed by Ansible - do not edit
-          # Role: {{ nomad_role }}. Servers form the Raft quorum (and run workloads);
-          # clients are workers pointing at the servers. Counts come from Terraform.
+        mode: "0700"
+      loop:
+        - postgres
+        - dragonfly
+        - garage/meta
+        - garage/data
 
-          name       = "{{ node_private_ip }}"
-          data_dir   = "{{ nomad_data_dir }}"
-          datacenter = "{{ nomad_datacenter }}"
-          region     = "{{ nomad_region }}"
-          bind_addr  = "{{ nomad_bind_addr }}"
+    - name: Ensure the TLS directory exists
+      ansible.builtin.file:
+        path: "{{ dropicture_tls_dir }}"
+        state: directory
+        mode: "0750"
 
-          advertise {
-            http = "{{ ansible_host }}"
-            rpc  = "{{ node_private_ip }}"
-            serf = "{{ node_private_ip }}"
-          }
+    - name: Write the Origin CA certificate
+      ansible.builtin.copy:
+        dest: "{{ dropicture_tls_dir }}/origin.crt"
+        content: "{{ hostvars['localhost']._origin_cert }}"
+        mode: "0644"
 
-          server {
-          {% if nomad_role == 'server' %}
-            enabled          = true
-            bootstrap_expect = {{ groups['nomad_servers'] | length }}
-            server_join {
-              retry_join = [{% for h in groups['nomad_servers'] %}"{{ hostvars[h].node_private_ip }}"{% if not loop.last %}, {% endif %}{% endfor %}]
-            }
-          {% else %}
-            enabled = false
-          {% endif %}
-          }
-
-          client {
-            enabled = true
-            servers = [{% for h in groups['nomad_servers'] %}"{{ hostvars[h].node_private_ip }}:4647"{% if not loop.last %}, {% endif %}{% endfor %}]
-          }
-
-          acl {
-            enabled = true
-          }
-
-          ui {
-            enabled = false
-          }
-      notify: Restart nomad
-
-    - name: Enable and start Nomad
-      ansible.builtin.service:
-        name: nomad
-        state: started
-        enabled: true
-
-- name: Bootstrap Nomad ACL and store the token in AWS Secrets Manager
-  hosts: localhost
-  connection: local
-  gather_facts: false
-  vars:
-    project_name: dropicture
-    aws_region: eu-west-3
-    nomad_secret_name: "nomad/{{ project_name }}/management-token"
-  tasks:
-    - name: Resolve a server API endpoint (first server node)
-      ansible.builtin.set_fact:
-        nomad_api: "http://{{ _server_public_ips[0] }}:4646"
-
-    - name: Check whether the secret already exists
-      ansible.builtin.set_fact:
-        _existing_secret: "{{ query('amazon.aws.aws_secret', nomad_secret_name, on_missing='skip', region=aws_region) }}"
-
-    - name: Bootstrap the ACL system on first run only
-      when: _existing_secret | length == 0
-      block:
-        - name: Wait for the Nomad HTTP API to accept connections
-          ansible.builtin.wait_for:
-            host: "{{ _server_public_ips[0] }}"
-            port: 4646
-            timeout: 120
-
-        - name: Bootstrap the ACL system
-          ansible.builtin.uri:
-            url: "{{ nomad_api }}/v1/acl/bootstrap"
-            method: POST
-            status_code: 200
-          register: _acl_bootstrap
-          retries: 10
-          delay: 6
-          until: _acl_bootstrap.status == 200
-
-        - name: Store the management token in AWS Secrets Manager
-          community.aws.secretsmanager_secret:
-            name: "{{ nomad_secret_name }}"
-            state: present
-            secret_type: string
-            secret: "{{ _acl_bootstrap.json.SecretID }}"
-            description: "Nomad ACL management token for {{ project_name }}"
-            region: "{{ aws_region }}"
-            tags:
-              Project: "{{ project_name }}"
-              Component: nomad-acl
-              ManagedBy: ansible
-
-- name: Reconcile the Nomad cluster with the Terraform inventory
-  hosts: localhost
-  connection: local
-  gather_facts: false
-  vars:
-    project_name: dropicture
-    aws_region: eu-west-3
-    nomad_secret_name: "nomad/{{ project_name }}/management-token"
-  tasks:
-    - name: Resolve a server API endpoint (first server node)
-      ansible.builtin.set_fact:
-        nomad_api: "http://{{ _server_public_ips[0] }}:4646"
-
-    - name: Fetch the management token from Secrets Manager
-      ansible.builtin.set_fact:
-        _mgmt_token: "{{ lookup('amazon.aws.aws_secret', nomad_secret_name, region=aws_region) }}"
+    - name: Write the Origin CA private key
+      ansible.builtin.copy:
+        dest: "{{ dropicture_tls_dir }}/origin.key"
+        content: "{{ hostvars['localhost']._origin_key }}"
+        mode: "0600"
       no_log: true
 
-    - name: List the current Nomad server members
-      ansible.builtin.uri:
-        url: "{{ nomad_api }}/v1/agent/members"
-        method: GET
-        headers:
-          X-Nomad-Token: "{{ _mgmt_token }}"
-        status_code: 200
-      register: _members
+    - name: Apply any pending Docker restart before touching the Swarm
+      ansible.builtin.meta: flush_handlers
 
-    - name: Force-leave and prune servers no longer in the Terraform state
-      ansible.builtin.uri:
-        url: "{{ nomad_api }}/v1/agent/force-leave?node={{ item.Name | urlencode }}&prune=true"
-        method: POST
-        headers:
-          X-Nomad-Token: "{{ _mgmt_token }}"
-        status_code: 200
-      loop: "{{ _members.json.Members | rejectattr('Addr', 'in', _server_private_ips) | list }}"
-      loop_control:
-        label: "{{ item.Name }} ({{ item.Addr }})"
+- name: Initialise the single-node Swarm
+  hosts: swarm
+  gather_facts: false
+  vars:
+    swarm_default_addr_pool: ["10.100.0.0/16"]
+    swarm_subnet_size: 24
+  tasks:
+    - name: Init the Swarm (the server is its own manager, no joins)
+      community.docker.docker_swarm:
+        state: present
+        advertise_addr: "{{ node_public_ip }}"
+        listen_addr: "{{ node_public_ip }}:2377"
+        default_addr_pool: "{{ swarm_default_addr_pool }}"
+        subnet_size: "{{ swarm_subnet_size }}"
 
-    - name: List the current Nomad client nodes
-      ansible.builtin.uri:
-        url: "{{ nomad_api }}/v1/nodes"
-        method: GET
-        headers:
-          X-Nomad-Token: "{{ _mgmt_token }}"
-        status_code: 200
-      register: _nodes
+- name: Configure the Swarm (configs, secrets)
+  hosts: swarm
+  gather_facts: false
+  vars:
+    stacks_dir: /opt/dropicture/stacks
+  tasks:
+    - name: Store the Origin CA certificate as a Swarm config
+      community.docker.docker_config:
+        name: dropicture_origin_cert
+        data: "{{ hostvars['localhost']._origin_cert | b64encode }}"
+        data_is_b64: true
+        state: present
 
-    - name: Purge client nodes no longer in the Terraform state
-      ansible.builtin.uri:
-        url: "{{ nomad_api }}/v1/node/{{ item.ID }}/purge"
-        method: POST
-        headers:
-          X-Nomad-Token: "{{ _mgmt_token }}"
-        status_code: 200
-      loop: "{{ _nodes.json | rejectattr('Name', 'in', _all_private_ips) | list }}"
-      loop_control:
-        label: "{{ item.Name }} ({{ item.ID }})"
+    - name: Store the Origin CA private key as a Swarm secret
+      community.docker.docker_secret:
+        name: dropicture_origin_key
+        data: "{{ hostvars['localhost']._origin_key | b64encode }}"
+        data_is_b64: true
+        state: present
+      no_log: true
+
+    - name: Ensure the stacks directory exists (drop your app stack files here)
+      ansible.builtin.file:
+        path: "{{ stacks_dir }}"
+        state: directory
+        mode: "0750"
 
 - name: Clean up
   hosts: localhost

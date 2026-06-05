@@ -8,9 +8,9 @@ import { IpThrottlerGuard } from './guards/throttler.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
 import IORedis from 'ioredis';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
+import { StorageService } from './services/storage.service';
 
-const entities = [
-]
+const entities = [];
 
 @Module({
   imports: [
@@ -36,8 +36,8 @@ const entities = [
       entities,
       synchronize: true,
       extra: {
-        max: 50,
-        min: 2,
+        max: 10,
+        min: 0,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 5000,
         acquireTimeoutMillis: 10000,
@@ -50,7 +50,8 @@ const entities = [
   controllers: [],
   providers: [
     { provide: APP_GUARD, useClass: IpThrottlerGuard },
-    RedisService
+    RedisService,
+    StorageService,
   ],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,0 +1,82 @@
+@startuml deploy
+title dropicture - CI/CD pipeline (build, publish and deploy)
+footer Author: Amir Redjem   |   2026-06-05   |   v1.0
+
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam ArrowColor #2F6FED
+skinparam ArrowFontColor #41505F
+skinparam sequenceMessageAlign center
+skinparam ParticipantBackgroundColor #FDF4F4
+skinparam ParticipantBorderColor #E6BCBC
+skinparam ActorBackgroundColor #EEF4FF
+skinparam ActorBorderColor #B8CDF3
+skinparam DatabaseBackgroundColor #FFFFFF
+skinparam DatabaseBorderColor #B7E0C9
+skinparam CollectionsBackgroundColor #FDF4F4
+skinparam CollectionsBorderColor #E6BCBC
+skinparam SequenceLifeLineBorderColor #B8C4D0
+skinparam SequenceDividerBackgroundColor #EEF4FF
+skinparam SequenceDividerFontColor #41505F
+skinparam SequenceGroupBackgroundColor #F6F1FC
+skinparam SequenceGroupBorderColor #CDBCE8
+skinparam SequenceGroupHeaderFontColor #41505F
+skinparam noteBackgroundColor #FFF6EC
+skinparam noteBorderColor #F3B27A
+
+actor "Developer" as dev
+collections "GitHub Actions\nbuild job (x2)\nmatrix: backend, frontend" as build
+database "GHCR\nghcr.io registry" as ghcr
+participant "GitHub Actions\ndeploy job\n(env: production)" as deploy
+database "S3 backend\ntfstate (eu-west-3)" as s3
+participant "Swarm server\nmanager-1 (SSH root)" as srv
+participant "Cloudflare\nedge proxy" as cf
+
+== Trigger ==
+dev -> build : push main / tag v*.*.* / dispatch\npaths: app/**, compose, nginx.conf,\ngarage.toml, workflow
+note right of build
+  concurrency: workflow-ref
+  cancel-in-progress: false
+  fail-fast: false
+end note
+
+== Job 1 - Build and publish (per matrix component) ==
+build -> build : checkout + setup Buildx
+build -> ghcr : docker login\n(GITHUB_TOKEN, packages: write)
+build -> build : metadata-action -> tags\nsemver | branch | sha-long | latest (main)
+build -> ghcr : build and push linux/amd64\ncache type=gha, scope=component
+note over build, ghcr
+  amd64 only: the cpx42 target
+  is AMD EPYC (x86_64) -
+  no QEMU, no arm64 build
+end note
+
+== Job 2 - Deploy (needs: build, if: main or tag v*) ==
+note over deploy
+  concurrency: deploy-production
+  env: IMAGE_TAG=sha-<sha>
+  + app secrets (POSTGRES_*,
+  GARAGE_RPC_SECRET, S3_*)
+end note
+deploy -> s3 : GET terraform.tfstate\n(AWS creds, read-only)
+s3 --> deploy : state JSON
+deploy -> deploy : jq outputs.manager_public_ip\nassert non-empty / non-null
+deploy -> deploy : ssh-agent (key in memory only,\nnever on disk) + ssh-keyscan
+deploy -> srv : docker stack deploy --prune --detach=false\nDOCKER_HOST=ssh://root@MANAGER_IP
+srv -> ghcr : pull images :sha-<sha>
+note over srv
+  rolling updates start-first
+  (frontend, backend, pgbouncer)
+  stop-first for db, dragonfly, garage
+  --detach=false waits for convergence
+end note
+srv --> deploy : services converged
+
+== Smoke test ==
+deploy -> cf : curl -fsSI https://dropicture.com\n(retry 5 x 10s)
+cf -> srv : proxied 443\n(Origin CA, Full strict)
+srv --> cf : 200
+cf --> deploy : 200 OK
+deploy --> dev : workflow status
+
+@enduml

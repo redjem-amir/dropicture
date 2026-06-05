@@ -1,7 +1,7 @@
 @startuml architecture
 !pragma layout smetana
 title dropicture Infrastructure (Terraform)
-footer Author: Amir Redjem   |   2026-06-03   |   v1.1
+footer Author: Amir Redjem   |   2026-06-05   |   v1.2
 
 skinparam shadowing false
 skinparam defaultFontName Helvetica
@@ -12,8 +12,6 @@ skinparam cloudBackgroundColor #FFF6EC
 skinparam cloudBorderColor #F3B27A
 skinparam nodeBackgroundColor #FDF4F4
 skinparam nodeBorderColor #E6BCBC
-skinparam frameBackgroundColor #EEF4FF
-skinparam frameBorderColor #B8CDF3
 skinparam rectangleBackgroundColor #FFFFFF
 skinparam rectangleBorderColor #B8C4D0
 skinparam databaseBackgroundColor #FFFFFF
@@ -25,30 +23,22 @@ actor "User" as user
 
 cloud "Cloudflare\nDNS, proxy, edge TLS" as cf {
   rectangle "**data cloudflare_zone**\nlookup zone by name -> zone_id" as zone
-  rectangle "**cloudflare_dns_record** (apex @ + www)\nA, proxied, ttl=1\ncontent = server[0].ipv4_address" as dns
+  rectangle "**cloudflare_dns_record** (apex @ + www)\nA, proxied, ttl=1\ncontent = manager.ipv4_address" as dns
   rectangle "**cloudflare_origin_ca_certificate**\norigin-rsa, validity 5475d\ndropicture.com + *.dropicture.com" as cert
 }
 
 node "Hetzner Cloud\nfsn1 / eu-central" as htz {
-  rectangle "**hcloud_firewall.app**\nin 80/443  <-  Cloudflare CIDRs\nin 22/4646/ICMP  <-  admin_ips" as fw
-  rectangle "**hcloud_ssh_key.deploy**\npublic key, root account" as ssh
+  rectangle "**hcloud_firewall.app**\nin 80/443  <-  Cloudflare CIDRs only\nin 22 + ICMP  <-  anywhere\n(SSH key-only, enforced by Ansible)" as fw
+  rectangle "**hcloud_ssh_key.deploy**\npublic key (base64 var), root account" as ssh
 
-  frame "**hcloud_network.main**  10.0.0.0/16\n**hcloud_network_subnet.nodes**  10.0.1.0/24 (cloud)" as net {
-
-    node "**hcloud_server.server[*]**   (count = server_count = 1)\nrole = nomad-server (master / Raft)\ncpx32, ubuntu-24.04\nprivate 10.0.1.10+i, public IPv4/IPv6" as srv {
-      component "Nomad server + workloads\nGarage (S3 object store)\n//outside Terraform, via Ansible//" as appsrv
-    }
-    database "**hcloud_volume.server_media[*]**\n50 GB ext4, automount\nlabel: object-storage" as svol
-
-    node "**hcloud_server.client[*]**   (count = client_count = 0)\nrole = nomad-client (worker)\ncpx32, ubuntu-24.04\nprivate 10.0.1.100+i, public IPv4/IPv6" as cli {
-      component "Nomad client / workloads\n//outside Terraform, via Ansible//" as appcli
-    }
-    database "**hcloud_volume.client_media[*]**\n50 GB ext4, automount\nlabel: object-storage" as cvol
+  node "**hcloud_server.manager**   (single server)\nrole = swarm-manager — single-node Docker Swarm\ncpx32 (4 vCPU / 8 GB / 160 GB SSD), ubuntu-24.04\npublic IPv4/IPv6 only — no private network" as srv {
+    component "Docker Engine — Swarm mode\nswarm init (no join)\nworkloads + media on the local SSD\n//outside Terraform, via Ansible//" as app
   }
 }
 
 node "Terraform\nIaC >= 1.10" as tf {
   rectangle "**providers**\nhcloud ~>1.45, cloudflare ~>5\ntls ~>4.0, http ~>3.4" as tfcli
+  rectangle "**tls_private_key.origin** (RSA 2048, prevent_destroy)\n+ **tls_cert_request.origin** (CSR)" as tlskey
   rectangle "**data http cloudflare_ipv4 / ipv6**\nfetch Cloudflare IP ranges" as cfips
   database "**S3 backend** (remote state)\nbucket dropicture-tfstate-prod\nencrypted, lockfile, eu-west-3" as state
 }
@@ -56,10 +46,11 @@ node "Terraform\nIaC >= 1.10" as tf {
 user --> dns : HTTPS 443 / TLS
 dns --> fw : reverse proxy\nFull (strict)
 fw --> srv : ingress 80/443
-fw ..> cli : ingress 80/443\n(when client_count > 0)
-srv --> svol : attach (ext4)
-cli ..> cvol : attach (ext4)
 zone ..> dns : zone_id
+ssh ..> srv : ssh_keys
+
+tlskey ..> cert : CSR
+cert ..> app : origin cert + key (PEM)\nTF outputs -> Ansible
 
 cfips ..> fw : source_ips (CIDRs)
 tfcli ..> htz : provisions\nhcloud API

@@ -1,6 +1,6 @@
 @startuml ansible
-title dropicture - Ansible provisioning (Nomad cluster)
-footer Author: Amir Redjem   |   2026-06-03   |   v1.0
+title dropicture - Ansible provisioning (single-node Docker Swarm)
+footer Author: Amir Redjem   |   2026-06-05   |   v1.2
 
 skinparam shadowing false
 skinparam defaultFontName Helvetica
@@ -13,10 +13,6 @@ skinparam ActorBackgroundColor #EEF4FF
 skinparam ActorBorderColor #B8CDF3
 skinparam DatabaseBackgroundColor #FFFFFF
 skinparam DatabaseBorderColor #B7E0C9
-skinparam CollectionsBackgroundColor #FDF4F4
-skinparam CollectionsBorderColor #E6BCBC
-skinparam ControlBackgroundColor #F6F1FC
-skinparam ControlBorderColor #CDBCE8
 skinparam SequenceLifeLineBorderColor #B8C4D0
 skinparam SequenceDividerBackgroundColor #EEF4FF
 skinparam SequenceDividerFontColor #41505F
@@ -29,52 +25,48 @@ skinparam noteBorderColor #F3B27A
 actor "Operator / CI" as op
 participant "Ansible\ncontrol node\n(localhost)" as ans
 database "S3 backend\ntfstate (eu-west-3)" as s3
-collections "Nomad nodes\nservers + clients\n(SSH root)" as nodes
-control "Nomad API\nserver[0]:4646" as api
-database "AWS Secrets\nManager" as sm
+participant "Swarm server\nmanager-1, single node\n(SSH root)" as srv
 
-== Play 1 - Discover nodes from Terraform state (localhost) ==
+== Play 1 - Discover the server from Terraform state (localhost) ==
 op -> ans : ansible-playbook playbook.yml\nAWS creds + SSH_PRIVATE_KEY_B64
 ans -> ans : assert required env vars
 ans -> s3 : GET terraform.tfstate
 s3 --> ans : state JSON
-ans -> ans : parse outputs\n(server/client public + private IPs)
+ans -> ans : parse outputs\n(manager_public_ip,\nOrigin CA cert + key, no_log)
 ans -> ans : delete local state copy (sensitive)
 ans -> ans : write SSH key to tempfile (0600)
-ans -> ans : add_host -> groups\nnomad_servers / nomad_clients
+ans -> ans : add_host -> group swarm\n(single host)
 
-== Play 2 - Configure the Nomad cluster (hosts: nomad, over SSH) ==
-ans -> nodes : add HashiCorp apt repo,\ninstall Nomad 2.0.2-1
-ans -> nodes : install Docker + CNI 1.6.2,\nbridge modules + sysctls
-ans -> nodes : template /etc/nomad.d/nomad.hcl
-note over nodes
-  server block on servers only
-  (bootstrap_expect = #servers, retry_join)
-  client block on every node
-  ACL enabled, UI disabled
-  datacenter dc1 / region global
+== Play 2 - Provision Docker Engine (hosts: swarm, over SSH) ==
+ans -> srv : harden SSH\n(key-only, sshd_config.d)
+ans -> srv : add Docker apt repo,\ninstall Docker CE + python3-docker
+ans -> srv : write /etc/docker/daemon.json\n(log rotation, validated)
+ans -> srv : bridge modules + sysctls
+ans -> srv : guard: fail if /opt/dropicture/data\nis still a symlink to the old volume
+note over srv
+  migration from the old setup:
+  rsync the Hetzner volume content
+  to the local disk, drop the link,
+  then re-run the playbook
 end note
-ans -> nodes : enable & start nomad\n(handler: restart on config change)
+ans -> srv : create data dirs on the local SSD\n/opt/dropicture/data/{postgres,\ndragonfly, garage/meta, garage/data}
+ans -> srv : write Origin CA cert + key\nto /opt/dropicture/tls (0644 / 0600)
+ans -> srv : flush handlers\n(restart docker if needed)
 
-== Play 3 - Bootstrap ACL + store token (localhost, first run only) ==
-ans -> sm : secret exists?\nnomad/dropicture/management-token
-alt secret missing (first run)
-  ans -> api : wait for :4646, then\nPOST /v1/acl/bootstrap
-  api --> ans : SecretID (management token)
-  ans -> sm : store management token
-else already bootstrapped
-  ans -> ans : skip bootstrap
-end
+== Play 3 - Initialise the single-node Swarm (SSH) ==
+ans -> srv : docker swarm init\nadvertise/listen = public IP:2377
+note over srv
+  the server is its own manager
+  no join, no tokens
+  2377/7946/4789 listen publicly but
+  stay unreachable: the Hetzner
+  firewall only allows 22/80/443/ICMP
+end note
 
-== Play 4 - Reconcile cluster with Terraform inventory (localhost) ==
-ans -> sm : fetch management token
-sm --> ans : token
-ans -> api : GET /v1/agent/members
-api --> ans : current servers
-ans -> api : force-leave + prune\nservers not in TF state
-ans -> api : GET /v1/nodes
-api --> ans : current clients
-ans -> api : purge client nodes\nnot in TF state
+== Play 4 - Configure the Swarm (SSH) ==
+ans -> srv : store Swarm config\ndropicture_origin_cert
+ans -> srv : store Swarm secret\ndropicture_origin_key (no_log)
+ans -> srv : create /opt/dropicture/stacks
 
 == Play 5 - Clean up (localhost) ==
 ans -> ans : remove temporary SSH key

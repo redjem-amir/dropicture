@@ -8,23 +8,23 @@ data "cloudflare_zone" "dropicture" {
 resource "cloudflare_dns_record" "apex" {
   zone_id = data.cloudflare_zone.dropicture.zone_id
   name    = "@"
-  content = hcloud_server.server[0].ipv4_address
+  content = hcloud_server.manager.ipv4_address
   type    = "A"
   ttl     = 1
   proxied = true
 
-  comment = "dropicture.com -> Hetzner server (Terraform-managed)"
+  comment = "dropicture.com -> Hetzner manager-1 (Terraform-managed)"
 }
 
 resource "cloudflare_dns_record" "www" {
   zone_id = data.cloudflare_zone.dropicture.zone_id
   name    = "www"
-  content = hcloud_server.server[0].ipv4_address
+  content = hcloud_server.manager.ipv4_address
   type    = "A"
   ttl     = 1
   proxied = true
 
-  comment = "www.dropicture.com -> Hetzner server (Terraform-managed)"
+  comment = "www.dropicture.com -> Hetzner manager-1 (Terraform-managed)"
 }
 
 resource "tls_private_key" "origin" {
