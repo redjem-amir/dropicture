@@ -18,12 +18,9 @@ const ERROR_MESSAGES: Record<string, string> = {
 }
 
 const inputClass =
-    'h-10 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm ' +
+    'h-10 w-full rounded-lg border border-stone-200 bg-white px-3 text-sm ' +
     'text-stone-900 placeholder:text-stone-400 outline-none transition ' +
-    'focus:border-stone-900 focus:ring-2 focus:ring-stone-900/10'
-
-const SPARKLE =
-    'M12 0c.9 6.1 5 10.2 11.9 12-6.9 1.8-11 5.9-11.9 12-.9-6.1-5-10.2-11.9-12C7 10.2 11.1 6.1 12 0Z'
+    'focus:border-stone-900 focus:ring-2 focus:ring-stone-900/10 disabled:opacity-60'
 
 function safeNext(value: string | string[] | undefined): string {
     const next = Array.isArray(value) ? value[0] : value
@@ -76,77 +73,20 @@ export default function SigninPage({
     }
 
     return (
-        <main className="relative flex min-h-dvh flex-col overflow-hidden bg-stone-50">
-            <div aria-hidden className="pointer-events-none absolute inset-0 select-none">
-                <svg className="absolute inset-0 h-full w-full text-stone-300 mask-[radial-gradient(ellipse_at_center,black_30%,transparent_75%)]">
-                    <defs>
-                        <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
-                            <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
-                        </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#dots)" />
-                </svg>
-                <div className="absolute -left-40 -top-40 size-120 rounded-full bg-linear-to-br from-amber-200 via-orange-100 to-transparent opacity-70 blur-3xl" />
-                <div className="absolute -bottom-48 -right-32 size-136 rounded-full bg-linear-to-tr from-violet-200 via-fuchsia-100 to-transparent opacity-70 blur-3xl" />
-                <svg
-                    viewBox="0 0 150 180"
-                    className="absolute left-[4%] top-[16%] hidden w-36 -rotate-6 drop-shadow-[0_16px_32px_rgba(0,0,0,0.10)] lg:block xl:w-44"
-                >
-                    <defs>
-                        <linearGradient id="pl1" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#FFEDD5" />
-                            <stop offset="100%" stopColor="#FED7AA" />
-                        </linearGradient>
-                    </defs>
-                    <rect x="0.5" y="0.5" width="149" height="179" rx="14" fill="#fff" stroke="#E7E5E4" />
-                    <rect x="12" y="12" width="126" height="126" rx="10" fill="url(#pl1)" />
-                    <circle cx="103" cy="48" r="14" fill="#FBBF24" />
-                    <path d="M12 138 L50 84 L76 114 L100 88 L138 138 Z" fill="#FDBA74" />
-                    <path d="M12 138 L42 100 L70 138 Z" fill="#FB923C" />
-                    <rect x="12" y="150" width="72" height="8" rx="4" fill="#E7E5E4" />
-                </svg>
-                <svg
-                    viewBox="0 0 150 180"
-                    className="absolute bottom-[14%] right-[4%] hidden w-36 rotate-[8deg] drop-shadow-[0_16px_32px_rgba(0,0,0,0.10)] lg:block xl:w-44"
-                >
-                    <defs>
-                        <linearGradient id="pl2" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#EDE9FE" />
-                            <stop offset="100%" stopColor="#DDD6FE" />
-                        </linearGradient>
-                    </defs>
-                    <rect x="0.5" y="0.5" width="149" height="179" rx="14" fill="#fff" stroke="#E7E5E4" />
-                    <rect x="12" y="12" width="126" height="126" rx="10" fill="url(#pl2)" />
-                    <circle cx="52" cy="50" r="12" fill="#A78BFA" />
-                    <path d="M12 100 Q 40 92 75 100 T 138 100 V 138 H 12 Z" fill="#C4B5FD" />
-                    <path d="M30 116 q 6 -4 12 0 M58 122 q 6 -4 12 0 M92 116 q 6 -4 12 0" stroke="#8B5CF6" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.5" />
-                    <rect x="12" y="150" width="58" height="8" rx="4" fill="#E7E5E4" />
-                </svg>
-                <svg viewBox="0 0 24 24" className="absolute left-[22%] top-[12%] hidden size-5 text-amber-400 md:block">
-                    <path d={SPARKLE} fill="currentColor" />
-                </svg>
-                <svg viewBox="0 0 24 24" className="absolute bottom-[22%] left-[12%] hidden size-3.5 text-violet-400 md:block">
-                    <path d={SPARKLE} fill="currentColor" />
-                </svg>
-                <svg viewBox="0 0 24 24" className="absolute right-[20%] top-[20%] hidden size-4 animate-pulse text-orange-400 md:block">
-                    <path d={SPARKLE} fill="currentColor" />
-                </svg>
+        <main className="relative flex min-h-dvh flex-col overflow-hidden bg-white">
+            <div aria-hidden className="pointer-events-none absolute inset-0 select-none overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-120 bg-[linear-gradient(to_right,rgba(28,25,23,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(28,25,23,0.05)_1px,transparent_1px)] bg-size-[56px_56px] mask-[radial-gradient(ellipse_75%_65%_at_50%_0%,#000_50%,transparent_100%)]" />
+                <div className="absolute left-1/2 -top-55 h-110 w-170 -translate-x-1/2 rounded-full bg-amber-100/50 blur-3xl" />
             </div>
             <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-12">
-                <div className="relative w-full max-w-sm">
-                    <svg aria-hidden viewBox="0 0 24 24" className="absolute -right-4 -top-5 size-7 text-amber-400">
-                        <path d={SPARKLE} fill="currentColor" />
-                    </svg>
-                    <svg aria-hidden viewBox="0 0 24 24" className="absolute -bottom-4 -left-6 size-5 animate-pulse text-violet-400">
-                        <path d={SPARKLE} fill="currentColor" />
-                    </svg>
+                <div className="w-full max-w-sm">
                     <SessionExpired className="mb-4" />
-                    <div className="rounded-3xl border border-stone-200/80 bg-white/80 p-8 shadow-[0_8px_40px_-12px_rgba(28,25,23,0.12)] backdrop-blur-sm">
+                    <div className="rounded-2xl border border-stone-200/70 bg-white p-8 shadow-xl shadow-stone-900/4">
                         <div className="flex justify-center">
                             <Link
                                 href="/"
-                                className="flex size-12 items-center justify-center rounded-2xl bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-[0_8px_20px_-6px_rgba(249,115,22,0.5)]"
                                 aria-label="Dropicture home"
+                                className="text-stone-900 transition-opacity hover:opacity-80"
                             >
                                 <svg
                                     viewBox="0 0 24 24"
@@ -155,7 +95,7 @@ export default function SigninPage({
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
-                                    className="size-6"
+                                    className="size-7"
                                     aria-hidden="true"
                                 >
                                     <circle cx="12" cy="12" r="10" />
@@ -163,26 +103,9 @@ export default function SigninPage({
                                 </svg>
                             </Link>
                         </div>
-                        <div className="mt-5 flex justify-center">
-                            <span className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-stone-500">
-                                <svg viewBox="0 0 24 24" className="size-3 text-amber-500" aria-hidden="true">
-                                    <path d={SPARKLE} fill="currentColor" />
-                                </svg>
-                                Open source · Hosted in Europe
-                            </span>
-                        </div>
-                        <h1 className="mt-4 text-center text-2xl font-semibold tracking-tight text-stone-900">
+                        <h1 className="mt-5 text-center text-2xl font-semibold tracking-tight text-stone-900">
                             Welcome back
                         </h1>
-                        <svg aria-hidden viewBox="0 0 120 12" className="mx-auto mt-1 h-3 w-28 text-amber-400">
-                            <path
-                                d="M3 8 C 22 3, 42 10, 62 6 S 100 4, 117 7"
-                                stroke="currentColor"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                fill="none"
-                            />
-                        </svg>
                         <p className="mt-2 text-center text-sm text-stone-500">
                             Your photos, on your terms.
                         </p>
@@ -190,7 +113,7 @@ export default function SigninPage({
                             {error && (
                                 <div
                                     role="alert"
-                                    className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-600"
+                                    className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-600"
                                 >
                                     {error}
                                 </div>
@@ -221,7 +144,7 @@ export default function SigninPage({
                                     <Link
                                         href="/reset-password"
                                         tabIndex={-1}
-                                        className="text-sm text-stone-400 underline-offset-4 hover:text-stone-700 hover:underline"
+                                        className="text-sm text-stone-500 underline-offset-4 transition-colors hover:text-stone-900 hover:underline"
                                     >
                                         Forgot password?
                                     </Link>
@@ -266,7 +189,7 @@ export default function SigninPage({
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-stone-900 text-sm font-medium text-white transition hover:bg-stone-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 disabled:pointer-events-none disabled:opacity-60"
+                                className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-stone-900 text-sm font-medium text-white shadow-sm transition-colors hover:bg-stone-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 disabled:pointer-events-none disabled:opacity-60"
                             >
                                 {loading && (
                                     <svg viewBox="0 0 24 24" fill="none" className="size-4 animate-spin" aria-hidden="true">
@@ -290,17 +213,17 @@ export default function SigninPage({
                 </div>
             </div>
             <footer className="relative z-10 flex items-center justify-center gap-6 px-4 py-6">
-                <Link href="/terms" className="text-xs text-stone-400 transition hover:text-stone-600">
+                <Link href="/terms" className="text-xs text-stone-500 transition-colors hover:text-stone-900">
                     Terms
                 </Link>
-                <Link href="/privacy" className="text-xs text-stone-400 transition hover:text-stone-600">
+                <Link href="/privacy" className="text-xs text-stone-500 transition-colors hover:text-stone-900">
                     Privacy
                 </Link>
                 <Link
                     href="https://github.com/redjem-amir/dropicture"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-stone-400 transition hover:text-stone-600"
+                    className="text-xs text-stone-500 transition-colors hover:text-stone-900"
                 >
                     GitHub
                 </Link>

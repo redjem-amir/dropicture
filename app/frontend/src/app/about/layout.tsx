@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 
 const TITLE = "About";
-const OG_TITLE = "About — Dropicture";
+const OG_TITLE = "About · Dropicture";
 const DESCRIPTION =
     "Why Dropicture exists: an independent, open source alternative for storing photos without giving up privacy or ownership.";
 

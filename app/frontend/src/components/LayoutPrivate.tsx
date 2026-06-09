@@ -12,9 +12,6 @@ import { useUser, type UserProfile } from '@/components/UserProvider'
 
 const APP_PATH = '/auth'
 
-const SPARKLE =
-    'M12 0c.9 6.1 5 10.2 11.9 12-6.9 1.8-11 5.9-11.9 12-.9-6.1-5-10.2-11.9-12C7 10.2 11.1 6.1 12 0Z'
-
 type NavRoute = Extract<RouteItem, { type: 'route' }> & { href: string }
 type NavGroup = { label: string | null; routes: NavRoute[] }
 
@@ -47,9 +44,6 @@ function initials(user: UserProfile): string {
     return `${user.firstname?.[0] ?? ''}${user.lastname?.[0] ?? ''}`.toUpperCase() || '?'
 }
 
-/** Avatar déterministe : même email → même avatar, rien à stocker.
- *  style="shape" = formes colorées ; passe style="character" pour
- *  afficher les initiales (displayValue est déjà branché). */
 function UserAvatar({ user, size }: { user: UserProfile; size: number }) {
     return (
         <span className="shrink-0" style={{ width: size, height: size }}>
@@ -65,17 +59,19 @@ function UserAvatar({ user, size }: { user: UserProfile; size: number }) {
 
 function BrandMark() {
     return (
-        <span className="relative inline-flex">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-[0_6px_16px_-4px_rgba(249,115,22,0.5)]">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-5" aria-hidden="true">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94" />
-                </svg>
-            </span>
-            <svg aria-hidden viewBox="0 0 24 24" className="absolute -right-2 -top-1.5 size-3.5 text-amber-400">
-                <path d={SPARKLE} fill="currentColor" />
-            </svg>
-        </span>
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="size-5"
+            aria-hidden="true"
+        >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94" />
+        </svg>
     )
 }
 
@@ -96,17 +92,17 @@ function NavPill({
             onClick={onNavigate}
             aria-current={active ? 'page' : undefined}
             className={
-                'group flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium transition ' +
+                'group flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ' +
                 (active
-                    ? 'bg-stone-900 text-white shadow-[0_4px_12px_-4px_rgba(28,25,23,0.4)]'
-                    : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900')
+                    ? 'bg-stone-100 text-stone-900'
+                    : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900')
             }
         >
             {Icon && (
                 <Icon
                     className={
-                        'size-4 shrink-0 transition ' +
-                        (active ? 'text-amber-400' : 'text-stone-400 group-hover:text-stone-600')
+                        'size-4 shrink-0 transition-colors ' +
+                        (active ? 'text-stone-700' : 'text-stone-400 group-hover:text-stone-600')
                     }
                 />
             )}
@@ -154,11 +150,11 @@ export default function LayoutPrivate({ children }: { children: React.ReactNode 
 
     return (
         <div className="flex min-h-dvh flex-col bg-stone-50">
-            <header className="sticky top-0 z-40 border-b border-stone-200/80 bg-white/80 backdrop-blur-sm">
+            <header className="sticky top-0 z-40 border-b border-stone-200/70 bg-white/80 backdrop-blur-sm">
                 <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
                     <Link
                         href={APP_PATH}
-                        className="inline-flex shrink-0 items-center gap-2.5 text-stone-900 transition hover:opacity-80"
+                        className="inline-flex shrink-0 items-center gap-2 text-stone-900 transition-opacity hover:opacity-80"
                     >
                         <BrandMark />
                         <span className="hidden text-sm font-semibold tracking-tight sm:block">
@@ -169,7 +165,7 @@ export default function LayoutPrivate({ children }: { children: React.ReactNode 
                         {isLoading && !user ? (
                             <div className="flex items-center gap-2" aria-hidden>
                                 {[0, 1, 2].map(i => (
-                                    <div key={i} className="h-8 w-24 animate-pulse rounded-xl bg-stone-100" />
+                                    <div key={i} className="h-8 w-24 animate-pulse rounded-full bg-stone-100" />
                                 ))}
                             </div>
                         ) : (
@@ -202,12 +198,11 @@ export default function LayoutPrivate({ children }: { children: React.ReactNode 
                                 aria-haspopup="menu"
                                 aria-expanded={userMenuOpen}
                                 className={
-                                    'flex items-center gap-2.5 rounded-full p-1 pr-2 transition hover:bg-stone-100 sm:rounded-2xl ' +
+                                    'flex items-center gap-2.5 rounded-full p-1 pr-2 transition-colors hover:bg-stone-100 ' +
                                     (userMenuOpen ? 'bg-stone-100' : '')
                                 }
                             >
                                 <UserAvatar user={user} size={32} />
-                                {/* Identité visible dans la barre (md+) */}
                                 <span className="hidden min-w-0 flex-col items-start text-left md:flex">
                                     <span className="max-w-40 truncate text-sm font-medium leading-tight text-stone-900">
                                         {user.firstname} {user.lastname}
@@ -226,7 +221,7 @@ export default function LayoutPrivate({ children }: { children: React.ReactNode 
                             {userMenuOpen && (
                                 <div
                                     role="menu"
-                                    className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-stone-200/80 bg-white p-1.5 shadow-[0_8px_30px_-12px_rgba(28,25,23,0.25)]"
+                                    className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-stone-200/70 bg-white p-1.5 shadow-xl shadow-stone-900/8"
                                 >
                                     <div className="flex items-center gap-2.5 px-2.5 py-2">
                                         <UserAvatar user={user} size={40} />
@@ -237,12 +232,12 @@ export default function LayoutPrivate({ children }: { children: React.ReactNode 
                                             <p className="truncate text-xs text-stone-400">{user.email}</p>
                                         </div>
                                     </div>
-                                    <div aria-hidden className="my-1 h-px bg-stone-100" />
+                                    <div aria-hidden className="my-1 h-px bg-stone-200/70" />
                                     <button
                                         type="button"
                                         role="menuitem"
                                         onClick={logout}
-                                        className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-sm text-stone-600 transition hover:bg-stone-100 hover:text-stone-900"
+                                        className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
                                     >
                                         <TbLogout className="size-4 text-stone-400" />
                                         Sign out
@@ -257,7 +252,7 @@ export default function LayoutPrivate({ children }: { children: React.ReactNode 
                         aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
                         aria-expanded={mobileOpen}
                         aria-controls="mobile-nav"
-                        className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-stone-200 bg-white text-stone-600 transition hover:bg-stone-50 lg:hidden"
+                        className="flex size-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-600 shadow-sm transition-colors hover:border-stone-300 hover:text-stone-900 lg:hidden"
                     >
                         {mobileOpen ? <TbX className="size-4.5" /> : <TbMenu2 className="size-4.5" />}
                     </button>
@@ -266,12 +261,12 @@ export default function LayoutPrivate({ children }: { children: React.ReactNode 
                     <nav
                         id="mobile-nav"
                         aria-label="Main navigation"
-                        className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-stone-200/80 bg-white/95 px-4 pb-4 pt-3 backdrop-blur-sm lg:hidden"
+                        className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-stone-200/70 bg-white/95 px-4 pb-4 pt-3 backdrop-blur-sm lg:hidden"
                     >
                         {groups.map((group, gi) => (
                             <div key={gi} className={gi > 0 ? 'mt-5' : ''}>
                                 {group.label && (
-                                    <p className="px-3 pb-2 text-[11px] font-medium uppercase tracking-wider text-stone-400">
+                                    <p className="px-3 pb-2 font-mono text-[11px] font-medium uppercase tracking-widest text-stone-400">
                                         {group.label}
                                     </p>
                                 )}
@@ -291,12 +286,8 @@ export default function LayoutPrivate({ children }: { children: React.ReactNode 
                     </nav>
                 )}
             </header>
-            <main className="relative flex-1">
-                <div aria-hidden className="pointer-events-none absolute inset-0 select-none overflow-hidden">
-                    <div className="absolute -right-40 -top-40 size-120 rounded-full bg-linear-to-bl from-amber-200 via-orange-100 to-transparent opacity-40 blur-3xl" />
-                    <div className="absolute -bottom-48 -left-32 size-136 rounded-full bg-linear-to-tr from-violet-200 via-fuchsia-100 to-transparent opacity-40 blur-3xl" />
-                </div>
-                <div className="relative z-10 mx-auto w-full max-w-7xl p-4 sm:p-8">{children}</div>
+            <main className="flex-1">
+                <div className="mx-auto w-full max-w-7xl p-4 sm:p-8">{children}</div>
             </main>
         </div>
     )

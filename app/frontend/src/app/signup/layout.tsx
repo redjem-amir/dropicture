@@ -1,7 +1,7 @@
 // dropicture/app/frontend/src/app/signup/layout.tsx
 import type { Metadata } from "next";
 
-const TITLE = "Create your account — Dropicture";
+const TITLE = "Create your account · Dropicture";
 const DESCRIPTION =
   "Create a free Dropicture account in a few steps. Open source photo storage hosted in Europe — your photos, on your terms.";
 

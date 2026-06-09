@@ -1,7 +1,7 @@
 // dropicture/app/frontend/src/app/terms/layout.tsx
 import type { Metadata } from "next";
 
-const TITLE = "Terms of Service — Dropicture";
+const TITLE = "Terms of Service · Dropicture";
 const DESCRIPTION =
     "The terms that govern dropicture.com: a free, open source photo service. Your content stays yours — plain words, fair terms.";
 

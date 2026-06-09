@@ -1,7 +1,7 @@
 // dropicture/app/frontend/src/app/signin/layout.tsx
 import type { Metadata } from "next";
 
-const TITLE = "Sign in — Dropicture";
+const TITLE = "Sign in · Dropicture";
 const DESCRIPTION =
   "Sign in to your Dropicture account and access your photo library — free, open source, and yours.";
 

@@ -1,17 +1,11 @@
 // dropicture/app/frontend/src/app/open-source/page.tsx
 import type { Metadata } from 'next'
-import {
-    TbBrandGithub,
-    TbGitPullRequest,
-    TbScale,
-    TbTerminal2,
-} from 'react-icons/tb'
-import LayoutPublic, { SPARKLE } from '@/components/LayoutPublic'
-import Link from 'next/link';
+import Link from 'next/link'
+import { TbArrowUpRight, TbBrandGithub, TbGitPullRequest, TbScale, TbTerminal2 } from 'react-icons/tb'
+import LayoutPublic from '@/components/LayoutPublic'
 
 const TITLE = 'Open source'
-const DESCRIPTION =
-    'Dropicture is MIT-licensed and built in the open. Audit the code, self-host the full stack with Docker, or contribute on GitHub.'
+const DESCRIPTION = 'Dropicture is MIT-licensed and built in the open. Audit the code, self-host the full stack with Docker, or contribute on GitHub.'
 
 export const metadata: Metadata = {
     title: TITLE,
@@ -27,6 +21,8 @@ export const metadata: Metadata = {
     },
     twitter: { card: 'summary', title: `${TITLE} — Dropicture`, description: DESCRIPTION },
 }
+
+const GITHUB_URL = 'https://github.com/redjem-amir/dropicture'
 
 const STACK = [
     'Next.js',
@@ -46,7 +42,8 @@ const STEPS = [
     },
     {
         title: 'Configure your environment',
-        code: 'cd dropicture  # create your .env — see HELP.md',
+        code: 'cd dropicture',
+        comment: '# create your .env — see HELP.md',
     },
     {
         title: 'Start the stack',
@@ -54,131 +51,149 @@ const STEPS = [
     },
 ]
 
+const BTN_PRIMARY =
+    'inline-flex h-11 items-center justify-center gap-2 rounded-full bg-stone-900 px-6 text-sm font-medium text-white shadow-sm transition-colors hover:bg-stone-700'
+const BTN_SECONDARY =
+    'inline-flex h-11 items-center justify-center gap-2 rounded-full border border-stone-200 bg-white px-6 text-sm font-medium text-stone-700 shadow-sm transition-colors hover:border-stone-300 hover:text-stone-900'
+
 export default function OpenSourcePage() {
     return (
         <LayoutPublic
             active="/open-source"
             flip
             decor={
-                <>
-                    <svg viewBox="0 0 24 24" className="absolute left-[16%] top-[12%] hidden size-4 text-amber-400 md:block">
-                        <path d={SPARKLE} fill="currentColor" />
-                    </svg>
-                    <svg viewBox="0 0 24 24" className="absolute bottom-[18%] right-[12%] hidden size-3.5 animate-pulse text-violet-400 md:block">
-                        <path d={SPARKLE} fill="currentColor" />
-                    </svg>
-                </>
+                <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 top-0 h-120 bg-[linear-gradient(to_right,rgba(28,25,23,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(28,25,23,0.05)_1px,transparent_1px)] bg-size-[56px_56px] mask-[radial-gradient(ellipse_75%_65%_at_50%_0%,#000_50%,transparent_100%)]"
+                />
             }
         >
-            <section className="mx-auto w-full max-w-6xl px-4 pb-8 pt-16 text-center sm:px-6 sm:pt-20">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-stone-500">
-                    <svg viewBox="0 0 24 24" className="size-3 text-amber-500" aria-hidden="true">
-                        <path d={SPARKLE} fill="currentColor" />
-                    </svg>
-                    MIT licensed
-                </span>
-                <h1 className="mt-5 text-3xl font-semibold tracking-tight text-stone-900 sm:text-5xl">
-                    Built in{' '}
-                    <span className="relative inline-block">
-                        the open.
-                        <svg aria-hidden viewBox="0 0 120 12" className="absolute -bottom-3 left-1/2 h-3 w-full -translate-x-1/2 text-amber-400">
-                            <path d="M3 8 C 22 3, 42 10, 62 6 S 100 4, 117 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
-                        </svg>
+            <section className="relative mx-auto w-full max-w-6xl px-4 pb-20 pt-20 sm:px-6 sm:pt-28">
+                <div className="mx-auto max-w-2xl text-center">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-stone-600 shadow-sm">
+                        <span className="relative flex size-1.5" aria-hidden>
+                            <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                            <span className="relative inline-flex size-1.5 rounded-full bg-amber-500" />
+                        </span>
+                        MIT licensed
                     </span>
-                </h1>
-                <p className="mx-auto mt-7 max-w-xl text-base leading-relaxed text-stone-500">
-                    The code that runs dropicture.com is public — from the Terraform that provisions the
-                    server to the button you&apos;re about to click. Nothing up our sleeves.
-                </p>
-                <Link
-                    href="https://github.com/redjem-amir/dropicture"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-8 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-stone-900 px-6 text-sm font-medium text-white transition hover:bg-stone-700"
-                >
-                    <TbBrandGithub className="size-4.5" />
-                    View on GitHub
-                </Link>
+                    <h1 className="mt-8 text-balance bg-linear-to-b from-stone-900 to-stone-600 bg-clip-text text-4xl font-semibold leading-[1.05] tracking-tighter text-transparent sm:text-6xl">
+                        Built in the open.
+                    </h1>
+                    <p className="mx-auto mt-6 max-w-xl text-pretty text-base leading-relaxed text-stone-500">
+                        The code that runs dropicture.com is public — from the Terraform that provisions the
+                        server to the button you&apos;re about to click. Nothing up our sleeves.
+                    </p>
+                    <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                        <Link
+                            href={GITHUB_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`${BTN_PRIMARY} w-full sm:w-auto`}
+                        >
+                            <TbBrandGithub className="size-4" />
+                            View on GitHub
+                        </Link>
+                        <Link href="#self-host" className={`${BTN_SECONDARY} w-full sm:w-auto`}>
+                            <TbTerminal2 className="size-4" />
+                            Self-host guide
+                        </Link>
+                    </div>
+                </div>
             </section>
-            <section className="mx-auto w-full max-w-3xl px-4 pb-16 pt-10 sm:px-6">
-                <div className="relative">
-                    <svg aria-hidden viewBox="0 0 24 24" className="absolute -right-4 -top-5 size-6 text-amber-400">
-                        <path d={SPARKLE} fill="currentColor" />
-                    </svg>
-                    <div className="rounded-3xl border border-stone-200/80 bg-white/80 p-8 shadow-[0_8px_40px_-12px_rgba(28,25,23,0.12)] backdrop-blur-sm sm:p-10">
-                        <h2 className="flex items-center gap-2.5 text-xl font-semibold tracking-tight text-stone-900 sm:text-2xl">
-                            <TbTerminal2 className="size-6 text-stone-400" />
+            <section id="self-host" className="scroll-mt-16 border-t border-stone-200/70 bg-stone-50/60">
+                <div className="mx-auto grid w-full max-w-6xl items-center gap-14 px-4 py-24 sm:px-6 lg:grid-cols-2 lg:gap-16">
+                    <div>
+                        <p className="font-mono text-xs font-medium uppercase tracking-widest text-stone-400">
+                            Self-hosting
+                        </p>
+                        <h2 className="mt-3 text-3xl font-semibold tracking-tighter text-stone-900 sm:text-4xl">
                             Self-host in three steps
                         </h2>
-                        <svg aria-hidden viewBox="0 0 120 12" className="mt-1.5 h-3 w-28 text-amber-400">
-                            <path d="M3 8 C 22 3, 42 10, 62 6 S 100 4, 117 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
-                        </svg>
-                        <p className="mt-4 text-sm leading-relaxed text-stone-500">
+                        <p className="mt-4 text-base leading-relaxed text-stone-500">
                             The same containers that power the hosted service, on your machine. A laptop, a
                             homelab, a VPS — anywhere Docker runs. Frontend, API, PostgreSQL, Dragonfly and
                             S3-compatible storage start together, pre-wired.
                         </p>
-                        <ol className="mt-7 space-y-5">
-                            {STEPS.map((step, i) => (
-                                <li key={step.title} className="flex gap-4">
-                                    <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-amber-400 to-orange-500 text-xs font-semibold text-white shadow-[0_4px_12px_-2px_rgba(249,115,22,0.5)]">
-                                        {i + 1}
-                                    </span>
-                                    <div className="min-w-0 flex-1">
-                                        <p className="text-sm font-medium text-stone-900">{step.title}</p>
-                                        <pre className="mt-2 overflow-x-auto rounded-xl bg-stone-900 px-4 py-3 text-xs leading-relaxed text-stone-100">
-                                            <code>{step.code}</code>
-                                        </pre>
-                                    </div>
-                                </li>
-                            ))}
-                        </ol>
-                        <p className="mt-6 text-xs text-stone-400">
+                        <p className="mt-4 text-sm leading-relaxed text-stone-500">
                             Full instructions — environment variables, production deployment on your own cloud
                             with Terraform and Ansible — live in the repository&apos;s HELP.md and README.
                         </p>
-                    </div>
-                </div>
-            </section>
-            <section className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-4 px-4 pb-24 sm:px-6 md:grid-cols-2">
-                <div className="rounded-3xl border border-stone-200/80 bg-white/80 p-8 backdrop-blur-sm">
-                    <h2 className="flex items-center gap-2.5 text-lg font-semibold tracking-tight text-stone-900">
-                        <TbScale className="size-5 text-stone-400" />
-                        An honest stack
-                    </h2>
-                    <p className="mt-3 text-sm leading-relaxed text-stone-500">
-                        Boring, proven, replaceable technology — chosen so anyone can run and maintain their
-                        own instance without a platform team.
-                    </p>
-                    <ul className="mt-5 flex flex-wrap gap-2">
-                        {STACK.map(item => (
-                            <li
-                                key={item}
-                                className="rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-stone-600"
+                        <p className="mt-8">
+                            <Link
+                                href={GITHUB_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group inline-flex items-center gap-1.5 text-sm font-medium text-stone-900 underline-offset-4 hover:underline"
                             >
-                                {item}
+                                Read the full guide on GitHub
+                                <TbArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                            </Link>
+                        </p>
+                    </div>
+                    <ol className="divide-y divide-stone-200/70 overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-xl shadow-stone-900/4">
+                        {STEPS.map((step, i) => (
+                            <li key={step.title} className="flex gap-5 p-6 sm:p-7">
+                                <span className="select-none pt-0.5 font-mono text-xs leading-5 text-stone-300">
+                                    0{i + 1}
+                                </span>
+                                <div className="min-w-0 flex-1">
+                                    <h3 className="text-sm font-semibold text-stone-900">{step.title}</h3>
+                                    <div className="mt-3 overflow-x-auto whitespace-nowrap rounded-lg border border-stone-200 bg-stone-50 px-3.5 py-2.5 font-mono text-xs leading-relaxed">
+                                        <span className="select-none text-stone-400">$ </span>
+                                        <span className="text-stone-800">{step.code}</span>
+                                        {step.comment && (
+                                            <span className="ml-3 text-stone-400">{step.comment}</span>
+                                        )}
+                                    </div>
+                                </div>
                             </li>
                         ))}
-                    </ul>
+                    </ol>
                 </div>
-                <div className="rounded-3xl border border-stone-200/80 bg-white/80 p-8 backdrop-blur-sm">
-                    <h2 className="flex items-center gap-2.5 text-lg font-semibold tracking-tight text-stone-900">
-                        <TbGitPullRequest className="size-5 text-stone-400" />
-                        Contributions welcome
-                    </h2>
-                    <p className="mt-3 text-sm leading-relaxed text-stone-500">
-                        Dropicture is young and evolving in the open. Bug reports, ideas and pull requests all
-                        help — the roadmap and issues live on GitHub, and the MIT license means your fork is
-                        always an option.
-                    </p>
-                    <Link
-                        href="https://github.com/redjem-amir/dropicture/issues"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-stone-900 underline-offset-4 hover:underline"
-                    >
-                        Browse open issues
-                    </Link>
+            </section>
+            <section className="mx-auto w-full max-w-6xl px-4 py-24 sm:px-6">
+                <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-stone-200/70 bg-stone-200/70 md:grid-cols-2">
+                    <div className="bg-white p-8">
+                        <span className="inline-flex size-10 items-center justify-center rounded-lg border border-stone-200 bg-white text-stone-700 shadow-sm">
+                            <TbScale className="size-5" strokeWidth={1.5} />
+                        </span>
+                        <h2 className="mt-5 text-sm font-semibold text-stone-900">An honest stack</h2>
+                        <p className="mt-2 text-sm leading-relaxed text-stone-500">
+                            Boring, proven, replaceable technology — chosen so anyone can run and maintain
+                            their own instance without a platform team.
+                        </p>
+                        <ul className="mt-5 flex flex-wrap gap-2">
+                            {STACK.map(item => (
+                                <li
+                                    key={item}
+                                    className="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 font-mono text-xs text-stone-600"
+                                >
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div className="bg-white p-8">
+                        <span className="inline-flex size-10 items-center justify-center rounded-lg border border-stone-200 bg-white text-stone-700 shadow-sm">
+                            <TbGitPullRequest className="size-5" strokeWidth={1.5} />
+                        </span>
+                        <h2 className="mt-5 text-sm font-semibold text-stone-900">Contributions welcome</h2>
+                        <p className="mt-2 text-sm leading-relaxed text-stone-500">
+                            Dropicture is young and evolving in the open. Bug reports, ideas and pull requests
+                            all help — the roadmap and issues live on GitHub, and the MIT license means your
+                            fork is always an option.
+                        </p>
+                        <Link
+                            href={`${GITHUB_URL}/issues`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-stone-900 underline-offset-4 hover:underline"
+                        >
+                            Browse open issues
+                            <TbArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        </Link>
+                    </div>
                 </div>
             </section>
         </LayoutPublic>

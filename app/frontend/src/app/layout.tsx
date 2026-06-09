@@ -7,9 +7,9 @@ const font = Roboto_Flex({
   subsets: ["latin"],
 });
 
-const TITLE = "Dropicture — Your photos, on your terms";
+const TITLE = "Dropicture · Your photos, on your terms";
 const DESCRIPTION =
-  "Free, open source photo storage and sharing, hosted in Europe. No ads, no trackers, one essential cookie — or self-host it anywhere. Your photos stay yours.";
+  "Free, open source photo storage and sharing, hosted in Europe. No ads, no trackers, one essential cookie or self-host it anywhere. Your photos stay yours.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://dropicture.com"),

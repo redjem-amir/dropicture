@@ -46,7 +46,7 @@ const TONES: Record<
     { container: string; iconBg: string; iconColor: string; title: string; desc: string; close: string }
 > = {
     neutral: {
-        container: 'border-stone-200/80 bg-white/80 backdrop-blur-sm',
+        container: 'border-stone-200/70 bg-white',
         iconBg: 'bg-stone-100',
         iconColor: 'text-stone-500',
         title: 'text-stone-900',
@@ -91,7 +91,7 @@ export const SessionExpired = ({ className = '' }: { className?: string }) => {
                 aria-live="polite"
                 data-anim
                 style={{ animation: 'dpNoticeIn 220ms cubic-bezier(0.16,1,0.3,1)' }}
-                className={`relative flex items-start gap-3 rounded-xl border px-3.5 py-3 pr-10 shadow-[0_4px_20px_-8px_rgba(28,25,23,0.12)] ${t.container} ${className}`}
+                className={`relative flex items-start gap-3 rounded-xl border px-3.5 py-3 pr-10 shadow-sm ${t.container} ${className}`}
             >
                 <span className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${t.iconBg}`}>
                     <Icon className={`size-4 ${t.iconColor}`} />
@@ -106,7 +106,7 @@ export const SessionExpired = ({ className = '' }: { className?: string }) => {
                     type="button"
                     onClick={() => setDismissed(true)}
                     aria-label="Dismiss"
-                    className={`absolute right-2 top-2 flex size-7 items-center justify-center rounded-lg transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${t.close}`}
+                    className={`absolute right-2 top-2 flex size-7 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${t.close}`}
                 >
                     <TbX className="size-3.5" />
                 </button>

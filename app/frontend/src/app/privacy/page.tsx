@@ -1,93 +1,106 @@
 // dropicture/app/frontend/src/app/privacy/page.tsx
+import type { Metadata } from 'next'
 import Link from 'next/link'
+import LayoutPublic from '@/components/LayoutPublic'
+
+const TITLE = 'Privacy Policy'
+const DESCRIPTION =
+    'How dropicture.com handles your data: what we collect, where it lives, how long we keep it, and your GDPR rights. No ads, no trackers, one cookie.'
+
+export const metadata: Metadata = {
+    title: TITLE,
+    description: DESCRIPTION,
+    alternates: { canonical: 'https://dropicture.com/privacy' },
+    openGraph: {
+        type: 'website',
+        locale: 'en_US',
+        url: 'https://dropicture.com/privacy',
+        siteName: 'Dropicture',
+        title: `${TITLE} — Dropicture`,
+        description: DESCRIPTION,
+    },
+    twitter: { card: 'summary', title: `${TITLE} — Dropicture`, description: DESCRIPTION },
+}
 
 const CONTROLLER = 'Amir Redjem'
 const CONTACT_EMAIL = 'privacy@dropicture.com'
 const LAST_UPDATED = 'June 5, 2026'
 
-const SPARKLE =
-    'M12 0c.9 6.1 5 10.2 11.9 12-6.9 1.8-11 5.9-11.9 12-.9-6.1-5-10.2-11.9-12C7 10.2 11.1 6.1 12 0Z'
+/** Single source of truth: drives section numbers, headings and the TOC. */
+const SECTIONS = {
+    controller: 'Who is responsible',
+    data: 'Data we collect',
+    never: 'What we never do',
+    legal: 'Legal bases (GDPR)',
+    where: 'Where your data lives',
+    retention: 'How long we keep things',
+    cookies: 'Cookies',
+    rights: 'Your rights',
+    security: 'Security',
+    children: 'Children',
+    changes: 'Changes to this policy',
+    contact: 'Contact',
+} as const
 
-function Section({
-    id,
-    title,
-    children,
-}: {
-    id: string
-    title: string
-    children: React.ReactNode
-}) {
+type SectionId = keyof typeof SECTIONS
+const SECTION_IDS = Object.keys(SECTIONS) as SectionId[]
+const pad = (n: number) => String(n).padStart(2, '0')
+
+function Section({ id, children }: { id: SectionId; children: React.ReactNode }) {
+    const n = SECTION_IDS.indexOf(id) + 1
     return (
-        <section id={id} className="mt-10 scroll-mt-24 first:mt-0">
-            <h2 className="text-lg font-semibold tracking-tight text-stone-900">{title}</h2>
-            <div className="mt-3 space-y-3 text-sm leading-relaxed text-stone-600">{children}</div>
+        <section
+            id={id}
+            className="mt-8 scroll-mt-24 border-t border-stone-200/70 pt-8 first:mt-0 first:border-t-0"
+        >
+            <h2 className="flex items-baseline gap-3 text-lg font-semibold tracking-tight text-stone-900">
+                <span aria-hidden className="select-none font-mono text-xs font-normal text-stone-300">
+                    {pad(n)}
+                </span>
+                {SECTIONS[id]}
+            </h2>
+            <div className="mt-3 space-y-3 text-sm leading-relaxed text-stone-600 [&_strong]:font-semibold [&_strong]:text-stone-900">
+                {children}
+            </div>
         </section>
     )
 }
 
+const LINK = 'font-medium text-stone-900 underline-offset-4 hover:underline'
+
 export default function PrivacyPage() {
     return (
-        <main className="relative flex min-h-dvh flex-col overflow-hidden bg-stone-50">
-            <div aria-hidden className="pointer-events-none absolute inset-0 select-none">
-                <svg className="absolute inset-0 h-full w-full text-stone-300 mask-[radial-gradient(ellipse_at_center,black_30%,transparent_75%)]">
-                    <defs>
-                        <pattern id="dots-privacy" width="26" height="26" patternUnits="userSpaceOnUse">
-                            <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
-                        </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#dots-privacy)" />
-                </svg>
-                <div className="absolute -left-40 -top-40 size-120 rounded-full bg-linear-to-br from-amber-200 via-orange-100 to-transparent opacity-60 blur-3xl" />
-                <div className="absolute -bottom-48 -right-32 size-136 rounded-full bg-linear-to-tr from-violet-200 via-fuchsia-100 to-transparent opacity-60 blur-3xl" />
-                <svg viewBox="0 0 24 24" className="absolute right-[14%] top-[10%] hidden size-4 text-amber-400 md:block">
-                    <path d={SPARKLE} fill="currentColor" />
-                </svg>
-                <svg viewBox="0 0 24 24" className="absolute bottom-[16%] left-[10%] hidden size-3.5 text-violet-400 md:block">
-                    <path d={SPARKLE} fill="currentColor" />
-                </svg>
-            </div>
-            <div className="relative z-10 mx-auto w-full max-w-2xl flex-1 px-4 py-12 sm:py-16">
-                <Link
-                    href="/"
-                    className="inline-flex items-center gap-2 text-stone-900 transition hover:opacity-80"
-                >
-                    <span className="flex size-9 items-center justify-center rounded-xl bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-[0_6px_16px_-4px_rgba(249,115,22,0.5)]">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-5" aria-hidden="true">
-                            <circle cx="12" cy="12" r="10" />
-                            <path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94" />
-                        </svg>
-                    </span>
-                    <span className="text-sm font-semibold tracking-tight">Dropicture</span>
-                </Link>
-                <div className="relative mt-8">
-                    <svg aria-hidden viewBox="0 0 24 24" className="absolute -right-3 -top-4 size-6 text-amber-400">
-                        <path d={SPARKLE} fill="currentColor" />
-                    </svg>
-                    <div className="rounded-3xl border border-stone-200/80 bg-white/80 p-8 shadow-[0_8px_40px_-12px_rgba(28,25,23,0.12)] backdrop-blur-sm sm:p-10">
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-stone-500">
-                            <svg viewBox="0 0 24 24" className="size-3 text-amber-500" aria-hidden="true">
-                                <path d={SPARKLE} fill="currentColor" />
-                            </svg>
-                            Your data, your rules
-                        </span>
-                        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-stone-900">
-                            Privacy Policy
-                        </h1>
-                        <svg aria-hidden viewBox="0 0 120 12" className="mt-1 h-3 w-28 text-amber-400">
-                            <path d="M3 8 C 22 3, 42 10, 62 6 S 100 4, 117 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
-                        </svg>
-                        <p className="mt-3 text-sm text-stone-500">Last updated: {LAST_UPDATED}</p>
-                        <p className="mt-4 text-sm leading-relaxed text-stone-600">
-                            Dropicture exists so that your photos stay yours. This policy explains, in plain
-                            words, what data the official instance at dropicture.com collects, why, where it
-                            lives, and the rights you have over it.
-                        </p>
-                        <hr className="my-8 border-stone-200/80" />
-                        <Section id="controller" title="1. Who is responsible">
+        <LayoutPublic
+            flip
+            decor={
+                <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 top-0 h-120 bg-[linear-gradient(to_right,rgba(28,25,23,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(28,25,23,0.05)_1px,transparent_1px)] bg-size-[56px_56px] mask-[radial-gradient(ellipse_75%_65%_at_50%_0%,#000_50%,transparent_100%)]"
+                />
+            }
+        >
+            <div className="relative mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:grid lg:grid-cols-[minmax(0,1fr)_240px] lg:gap-16">
+                <article className="min-w-0 max-w-2xl">
+                    <p className="font-mono text-xs font-medium uppercase tracking-widest text-stone-400">
+                        Legal
+                    </p>
+                    <h1 className="mt-3 bg-linear-to-b from-stone-900 to-stone-600 bg-clip-text text-4xl font-semibold tracking-tighter text-transparent sm:text-5xl">
+                        Privacy Policy
+                    </h1>
+                    <p className="mt-5 font-mono text-xs text-stone-400">
+                        Last updated · {LAST_UPDATED}
+                    </p>
+                    <p className="mt-5 text-pretty text-base leading-relaxed text-stone-500">
+                        Dropicture exists so that your photos stay yours. This policy explains, in plain
+                        words, what data the official instance at dropicture.com collects, why, where it
+                        lives, and the rights you have over it.
+                    </p>
+                    <div className="mt-10 border-t border-stone-200/70">
+                        <Section id="controller">
                             <p>
                                 The data controller for dropicture.com is {CONTROLLER}. For anything related to
                                 your data, write to{' '}
-                                <a href={`mailto:${CONTACT_EMAIL}`} className="font-medium text-stone-900 underline-offset-4 hover:underline">
+                                <a href={`mailto:${CONTACT_EMAIL}`} className={LINK}>
                                     {CONTACT_EMAIL}
                                 </a>
                                 .
@@ -98,147 +111,163 @@ export default function PrivacyPage() {
                                 operator is the controller of your data, not us.
                             </p>
                         </Section>
-                        <Section id="data" title="2. Data we collect">
+                        <Section id="data">
                             <p>We collect the minimum needed to run the service:</p>
                             <p>
-                                <strong className="text-stone-800">Account.</strong> First name, last name, email
-                                address, and your password — stored only as a salted Argon2id hash, never in plain
-                                text. We cannot read your password.
+                                <strong>Account.</strong> First name, last name, email address, and your
+                                password — stored only as a salted Argon2id hash, never in plain text. We cannot
+                                read your password.
                             </p>
                             <p>
-                                <strong className="text-stone-800">Your content.</strong> The photos and files you
-                                upload, stored on our own servers (see section 5).
+                                <strong>Your content.</strong> The photos and files you upload, stored on our
+                                own servers (see section 5).
                             </p>
                             <p>
-                                <strong className="text-stone-800">Sessions &amp; security.</strong> When you sign
-                                in we create a server-side session holding a random identifier, your browser&apos;s
-                                user-agent, your IP address and a truncated hash of it, and activity timestamps.
-                                Sessions live at most 8 hours (30 minutes of inactivity) and are then deleted
-                                automatically. Security events (such as suspicious session activity) are written to
-                                server logs.
+                                <strong>Sessions &amp; security.</strong> When you sign in we create a
+                                server-side session holding a random identifier, your browser&apos;s user-agent,
+                                your IP address and a truncated hash of it, and activity timestamps. Sessions
+                                live at most 8 hours (30 minutes of inactivity) and are then deleted
+                                automatically. Security events (such as suspicious session activity) are written
+                                to server logs.
                             </p>
                             <p>
-                                <strong className="text-stone-800">Anti-abuse counters.</strong> Short-lived
-                                counters keyed by IP address and email protect sign-up and sign-in against abuse.
-                                They expire on their own within 10 to 60 minutes.
+                                <strong>Anti-abuse counters.</strong> Short-lived counters keyed by IP address
+                                and email protect sign-up and sign-in against abuse. They expire on their own
+                                within 10 to 60 minutes.
                             </p>
                         </Section>
-                        <Section id="never" title="3. What we never do">
+                        <Section id="never">
                             <p>
                                 No advertising, no third-party analytics, no trackers, no fingerprinting, no
-                                profiling, and no selling, renting or sharing of your data for commercial purposes.
-                                We don&apos;t email you except to answer you or for messages strictly necessary to
-                                the service.
+                                profiling, and no selling, renting or sharing of your data for commercial
+                                purposes. We don&apos;t email you except to answer you or for messages strictly
+                                necessary to the service.
                             </p>
                         </Section>
-                        <Section id="legal" title="4. Legal bases (GDPR)">
+                        <Section id="legal">
                             <p>
-                                We process your data to <strong>perform our contract</strong> with you (providing
-                                your account and storing your photos — Art. 6(1)(b)), out of{' '}
+                                We process your data to <strong>perform our contract</strong> with you
+                                (providing your account and storing your photos — Art. 6(1)(b)), out of{' '}
                                 <strong>legitimate interest</strong> (keeping the service secure and preventing
                                 abuse — Art. 6(1)(f)), and to meet <strong>legal obligations</strong> where they
                                 apply (Art. 6(1)(c)).
                             </p>
                         </Section>
-                        <Section id="where" title="5. Where your data lives">
+                        <Section id="where">
                             <p>
                                 Your account data, sessions and photos are stored on servers we operate at{' '}
                                 <strong>Hetzner Online GmbH in Falkenstein, Germany (EU)</strong>. They are not
                                 replicated outside the European Union.
                             </p>
                             <p>
-                                Traffic to dropicture.com transits through <strong>Cloudflare</strong> (DNS, DDoS
-                                protection, TLS at the edge), which processes connection data in transit on our
-                                behalf. See{' '}
+                                Traffic to dropicture.com transits through <strong>Cloudflare</strong> (DNS,
+                                DDoS protection, TLS at the edge), which processes connection data in transit on
+                                our behalf. See{' '}
                                 <Link
                                     href="https://www.cloudflare.com/privacypolicy/"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="font-medium text-stone-900 underline-offset-4 hover:underline"
+                                    className={LINK}
                                 >
                                     Cloudflare&apos;s privacy policy
                                 </Link>{' '}
-                                for how they handle that data. We have no other processors and no other recipients,
-                                unless the law compels us.
+                                for how they handle that data. We have no other processors and no other
+                                recipients, unless the law compels us.
                             </p>
                         </Section>
-                        <Section id="retention" title="6. How long we keep things">
+                        <Section id="retention">
                             <p>
-                                Account data and photos: for as long as your account exists, then deleted. Sessions:
-                                at most 8 hours. Anti-abuse counters: at most 1 hour. Security logs are rotated and
-                                kept only briefly. Backups, where present, follow the same logic and are purged on a
-                                fixed cycle.
+                                Account data and photos: for as long as your account exists, then deleted.
+                                Sessions: at most 8 hours. Anti-abuse counters: at most 1 hour. Security logs
+                                are rotated and kept only briefly. Backups, where present, follow the same logic
+                                and are purged on a fixed cycle.
                             </p>
                         </Section>
-                        <Section id="cookies" title="7. Cookies">
+                        <Section id="cookies">
                             <p>
-                                Exactly one cookie: <code className="rounded bg-stone-100 px-1.5 py-0.5 text-xs text-stone-800">session</code>,
-                                httpOnly and secure, used solely to keep you signed in. It is strictly necessary to
-                                the service, so no consent banner is required — and there are no advertising or
-                                third-party cookies, ever.
+                                Exactly one cookie:{' '}
+                                <code className="rounded border border-stone-200 bg-stone-50 px-1.5 py-0.5 font-mono text-xs text-stone-800">
+                                    session
+                                </code>
+                                , httpOnly and secure, used solely to keep you signed in. It is strictly
+                                necessary to the service, so no consent banner is required — and there are no
+                                advertising or third-party cookies, ever.
                             </p>
                         </Section>
-                        <Section id="rights" title="8. Your rights">
+                        <Section id="rights">
                             <p>
                                 Under the GDPR you can ask for <strong>access</strong> to your data, its{' '}
                                 <strong>rectification</strong> or <strong>erasure</strong>, the{' '}
-                                <strong>restriction</strong> of processing, its <strong>portability</strong>, and
-                                you can <strong>object</strong> to processing based on legitimate interest. Write to{' '}
-                                <a href={`mailto:${CONTACT_EMAIL}`} className="font-medium text-stone-900 underline-offset-4 hover:underline">
+                                <strong>restriction</strong> of processing, its <strong>portability</strong>,
+                                and you can <strong>object</strong> to processing based on legitimate interest.
+                                Write to{' '}
+                                <a href={`mailto:${CONTACT_EMAIL}`} className={LINK}>
                                     {CONTACT_EMAIL}
                                 </a>{' '}
-                                — we answer within one month. You can also lodge a complaint with your supervisory
-                                authority (in France, the CNIL).
+                                — we answer within one month. You can also lodge a complaint with your
+                                supervisory authority (in France, the CNIL).
                             </p>
                         </Section>
-                        <Section id="security" title="9. Security">
+                        <Section id="security">
                             <p>
-                                Passwords hashed with Argon2id, TLS everywhere, databases and storage isolated on an
-                                internal network with no public access, a cloud firewall restricting inbound
-                                traffic, and secrets managed outside the codebase. No system is perfectly secure,
-                                but we designed this one to expose as little as possible.
+                                Passwords hashed with Argon2id, TLS everywhere, databases and storage isolated
+                                on an internal network with no public access, a cloud firewall restricting
+                                inbound traffic, and secrets managed outside the codebase. No system is
+                                perfectly secure, but we designed this one to expose as little as possible.
                             </p>
                         </Section>
-                        <Section id="children" title="10. Children">
+                        <Section id="children">
                             <p>
-                                Dropicture is not directed at children. You must be at least 15 years old (or the
-                                digital-consent age applicable in your country) to create an account.
+                                Dropicture is not directed at children. You must be at least 15 years old (or
+                                the digital-consent age applicable in your country) to create an account.
                             </p>
                         </Section>
-                        <Section id="changes" title="11. Changes to this policy">
+                        <Section id="changes">
                             <p>
                                 We may update this page; the date above always reflects the latest version. For
                                 material changes we will inform you through the service before they take effect.
                             </p>
                         </Section>
-                        <Section id="contact" title="12. Contact">
+                        <Section id="contact">
                             <p>
                                 Questions, requests, concerns:{' '}
-                                <Link href={`mailto:${CONTACT_EMAIL}`} className="font-medium text-stone-900 underline-offset-4 hover:underline">
+                                <a href={`mailto:${CONTACT_EMAIL}`} className={LINK}>
                                     {CONTACT_EMAIL}
-                                </Link>
+                                </a>
                                 .
                             </p>
                         </Section>
                     </div>
-                </div>
+                </article>
+                <aside className="hidden lg:block">
+                    <nav
+                        aria-label="On this page"
+                        className="sticky top-24 max-h-[calc(100dvh-7rem)] overflow-y-auto"
+                    >
+                        <p className="font-mono text-xs font-medium uppercase tracking-widest text-stone-400">
+                            On this page
+                        </p>
+                        <ul className="mt-4 space-y-0.5 border-l border-stone-200/70 pl-5">
+                            {SECTION_IDS.map((id, i) => (
+                                <li key={id}>
+                                    <a
+                                        href={`#${id}`}
+                                        className="group flex items-baseline gap-2.5 py-1 text-[13px] leading-snug text-stone-500 transition-colors hover:text-stone-900"
+                                    >
+                                        <span
+                                            aria-hidden
+                                            className="select-none font-mono text-[11px] text-stone-300 transition-colors group-hover:text-stone-400"
+                                        >
+                                            {pad(i + 1)}
+                                        </span>
+                                        {SECTIONS[id]}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                </aside>
             </div>
-            <footer className="relative z-10 flex items-center justify-center gap-6 px-4 py-6">
-                <Link href="/terms" className="text-xs text-stone-400 transition hover:text-stone-600">
-                    Terms
-                </Link>
-                <Link href="/privacy" className="text-xs text-stone-400 transition hover:text-stone-600">
-                    Privacy
-                </Link>
-                <Link
-                    href="https://github.com/redjem-amir/dropicture"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-stone-400 transition hover:text-stone-600"
-                >
-                    GitHub
-                </Link>
-            </footer>
-        </main>
+        </LayoutPublic>
     )
 }

@@ -1,7 +1,7 @@
 // dropicture/app/frontend/src/app/privacy/layout.tsx
 import type { Metadata } from "next";
 
-const TITLE = "Privacy Policy — Dropicture";
+const TITLE = "Privacy Policy · Dropicture";
 const DESCRIPTION =
     "How Dropicture handles your data: EU hosting, no ads, no trackers, a single essential cookie, and your GDPR rights explained.";
 

@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 
 const TITLE = "Open source";
-const OG_TITLE = "Open source — Dropicture";
+const OG_TITLE = "Open source · Dropicture";
 const DESCRIPTION =
     "Dropicture is MIT-licensed and built in the open. Audit the code, self-host the full stack with Docker, or contribute on GitHub.";
 

@@ -45,12 +45,9 @@ const PASSWORD_RULES: { label: string; test: (p: string) => boolean }[] = [
 const STEP_CAPTIONS = ['Your profile', 'Your email', 'Secure your account']
 
 const inputClass =
-  'h-10 w-full rounded-xl border border-stone-200 bg-white px-3 text-sm ' +
+  'h-10 w-full rounded-lg border border-stone-200 bg-white px-3 text-sm ' +
   'text-stone-900 placeholder:text-stone-400 outline-none transition ' +
-  'focus:border-stone-900 focus:ring-2 focus:ring-stone-900/10'
-
-const SPARKLE =
-  'M12 0c.9 6.1 5 10.2 11.9 12-6.9 1.8-11 5.9-11.9 12-.9-6.1-5-10.2-11.9-12C7 10.2 11.1 6.1 12 0Z'
+  'focus:border-stone-900 focus:ring-2 focus:ring-stone-900/10 disabled:opacity-60'
 
 function safeNext(value: string | string[] | undefined): string {
   const next = Array.isArray(value) ? value[0] : value
@@ -149,90 +146,30 @@ export default function SignupPage({
   }
 
   return (
-    <main className="relative flex min-h-dvh flex-col overflow-hidden bg-stone-50">
-      <div aria-hidden className="pointer-events-none absolute inset-0 select-none">
-        <svg className="absolute inset-0 h-full w-full text-stone-300 mask-[radial-gradient(ellipse_at_center,black_30%,transparent_75%)]">
-          <defs>
-            <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
-              <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#dots)" />
-        </svg>
-        <div className="absolute -right-40 -top-40 size-120 rounded-full bg-linear-to-bl from-amber-200 via-orange-100 to-transparent opacity-70 blur-3xl" />
-        <div className="absolute -bottom-48 -left-32 size-136 rounded-full bg-linear-to-tr from-violet-200 via-fuchsia-100 to-transparent opacity-70 blur-3xl" />
-        <svg
-          viewBox="0 0 150 180"
-          className="absolute right-[4%] top-[14%] hidden w-36 rotate-[-7deg] drop-shadow-[0_16px_32px_rgba(0,0,0,0.10)] lg:block xl:w-44"
-        >
-          <rect x="0.5" y="0.5" width="149" height="179" rx="14" fill="#fff" stroke="#E7E5E4" />
-          <rect x="12" y="12" width="126" height="126" rx="10" fill="#FFF7ED" />
-          <rect x="56" y="44" width="38" height="16" rx="6" fill="#F97316" />
-          <rect x="30" y="54" width="90" height="58" rx="12" fill="#FB923C" />
-          <circle cx="75" cy="83" r="19" fill="#FFEDD5" />
-          <circle cx="75" cy="83" r="11" fill="#9A3412" />
-          <circle cx="71" cy="79" r="3" fill="#fff" opacity="0.8" />
-          <circle cx="106" cy="64" r="4" fill="#FDE68A" />
-          <rect x="12" y="150" width="64" height="8" rx="4" fill="#E7E5E4" />
-        </svg>
-        <svg
-          viewBox="0 0 150 180"
-          className="absolute bottom-[12%] left-[4%] hidden w-36 rotate-6 drop-shadow-[0_16px_32px_rgba(0,0,0,0.10)] lg:block xl:w-44"
-        >
-          <defs>
-            <linearGradient id="pl3" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#EDE9FE" />
-              <stop offset="100%" stopColor="#DDD6FE" />
-            </linearGradient>
-          </defs>
-          <rect x="0.5" y="0.5" width="149" height="179" rx="14" fill="#fff" stroke="#E7E5E4" />
-          <rect x="12" y="12" width="126" height="126" rx="10" fill="url(#pl3)" />
-          <circle cx="106" cy="44" r="12" fill="#A78BFA" />
-          <circle cx="40" cy="36" r="2" fill="#8B5CF6" opacity="0.6" />
-          <circle cx="62" cy="28" r="1.5" fill="#8B5CF6" opacity="0.5" />
-          <path d="M12 138 L54 74 L86 138 Z" fill="#8B5CF6" />
-          <path d="M54 74 L64 90 L58 90 L66 102 L60 102 L72 120 L54 120 Z" fill="#EDE9FE" opacity="0.8" />
-          <path d="M70 138 L104 90 L138 138 Z" fill="#C4B5FD" />
-          <rect x="12" y="150" width="72" height="8" rx="4" fill="#E7E5E4" />
-        </svg>
-        <svg viewBox="0 0 24 24" className="absolute right-[22%] top-[12%] hidden size-5 text-amber-400 md:block">
-          <path d={SPARKLE} fill="currentColor" />
-        </svg>
-        <svg viewBox="0 0 24 24" className="absolute bottom-[24%] right-[12%] hidden size-3.5 text-violet-400 md:block">
-          <path d={SPARKLE} fill="currentColor" />
-        </svg>
-        <svg viewBox="0 0 24 24" className="absolute left-[20%] top-[22%] hidden size-4 animate-pulse text-orange-400 md:block">
-          <path d={SPARKLE} fill="currentColor" />
-        </svg>
+    <main className="relative flex min-h-dvh flex-col overflow-hidden bg-white">
+      <div aria-hidden className="pointer-events-none absolute inset-0 select-none overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-120 bg-[linear-gradient(to_right,rgba(28,25,23,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(28,25,23,0.05)_1px,transparent_1px)] bg-size-[56px_56px] mask-[radial-gradient(ellipse_75%_65%_at_50%_0%,#000_50%,transparent_100%)]" />
+        <div className="absolute left-1/2 -top-55 h-110 w-170 -translate-x-1/2 rounded-full bg-amber-100/50 blur-3xl" />
       </div>
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-12">
-        <div className="relative w-full max-w-sm">
-          <svg aria-hidden viewBox="0 0 24 24" className="absolute -left-5 -top-5 size-7 text-amber-400">
-            <path d={SPARKLE} fill="currentColor" />
-          </svg>
-          <svg aria-hidden viewBox="0 0 24 24" className="absolute -bottom-4 -right-6 size-5 animate-pulse text-violet-400">
-            <path d={SPARKLE} fill="currentColor" />
-          </svg>
-          <div className="rounded-3xl border border-stone-200/80 bg-white/80 p-8 shadow-[0_8px_40px_-12px_rgba(28,25,23,0.12)] backdrop-blur-sm">
+        <div className="w-full max-w-sm">
+          <div className="rounded-2xl border border-stone-200/70 bg-white p-8 shadow-xl shadow-stone-900/4">
             {done ? (
               <div data-anim style={{ animation: 'dpPop 0.3s ease-out' }} className="text-center">
-                <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-[0_8px_20px_-6px_rgba(249,115,22,0.5)]">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="size-7" aria-hidden="true">
+                <div className="mx-auto flex size-12 items-center justify-center rounded-full border border-stone-200 bg-white text-emerald-600 shadow-sm">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="size-6" aria-hidden="true">
                     <path d="M20 6 9 17l-5-5" />
                   </svg>
                 </div>
                 <h1 className="mt-5 text-2xl font-semibold tracking-tight text-stone-900">
                   You&apos;re all set
                 </h1>
-                <svg aria-hidden viewBox="0 0 120 12" className="mx-auto mt-1 h-3 w-28 text-amber-400">
-                  <path d="M3 8 C 22 3, 42 10, 62 6 S 100 4, 117 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
-                </svg>
                 <p className="mt-3 text-sm text-stone-500">
                   Your account has been created. Sign in to start uploading your photos.
                 </p>
                 <Link
                   href={signinHref}
-                  className="mt-6 inline-flex h-10 w-full items-center justify-center rounded-xl bg-stone-900 text-sm font-medium text-white transition hover:bg-stone-700"
+                  className="mt-6 inline-flex h-10 w-full items-center justify-center rounded-full bg-stone-900 text-sm font-medium text-white shadow-sm transition-colors hover:bg-stone-700"
                 >
                   Continue to sign in
                 </Link>
@@ -242,10 +179,10 @@ export default function SignupPage({
                 <div className="flex justify-center">
                   <Link
                     href="/"
-                    className="flex size-12 items-center justify-center rounded-2xl bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-[0_8px_20px_-6px_rgba(249,115,22,0.5)]"
                     aria-label="Dropicture home"
+                    className="text-stone-900 transition-opacity hover:opacity-80"
                   >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-6" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-7" aria-hidden="true">
                       <circle cx="12" cy="12" r="10" />
                       <path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94" />
                     </svg>
@@ -254,9 +191,6 @@ export default function SignupPage({
                 <h1 className="mt-5 text-center text-2xl font-semibold tracking-tight text-stone-900">
                   Create your account
                 </h1>
-                <svg aria-hidden viewBox="0 0 120 12" className="mx-auto mt-1 h-3 w-28 text-amber-400">
-                  <path d="M3 8 C 22 3, 42 10, 62 6 S 100 4, 117 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
-                </svg>
                 <p className="mt-2 text-center text-sm text-stone-500">
                   Free, open source, and yours.
                 </p>
@@ -268,9 +202,9 @@ export default function SignupPage({
                       <li key={id} className={id < 3 ? 'flex flex-1 items-center' : 'flex items-center'}>
                         <span
                           className={
-                            'flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition ' +
+                            'flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors ' +
                             (isDone
-                              ? 'bg-linear-to-br from-amber-400 to-orange-500 text-white shadow-[0_4px_12px_-2px_rgba(249,115,22,0.5)]'
+                              ? 'bg-stone-900 text-white'
                               : isCurrent
                                 ? 'border-2 border-stone-900 bg-white text-stone-900'
                                 : 'border border-stone-200 bg-white text-stone-400')
@@ -287,8 +221,8 @@ export default function SignupPage({
                         {id < 3 && (
                           <span
                             className={
-                              'mx-2 h-0.5 flex-1 rounded-full transition ' +
-                              (step > id ? 'bg-linear-to-r from-amber-400 to-orange-400' : 'bg-stone-200')
+                              'mx-2 h-px flex-1 rounded-full transition-colors ' +
+                              (step > id ? 'bg-stone-900' : 'bg-stone-200')
                             }
                           />
                         )}
@@ -296,12 +230,12 @@ export default function SignupPage({
                     )
                   })}
                 </ol>
-                <p className="mt-3 text-center text-xs font-medium uppercase tracking-wide text-stone-400">
+                <p className="mt-3 text-center font-mono text-[11px] font-medium uppercase tracking-widest text-stone-400">
                   Step {step} of 3 · {STEP_CAPTIONS[step - 1]}
                 </p>
                 <form onSubmit={onSubmit} className="mt-6 space-y-4">
                   {error && (
-                    <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-600">
+                    <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-600">
                       {error}
                     </div>
                   )}
@@ -442,7 +376,7 @@ export default function SignupPage({
                         type="button"
                         onClick={goBack}
                         disabled={loading}
-                        className="inline-flex h-10 items-center justify-center rounded-xl border border-stone-200 bg-white px-4 text-sm font-medium text-stone-600 transition hover:bg-stone-50 disabled:pointer-events-none disabled:opacity-60"
+                        className="inline-flex h-10 items-center justify-center rounded-full border border-stone-200 bg-white px-4 text-sm font-medium text-stone-700 shadow-sm transition-colors hover:border-stone-300 hover:text-stone-900 disabled:pointer-events-none disabled:opacity-60"
                       >
                         Back
                       </button>
@@ -450,7 +384,7 @@ export default function SignupPage({
                     <button
                       type="submit"
                       disabled={loading}
-                      className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-stone-900 text-sm font-medium text-white transition hover:bg-stone-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 disabled:pointer-events-none disabled:opacity-60"
+                      className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-stone-900 text-sm font-medium text-white shadow-sm transition-colors hover:bg-stone-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 disabled:pointer-events-none disabled:opacity-60"
                     >
                       {loading && (
                         <svg viewBox="0 0 24 24" fill="none" className="size-4 animate-spin" aria-hidden="true">
@@ -476,17 +410,17 @@ export default function SignupPage({
         </div>
       </div>
       <footer className="relative z-10 flex items-center justify-center gap-6 px-4 py-6">
-        <Link href="/terms" className="text-xs text-stone-400 transition hover:text-stone-600">
+        <Link href="/terms" className="text-xs text-stone-500 transition-colors hover:text-stone-900">
           Terms
         </Link>
-        <Link href="/privacy" className="text-xs text-stone-400 transition hover:text-stone-600">
+        <Link href="/privacy" className="text-xs text-stone-500 transition-colors hover:text-stone-900">
           Privacy
         </Link>
         <Link
           href="https://github.com/redjem-amir/dropicture"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-stone-400 transition hover:text-stone-600"
+          className="text-xs text-stone-500 transition-colors hover:text-stone-900"
         >
           GitHub
         </Link>
