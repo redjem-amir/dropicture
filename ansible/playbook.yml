@@ -238,25 +238,6 @@
         - garage/meta
         - garage/data
 
-    - name: Ensure the TLS directory exists
-      ansible.builtin.file:
-        path: "{{ dropicture_tls_dir }}"
-        state: directory
-        mode: "0750"
-
-    - name: Write the Origin CA certificate
-      ansible.builtin.copy:
-        dest: "{{ dropicture_tls_dir }}/origin.crt"
-        content: "{{ hostvars['localhost']._origin_cert }}"
-        mode: "0644"
-
-    - name: Write the Origin CA private key
-      ansible.builtin.copy:
-        dest: "{{ dropicture_tls_dir }}/origin.key"
-        content: "{{ hostvars['localhost']._origin_key }}"
-        mode: "0600"
-      no_log: true
-
     - name: Apply any pending Docker restart before touching the Swarm
       ansible.builtin.meta: flush_handlers
 
@@ -295,6 +276,21 @@
         data_is_b64: true
         state: present
       no_log: true
+
+    - name: Store the Traefik dynamic TLS configuration as a Swarm config
+      community.docker.docker_config:
+        name: dropicture_traefik_dynamic_v1
+        data: |
+          tls:
+            stores:
+              default:
+                defaultCertificate:
+                  certFile: /etc/traefik/certs/origin.crt
+                  keyFile: /run/secrets/origin.key
+            certificates:
+              - certFile: /etc/traefik/certs/origin.crt
+                keyFile: /run/secrets/origin.key
+        state: present
 
     - name: Ensure the stacks directory exists (drop your app stack files here)
       ansible.builtin.file:
