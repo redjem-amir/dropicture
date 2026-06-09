@@ -51,8 +51,8 @@ services:
         delay: 5s
         window: 30s
       resources:
-        reservations: { cpus: "0.10", memory: 64M }
-        limits: { cpus: "0.50", memory: 128M }
+        reservations: { cpus: "0.25", memory: 128M }
+        limits: { cpus: "1.00", memory: 256M }
 
   socket-proxy:
     image: tecnativa/docker-socket-proxy:v0.4.2
@@ -107,7 +107,7 @@ services:
       retries: 3
       start_period: 30s
     deploy:
-      replicas: 2
+      replicas: 3
       labels:
         - traefik.enable=true
         - traefik.http.routers.frontend.rule=Host(`dropicture.com`)
@@ -132,8 +132,8 @@ services:
         delay: 5s
         window: 30s
       resources:
-        reservations: { cpus: "0.25", memory: 128M }
-        limits: { cpus: "1.00", memory: 512M }
+        reservations: { cpus: "0.50", memory: 256M }
+        limits: { cpus: "1.50", memory: 1G }
 
   dropicture-backend:
     image: ghcr.io/redjem-amir/dropicture/backend:${IMAGE_TAG:-latest}
@@ -162,7 +162,7 @@ services:
       retries: 3
       start_period: 30s
     deploy:
-      replicas: 2
+      replicas: 3
       labels:
         - traefik.enable=true
         - traefik.http.routers.backend.rule=Host(`dropicture.com`) && PathPrefix(`/api`)
@@ -187,7 +187,7 @@ services:
         delay: 5s
         window: 30s
       resources:
-        reservations: { cpus: "0.50", memory: 512M }
+        reservations: { cpus: "0.50", memory: 384M }
         limits: { cpus: "2.00", memory: 2G }
 
   dropicture-pgbouncer:
@@ -246,14 +246,14 @@ services:
       - "-c"
       - "max_connections=80"
       - "-c"
-      - "shared_buffers=1GB"
+      - "shared_buffers=2GB"
       - "-c"
-      - "effective_cache_size=3GB"
+      - "effective_cache_size=4GB"
     volumes:
       - /opt/dropicture/data/postgres:/var/lib/postgresql
       - type: tmpfs
         target: /dev/shm
-        tmpfs: { size: 1073741824 }
+        tmpfs: { size: 2147483648 }
     stop_grace_period: 1m
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
@@ -272,13 +272,13 @@ services:
         delay: 5s
         window: 60s
       resources:
-        reservations: { cpus: "1.00", memory: 1G }
-        limits: { cpus: "3.00", memory: 4G }
+        reservations: { cpus: "1.50", memory: 2G }
+        limits: { cpus: "4.00", memory: 6G }
 
   dropicture-dragonfly:
     image: ghcr.io/dragonflydb/dragonfly:v1.38.1
     command:
-      - "--maxmemory=1gb"
+      - "--maxmemory=2gb"
       - "--dir=/data"
       - "--snapshot_cron=*/30 * * * *"
     ulimits:
@@ -303,8 +303,8 @@ services:
         delay: 5s
         window: 60s
       resources:
-        reservations: { cpus: "0.50", memory: 1152M }
-        limits: { cpus: "1.00", memory: 1536M }
+        reservations: { cpus: "0.75", memory: 2304M }
+        limits: { cpus: "2.00", memory: 3072M }
 
   dropicture-garage:
     image: dxflrs/garage:v2.3.0
@@ -334,8 +334,8 @@ services:
         delay: 5s
         window: 60s
       resources:
-        reservations: { cpus: "0.50", memory: 512M }
-        limits: { cpus: "1.50", memory: 2G }
+        reservations: { cpus: "0.50", memory: 768M }
+        limits: { cpus: "2.00", memory: 3G }
 
 networks:
   frontend:

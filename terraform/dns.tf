@@ -27,6 +27,47 @@ resource "cloudflare_dns_record" "www" {
   comment = "www.dropicture.com -> Hetzner manager-1 (Terraform-managed)"
 }
 
+resource "cloudflare_ruleset" "redirects" {
+  zone_id     = data.cloudflare_zone.dropicture.zone_id
+  name        = "redirects"
+  description = "Redirections de la zone (Terraform-managed)"
+  kind        = "zone"
+  phase       = "http_request_dynamic_redirect"
+  rules = [{
+    ref         = "www_to_apex"
+    description = "www.${var.cloudflare_zone_name} -> ${var.cloudflare_zone_name} (301)"
+    expression  = "(http.host eq \"www.${var.cloudflare_zone_name}\")"
+    action      = "redirect"
+    action_parameters = {
+      from_value = {
+        status_code           = 301
+        preserve_query_string = true
+        target_url = {
+          expression = "concat(\"https://${var.cloudflare_zone_name}\", http.request.uri.path)"
+        }
+      }
+    }
+  }]
+}
+
+resource "cloudflare_zone_setting" "ssl" {
+  zone_id    = data.cloudflare_zone.dropicture.zone_id
+  setting_id = "ssl"
+  value      = "strict"
+}
+
+resource "cloudflare_zone_setting" "always_use_https" {
+  zone_id    = data.cloudflare_zone.dropicture.zone_id
+  setting_id = "always_use_https"
+  value      = "on"
+}
+
+resource "cloudflare_zone_setting" "min_tls_version" {
+  zone_id    = data.cloudflare_zone.dropicture.zone_id
+  setting_id = "min_tls_version"
+  value      = "1.2"
+}
+
 resource "tls_private_key" "origin" {
   algorithm = "RSA"
   rsa_bits  = 2048
