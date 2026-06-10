@@ -8,9 +8,6 @@ export const SCOPES = {
     ACCOUNTS_WRITE: 'accounts.write',
     ROLES_READ: 'roles.read',
     ROLES_WRITE: 'roles.write',
-    MODERATION_READ: 'moderation.read',
-    MODERATION_WRITE: 'moderation.write',
-    SYSTEM_READ: 'system.read',
 } as const;
 
 export type Scope = typeof SCOPES[keyof typeof SCOPES];

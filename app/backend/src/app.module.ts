@@ -19,10 +19,17 @@ import { BootstrapService } from './services/bootstrap.service';
 import { SettingsController } from './controllers/settings.controller';
 import { AccountsController } from './controllers/accounts.controller';
 import { RolesController } from './controllers/roles.controller';
+import { Picture } from './models/picture.model';
+import { PicturesController } from './controllers/pictures.controller';
+import { Album } from './models/album.model';
+import { ShareLink } from './models/share-link.model';
 
 const entities = [
   Account,
   Role,
+  Picture,
+  Album,
+  ShareLink,
 ];
 
 @Module({
@@ -65,6 +72,7 @@ const entities = [
     SettingsController,
     AccountsController,
     RolesController,
+    PicturesController,
   ],
   providers: [
     { provide: APP_GUARD, useClass: IpThrottlerGuard },
