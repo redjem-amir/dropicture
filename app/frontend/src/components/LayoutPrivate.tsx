@@ -3,14 +3,15 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Avvvatars from 'avvvatars-react'
-import { TbChevronDown, TbLogout, TbMenu2, TbX } from 'react-icons/tb'
+import { TbChevronDown, TbLogout, TbMenu2, TbSettings, TbX } from 'react-icons/tb'
 import { ROUTE_ACCESS, isRoute, type RouteItem } from '@/lib/routeAccess'
 import { hasScope } from '@/lib/scopes'
 import { useUser, type UserProfile } from '@/components/UserProvider'
 
 const APP_PATH = '/auth'
+const SIDEBAR_ID = 'app-sidebar'
 
 type NavRoute = Extract<RouteItem, { type: 'route' }> & { href: string }
 type NavGroup = { label: string | null; routes: NavRoute[] }
@@ -47,35 +48,36 @@ function initials(user: UserProfile): string {
 function UserAvatar({ user, size }: { user: UserProfile; size: number }) {
     return (
         <span className="shrink-0" style={{ width: size, height: size }}>
-            <Avvvatars
-                value={user.email}
-                displayValue={initials(user)}
-                style="shape"
-                size={size}
-            />
+            <Avvvatars value={user.email} displayValue={initials(user)} style="shape" size={size} />
         </span>
     )
 }
 
 function BrandMark() {
     return (
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="size-5"
-            aria-hidden="true"
+        <Link
+            href={APP_PATH}
+            className="inline-flex items-center gap-2 text-stone-900 transition-opacity hover:opacity-80"
         >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94" />
-        </svg>
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="size-5"
+                aria-hidden="true"
+            >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94" />
+            </svg>
+            <span className="text-sm font-semibold tracking-tight">Dropicture</span>
+        </Link>
     )
 }
 
-function NavPill({
+function NavItem({
     route,
     pathname,
     onNavigate,
@@ -92,7 +94,7 @@ function NavPill({
             onClick={onNavigate}
             aria-current={active ? 'page' : undefined}
             className={
-                'group flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ' +
+                'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ' +
                 (active
                     ? 'bg-stone-100 text-stone-900'
                     : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900')
@@ -101,7 +103,7 @@ function NavPill({
             {Icon && (
                 <Icon
                     className={
-                        'size-4 shrink-0 transition-colors ' +
+                        'size-4.5 shrink-0 transition-colors ' +
                         (active ? 'text-stone-700' : 'text-stone-400 group-hover:text-stone-600')
                     }
                 />
@@ -148,72 +150,107 @@ export default function LayoutPrivate({ children }: { children: React.ReactNode 
         return () => document.removeEventListener('mousedown', onDown)
     }, [userMenuOpen])
 
+    useEffect(() => {
+        if (!mobileOpen) return
+        const prev = document.body.style.overflow
+        document.body.style.overflow = 'hidden'
+        return () => {
+            document.body.style.overflow = prev
+        }
+    }, [mobileOpen])
+
     return (
-        <div className="flex min-h-dvh flex-col bg-stone-50">
-            <header className="sticky top-0 z-40 border-b border-stone-200/70 bg-white/80 backdrop-blur-sm">
-                <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
-                    <Link
-                        href={APP_PATH}
-                        className="inline-flex shrink-0 items-center gap-2 text-stone-900 transition-opacity hover:opacity-80"
+        <div className="flex min-h-dvh bg-stone-50">
+            {mobileOpen && (
+                <div
+                    aria-hidden
+                    onClick={() => setMobileOpen(false)}
+                    className="fixed inset-0 z-40 bg-stone-900/20 backdrop-blur-sm lg:hidden"
+                />
+            )}
+            <aside
+                id={SIDEBAR_ID}
+                aria-label="Sidebar"
+                className={
+                    'fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col border-r border-stone-200/70 bg-white transition-transform duration-200 ease-out ' +
+                    'lg:sticky lg:top-0 lg:h-dvh lg:w-64 lg:max-w-none lg:translate-x-0 ' +
+                    (mobileOpen ? 'translate-x-0' : '-translate-x-full')
+                }
+            >
+                <div className="flex h-16 shrink-0 items-center gap-3 border-b border-stone-200/70 px-4">
+                    <BrandMark />
+                    <button
+                        type="button"
+                        onClick={() => setMobileOpen(false)}
+                        aria-label="Close menu"
+                        className="ml-auto flex size-9 items-center justify-center rounded-full text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-900 lg:hidden"
                     >
-                        <BrandMark />
-                        <span className="hidden text-sm font-semibold tracking-tight sm:block">
-                            Dropicture
-                        </span>
-                    </Link>
-                    <nav aria-label="Main navigation" className="ml-4 hidden items-center gap-1 lg:flex">
-                        {isLoading && !user ? (
-                            <div className="flex items-center gap-2" aria-hidden>
-                                {[0, 1, 2].map(i => (
-                                    <div key={i} className="h-8 w-24 animate-pulse rounded-full bg-stone-100" />
-                                ))}
-                            </div>
-                        ) : (
-                            groups.map((group, gi) => (
-                                <Fragment key={gi}>
-                                    {gi > 0 && (
-                                        <span aria-hidden className="mx-2 h-4 w-px shrink-0 bg-stone-200" />
-                                    )}
-                                    {group.routes.map(route => (
-                                        <NavPill key={route.href} route={route} pathname={pathname} />
-                                    ))}
-                                </Fragment>
-                            ))
-                        )}
-                    </nav>
-                    <div className="ml-auto" />
+                        <TbX className="size-4.5" />
+                    </button>
+                </div>
+                <nav aria-label="Main navigation" className="flex-1 overflow-y-auto px-3 py-4">
                     {isLoading && !user ? (
-                        <div className="flex items-center gap-2.5" aria-hidden>
-                            <div className="size-8 animate-pulse rounded-full bg-stone-100" />
-                            <div className="hidden space-y-1.5 md:block">
+                        <div className="space-y-1" aria-hidden>
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <div key={i} className="h-9 animate-pulse rounded-lg bg-stone-100" />
+                            ))}
+                        </div>
+                    ) : (
+                        groups.map((group, gi) => (
+                            <div key={gi} className={gi > 0 ? 'mt-6' : ''}>
+                                {group.label && (
+                                    <p className="px-3 pb-2 font-mono text-[11px] font-medium uppercase tracking-widest text-stone-400">
+                                        {group.label}
+                                    </p>
+                                )}
+                                <ul className="space-y-1">
+                                    {group.routes.map(route => (
+                                        <li key={route.href}>
+                                            <NavItem
+                                                route={route}
+                                                pathname={pathname}
+                                                onNavigate={() => setMobileOpen(false)}
+                                            />
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))
+                    )}
+                </nav>
+                <div ref={userMenuRef} className="shrink-0 border-t border-stone-200/70 p-3">
+                    {isLoading && !user ? (
+                        <div className="flex items-center gap-2.5 p-2" aria-hidden>
+                            <div className="size-8 shrink-0 animate-pulse rounded-full bg-stone-100" />
+                            <div className="flex-1 space-y-1.5">
                                 <div className="h-3 w-24 animate-pulse rounded bg-stone-100" />
                                 <div className="h-2.5 w-32 animate-pulse rounded bg-stone-100" />
                             </div>
                         </div>
                     ) : user ? (
-                        <div ref={userMenuRef} className="relative">
+                        <div className="relative">
                             <button
                                 type="button"
                                 onClick={() => setUserMenuOpen(v => !v)}
                                 aria-haspopup="menu"
                                 aria-expanded={userMenuOpen}
                                 className={
-                                    'flex items-center gap-2.5 rounded-full p-1 pr-2 transition-colors hover:bg-stone-100 ' +
+                                    'flex w-full items-center gap-2.5 rounded-lg p-2 text-left transition-colors hover:bg-stone-100 ' +
                                     (userMenuOpen ? 'bg-stone-100' : '')
                                 }
                             >
                                 <UserAvatar user={user} size={32} />
-                                <span className="hidden min-w-0 flex-col items-start text-left md:flex">
-                                    <span className="max-w-40 truncate text-sm font-medium leading-tight text-stone-900">
+                                <span className="flex min-w-0 flex-1 flex-col">
+                                    <span className="truncate text-sm font-medium leading-tight text-stone-900">
                                         {user.firstname} {user.lastname}
                                     </span>
-                                    <span className="max-w-40 truncate text-xs leading-tight text-stone-400">
+                                    <span className="truncate text-xs leading-tight text-stone-400">
                                         {user.email}
                                     </span>
                                 </span>
                                 <TbChevronDown
                                     className={
-                                        'size-3.5 shrink-0 text-stone-400 transition-transform ' +
+                                        'size-4 shrink-0 text-stone-400 transition-transform ' +
                                         (userMenuOpen ? 'rotate-180' : '')
                                     }
                                 />
@@ -221,18 +258,16 @@ export default function LayoutPrivate({ children }: { children: React.ReactNode 
                             {userMenuOpen && (
                                 <div
                                     role="menu"
-                                    className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-stone-200/70 bg-white p-1.5 shadow-xl shadow-stone-900/8"
+                                    className="absolute bottom-full left-0 right-0 mb-2 rounded-xl border border-stone-200/70 bg-white p-1.5 shadow-xl shadow-stone-900/8"
                                 >
-                                    <div className="flex items-center gap-2.5 px-2.5 py-2">
-                                        <UserAvatar user={user} size={40} />
-                                        <div className="min-w-0 flex-1">
-                                            <p className="truncate text-sm font-medium text-stone-900">
-                                                {user.firstname} {user.lastname}
-                                            </p>
-                                            <p className="truncate text-xs text-stone-400">{user.email}</p>
-                                        </div>
-                                    </div>
-                                    <div aria-hidden className="my-1 h-px bg-stone-200/70" />
+                                    <Link
+                                        href={`${APP_PATH}/settings`}
+                                        role="menuitem"
+                                        className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+                                    >
+                                        <TbSettings className="size-4 text-stone-400" />
+                                        Settings
+                                    </Link>
                                     <button
                                         type="button"
                                         role="menuitem"
@@ -246,49 +281,24 @@ export default function LayoutPrivate({ children }: { children: React.ReactNode 
                             )}
                         </div>
                     ) : null}
+                </div>
+            </aside>
+            <div className="flex min-w-0 flex-1 flex-col">
+                <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-stone-200/70 bg-white/80 px-4 backdrop-blur-sm lg:hidden">
                     <button
                         type="button"
-                        onClick={() => setMobileOpen(v => !v)}
-                        aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+                        onClick={() => setMobileOpen(true)}
+                        aria-label="Open menu"
+                        aria-controls={SIDEBAR_ID}
                         aria-expanded={mobileOpen}
-                        aria-controls="mobile-nav"
-                        className="flex size-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-600 shadow-sm transition-colors hover:border-stone-300 hover:text-stone-900 lg:hidden"
+                        className="flex size-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-600 shadow-sm transition-colors hover:border-stone-300 hover:text-stone-900"
                     >
-                        {mobileOpen ? <TbX className="size-4.5" /> : <TbMenu2 className="size-4.5" />}
+                        <TbMenu2 className="size-4.5" />
                     </button>
-                </div>
-                {mobileOpen && (
-                    <nav
-                        id="mobile-nav"
-                        aria-label="Main navigation"
-                        className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-stone-200/70 bg-white/95 px-4 pb-4 pt-3 backdrop-blur-sm lg:hidden"
-                    >
-                        {groups.map((group, gi) => (
-                            <div key={gi} className={gi > 0 ? 'mt-5' : ''}>
-                                {group.label && (
-                                    <p className="px-3 pb-2 font-mono text-[11px] font-medium uppercase tracking-widest text-stone-400">
-                                        {group.label}
-                                    </p>
-                                )}
-                                <ul className="space-y-1">
-                                    {group.routes.map(route => (
-                                        <li key={route.href}>
-                                            <NavPill
-                                                route={route}
-                                                pathname={pathname}
-                                                onNavigate={() => setMobileOpen(false)}
-                                            />
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </nav>
-                )}
-            </header>
-            <main className="flex-1">
-                <div className="mx-auto w-full max-w-7xl p-4 sm:p-8">{children}</div>
-            </main>
+                    <BrandMark />
+                </header>
+                <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
+            </div>
         </div>
     )
 }

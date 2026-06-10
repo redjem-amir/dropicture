@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://dropicture.com"),
   title: {
     default: TITLE,
-    template: "%s — Dropicture",
+    template: "%s · Dropicture",
   },
   description: DESCRIPTION,
   alternates: { canonical: "https://dropicture.com" },

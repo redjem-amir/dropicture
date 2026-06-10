@@ -16,6 +16,9 @@ import { AuthService } from './services/auth.service';
 import { Role } from './models/role.model';
 import { AccessTokenStrategy } from './guards/access.strategy';
 import { BootstrapService } from './services/bootstrap.service';
+import { SettingsController } from './controllers/settings.controller';
+import { AccountsController } from './controllers/accounts.controller';
+import { RolesController } from './controllers/roles.controller';
 
 const entities = [
   Account,
@@ -58,7 +61,10 @@ const entities = [
     TypeOrmModule.forFeature(entities),
   ],
   controllers: [
-    AuthController
+    AuthController,
+    SettingsController,
+    AccountsController,
+    RolesController,
   ],
   providers: [
     { provide: APP_GUARD, useClass: IpThrottlerGuard },
