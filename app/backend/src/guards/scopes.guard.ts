@@ -4,10 +4,10 @@ import { Reflector } from '@nestjs/core';
 import type { AuthenticatedUser } from '../services/auth.service';
 
 export const SCOPES = {
-    ACCOUNTS_READ: 'accounts.read',
-    ACCOUNTS_WRITE: 'accounts.write',
-    ROLES_READ: 'roles.read',
-    ROLES_WRITE: 'roles.write',
+    ACCOUNTS_READ: 'read:accounts',
+    ACCOUNTS_WRITE: 'write:accounts',
+    ROLES_READ: 'read:roles',
+    ROLES_WRITE: 'write:roles',
 } as const;
 
 export type Scope = typeof SCOPES[keyof typeof SCOPES];

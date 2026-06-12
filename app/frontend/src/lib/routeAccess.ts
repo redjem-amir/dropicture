@@ -1,6 +1,6 @@
 // dropicture/app/frontend/src/lib/routeAccess.ts
 import { IconType } from 'react-icons'
-import { TbAlbum, TbArchive, TbFlag, TbHeart, TbPhoto, TbServer2, TbShare2, TbShieldCheck, TbTrash, TbUsers } from 'react-icons/tb'
+import { TbPhoto, TbShieldCheck, TbUsers } from 'react-icons/tb'
 
 export type Scope = string
 
@@ -39,6 +39,6 @@ export const ROUTE_ACCESS: RouteItem[] = [
     { type: 'section', nav: { label: 'Library' } },
     { type: 'route', path: '/settings' },
     { type: 'section', nav: { label: 'Administration' } },
-    { type: 'route', path: '/accounts', scopes: ['accounts.read', 'accounts.write'], nav: { label: 'Accounts', icon: TbUsers } },
-    { type: 'route', path: '/roles', scopes: ['roles.read', 'roles.write'], nav: { label: 'Roles', icon: TbShieldCheck } },
+    { type: 'route', path: '/accounts', scopes: ['read:accounts', 'write:accounts'], nav: { label: 'Accounts', icon: TbUsers } },
+    { type: 'route', path: '/roles', scopes: ['read:roles', 'write:roles'], nav: { label: 'Roles', icon: TbShieldCheck } },
 ]
