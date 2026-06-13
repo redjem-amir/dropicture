@@ -7,16 +7,28 @@ import { Readable } from 'stream';
 @Injectable()
 export class StorageService implements OnModuleInit {
     private readonly logger = new Logger(StorageService.name);
-    private readonly bucket = process.env.S3_BUCKET ?? 'dropicture-media';
+    private readonly bucket = process.env.S3_BUCKET ?? 'media';
+    private readonly region = process.env.S3_REGION ?? 'garage';
+    private readonly forcePathStyle = process.env.S3_FORCE_PATH_STYLE !== 'false';
+    private readonly credentials = {
+        accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+    };
 
     private readonly s3 = new S3Client({
         endpoint: process.env.S3_ENDPOINT,
-        region: process.env.S3_REGION ?? 'garage',
-        forcePathStyle: process.env.S3_FORCE_PATH_STYLE !== 'false',
-        credentials: {
-            accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
-        },
+        region: this.region,
+        forcePathStyle: this.forcePathStyle,
+        credentials: this.credentials,
+        requestChecksumCalculation: 'WHEN_REQUIRED',
+        responseChecksumValidation: 'WHEN_REQUIRED',
+    });
+
+    private readonly signer = new S3Client({
+        endpoint: process.env.S3_PUBLIC_ENDPOINT ?? process.env.S3_ENDPOINT,
+        region: this.region,
+        forcePathStyle: this.forcePathStyle,
+        credentials: this.credentials,
         requestChecksumCalculation: 'WHEN_REQUIRED',
         responseChecksumValidation: 'WHEN_REQUIRED',
     });
@@ -33,7 +45,13 @@ export class StorageService implements OnModuleInit {
 
     async upload(key: string, body: Buffer, contentType: string): Promise<void> {
         await this.s3.send(
-            new PutObjectCommand({ Bucket: this.bucket, Key: key, Body: body, ContentType: contentType }),
+            new PutObjectCommand({
+                Bucket: this.bucket,
+                Key: key,
+                Body: body,
+                ContentType: contentType,
+                CacheControl: 'private, max-age=86400',
+            }),
         );
     }
 
@@ -46,7 +64,17 @@ export class StorageService implements OnModuleInit {
         await this.s3.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: key }));
     }
 
-    async getPresignedUrl(key: string, expiresIn = 900): Promise<string> {
-        return getSignedUrl(this.s3, new GetObjectCommand({ Bucket: this.bucket, Key: key }), { expiresIn });
+    async getPresignedUrl(key: string, expiresIn = 3600, downloadName?: string): Promise<string> {
+        return getSignedUrl(
+            this.signer,
+            new GetObjectCommand({
+                Bucket: this.bucket,
+                Key: key,
+                ...(downloadName
+                    ? { ResponseContentDisposition: `attachment; filename*=UTF-8''${encodeURIComponent(downloadName)}` }
+                    : {}),
+            }),
+            { expiresIn },
+        );
     }
 }

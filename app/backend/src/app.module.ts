@@ -72,7 +72,7 @@ const entities = [
     SettingsController,
     AccountsController,
     RolesController,
-    PicturesController,
+    PicturesController
   ],
   providers: [
     { provide: APP_GUARD, useClass: IpThrottlerGuard },

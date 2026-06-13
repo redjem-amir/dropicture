@@ -2,27 +2,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import {
-    TbAlbum,
-    TbArchive,
-    TbArchiveOff,
-    TbArrowBackUp,
-    TbCheck,
-    TbChevronLeft,
-    TbChevronRight,
-    TbHeart,
-    TbHeartFilled,
-    TbHeartOff,
-    TbLink,
-    TbPhoto,
-    TbPlayerPlayFilled,
-    TbPlus,
-    TbShare2,
-    TbShare3,
-    TbTrash,
-    TbUpload,
-    TbX,
-} from 'react-icons/tb'
+import { TbAlbum, TbArchive, TbArchiveOff, TbArrowBackUp, TbCheck, TbChevronLeft, TbChevronRight, TbHeart, TbHeartFilled, TbHeartOff, TbLink, TbPhoto, TbPlayerPlayFilled, TbPlus, TbShare2, TbShare3, TbTrash, TbUpload, TbX } from 'react-icons/tb'
 import type { IconType } from 'react-icons'
 
 type CollectionId = 'all' | 'favorites' | 'archive' | 'trash'
@@ -41,6 +21,7 @@ type Picture = {
     createdAt: string
     url: string
 }
+
 type AlbumCard = { id: string; name: string; count: number; coverUrl: string | null; createdAt: string }
 type Share = { id: string; token: string; kind: 'album' | 'selection'; title: string; items: number; views: number; expiresAt: string | null; createdAt: string; path: string }
 type CollMeta = { count: number; coverUrl: string | null }
@@ -363,9 +344,17 @@ export default function LibraryPage() {
     })
 
     async function copyShare(share: Share) {
-        const url = `${window.location.origin}${share.path}`
-        try { await navigator.clipboard.writeText(url); flash('Share link copied to clipboard.') }
-        catch { flash('Share link created.') }
+        try {
+            const res = await fetch(`/api/pictures/shared/${share.token}`, { credentials: 'omit' })
+            if (!res.ok) throw new Error()
+            const data = (await res.json()) as { items: { url: string }[] }
+            const url = data.items?.[0]?.url
+            if (!url) throw new Error()
+            await navigator.clipboard.writeText(url)
+            flash('Direct link copied to clipboard.')
+        } catch {
+            flash('Could not copy the link.')
+        }
     }
 
     async function shareSelection() {

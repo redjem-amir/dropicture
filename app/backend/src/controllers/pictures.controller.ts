@@ -1,5 +1,5 @@
 // dropicture/app/backend/src/controllers/pictures.controller.ts
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query, Req, StreamableFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
@@ -9,7 +9,6 @@ import { Throttle } from '@nestjs/throttler';
 import { ArrayNotEmpty, IsArray, IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, IsUUID, Max, MaxLength, Min } from 'class-validator';
 import { randomBytes, randomUUID } from 'crypto';
 import { extname } from 'path';
-import type { Readable } from 'stream';
 import { Picture, PictureKind } from '../models/picture.model';
 import { Album } from '../models/album.model';
 import { ShareLink, ShareKind } from '../models/share-link.model';
@@ -20,6 +19,7 @@ const DEFAULT_LIMIT = 60;
 const MAX_LIMIT = 100;
 const MAX_FILES_PER_UPLOAD = 50;
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
+const FILE_URL_TTL = 3600;
 
 interface UploadedFileLike {
     originalname: string;
@@ -55,7 +55,6 @@ export class CreateShareDto {
 }
 
 @Controller('/api/pictures')
-@UseGuards(AuthGuard('access-token'))
 export class PicturesController {
     constructor(
         @InjectRepository(Picture)
@@ -94,7 +93,11 @@ export class PicturesController {
         }
     }
 
-    private pictureDto(p: Picture) {
+    private fileUrl(p: Picture): Promise<string> {
+        return this.storage.getPresignedUrl(p.storageKey, FILE_URL_TTL);
+    }
+
+    private async pictureDto(p: Picture) {
         return {
             id: p.id,
             filename: p.filename,
@@ -108,11 +111,11 @@ export class PicturesController {
             archived: p.archived,
             takenAt: p.takenAt,
             createdAt: p.createdAt,
-            url: `/api/pictures/${p.id}/file`,
+            url: await this.fileUrl(p),
         };
     }
 
-    private albumDto(album: Album) {
+    private async albumDto(album: Album) {
         const pics = album.pictures ?? [];
         const cover = pics.length
             ? [...pics].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))[0]
@@ -121,7 +124,7 @@ export class PicturesController {
             id: album.id,
             name: album.name,
             count: pics.length,
-            coverUrl: cover ? `/api/pictures/${cover.id}/file` : null,
+            coverUrl: cover ? await this.fileUrl(cover) : null,
             createdAt: album.createdAt,
             updatedAt: album.updatedAt,
         };
@@ -143,6 +146,7 @@ export class PicturesController {
     }
 
     @Throttle({ default: { limit: 120, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Get('/albums')
     async listAlbums(@Req() req: Request) {
         const albums = await this.albumRepository.find({
@@ -150,10 +154,11 @@ export class PicturesController {
             relations: { pictures: true },
             order: { createdAt: 'DESC' },
         });
-        return { items: albums.map(a => this.albumDto(a)) };
+        return { items: await Promise.all(albums.map(a => this.albumDto(a))) };
     }
 
     @Throttle({ default: { limit: 120, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Get('/albums/:albumId')
     async getAlbum(@Param('albumId', new ParseUUIDPipe()) albumId: string, @Req() req: Request) {
         const album = await this.albumRepository.findOne({
@@ -161,14 +166,17 @@ export class PicturesController {
             relations: { pictures: true },
         });
         if (!album) throw new HttpException({ code: 'ALBUM_NOT_FOUND' }, HttpStatus.NOT_FOUND);
-        const items = (album.pictures ?? [])
-            .filter(p => !p.deletedAt)
-            .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))
-            .map(p => this.pictureDto(p));
-        return { album: this.albumDto(album), items };
+        const items = await Promise.all(
+            (album.pictures ?? [])
+                .filter(p => !p.deletedAt)
+                .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))
+                .map(p => this.pictureDto(p)),
+        );
+        return { album: await this.albumDto(album), items };
     }
 
     @Throttle({ default: { limit: 30, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Post('/albums')
     @HttpCode(HttpStatus.CREATED)
     async createAlbum(@Body() body: AlbumNameDto, @Req() req: Request) {
@@ -176,10 +184,11 @@ export class PicturesController {
         const album = await this.albumRepository.save(
             this.albumRepository.create({ ownerId: this.ownerId(req), name: body.name.trim().slice(0, 80), pictures: [] }),
         );
-        return { success: true, album: this.albumDto(album) };
+        return { success: true, album: await this.albumDto(album) };
     }
 
     @Throttle({ default: { limit: 60, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Patch('/albums/:albumId')
     @HttpCode(HttpStatus.OK)
     async renameAlbum(@Param('albumId', new ParseUUIDPipe()) albumId: string, @Body() body: AlbumNameDto, @Req() req: Request) {
@@ -192,6 +201,7 @@ export class PicturesController {
     }
 
     @Throttle({ default: { limit: 30, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Post('/albums/:albumId/pictures')
     @HttpCode(HttpStatus.OK)
     async addToAlbum(@Param('albumId', new ParseUUIDPipe()) albumId: string, @Body() body: AddPicturesDto, @Req() req: Request) {
@@ -207,6 +217,7 @@ export class PicturesController {
     }
 
     @Throttle({ default: { limit: 60, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Delete('/albums/:albumId/pictures/:pictureId')
     @HttpCode(HttpStatus.OK)
     async removeFromAlbum(
@@ -222,6 +233,7 @@ export class PicturesController {
     }
 
     @Throttle({ default: { limit: 30, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Delete('/albums/:albumId')
     @HttpCode(HttpStatus.OK)
     async deleteAlbum(@Param('albumId', new ParseUUIDPipe()) albumId: string, @Req() req: Request) {
@@ -235,6 +247,7 @@ export class PicturesController {
     }
 
     @Throttle({ default: { limit: 120, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Get('/shares')
     async listShares(@Req() req: Request) {
         const shares = await this.shareRepository.find({
@@ -245,13 +258,13 @@ export class PicturesController {
     }
 
     @Throttle({ default: { limit: 30, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Post('/shares')
     @HttpCode(HttpStatus.CREATED)
     async createShare(@Body() body: CreateShareDto, @Req() req: Request) {
         const owner = this.ownerId(req);
         const expiresAt = body.expiresInDays ? new Date(Date.now() + body.expiresInDays * 86400000) : null;
         const token = randomBytes(16).toString('base64url');
-
         if (body.albumId) {
             const album = await this.albumRepository.findOne({ where: { id: body.albumId, ownerId: owner }, relations: { pictures: true } });
             if (!album) throw new HttpException({ code: 'ALBUM_NOT_FOUND' }, HttpStatus.NOT_FOUND);
@@ -263,7 +276,6 @@ export class PicturesController {
             );
             return { success: true, share: this.shareDto(share) };
         }
-
         if (body.pictureIds && body.pictureIds.length > 0) {
             const owned = await this.pictureRepository.find({ where: { id: In(body.pictureIds), ownerId: owner } });
             if (owned.length === 0) throw new HttpException({ code: 'NOT_FOUND' }, HttpStatus.NOT_FOUND);
@@ -276,11 +288,11 @@ export class PicturesController {
             );
             return { success: true, share: this.shareDto(share) };
         }
-
         throw new HttpException({ code: 'NOTHING_TO_SHARE' }, HttpStatus.BAD_REQUEST);
     }
 
     @Throttle({ default: { limit: 60, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Delete('/shares/:shareId')
     @HttpCode(HttpStatus.OK)
     async revokeShare(@Param('shareId', new ParseUUIDPipe()) shareId: string, @Req() req: Request) {
@@ -291,6 +303,63 @@ export class PicturesController {
     }
 
     @Throttle({ default: { limit: 120, ttl: 60000 } })
+    @Get('/shared/:token')
+    async getSharedAlbum(@Param('token') token: string) {
+        const share = await this.shareRepository.findOne({ where: { token } });
+        if (!share) throw new HttpException({ code: 'SHARE_NOT_FOUND' }, HttpStatus.NOT_FOUND);
+        if (share.expiresAt && new Date(share.expiresAt).getTime() <= Date.now()) {
+            throw new HttpException({ code: 'SHARE_EXPIRED' }, HttpStatus.GONE);
+        }
+        let pictures: Picture[];
+        if (share.kind === ShareKind.ALBUM && share.albumId) {
+            const album = await this.albumRepository.findOne({
+                where: { id: share.albumId },
+                relations: { pictures: true },
+            });
+            pictures = (album?.pictures ?? [])
+                .filter(p => !p.deletedAt)
+                .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+        } else {
+            const ids = share.pictureIds ?? [];
+            if (ids.length === 0) {
+                pictures = [];
+            } else {
+                const pics = await this.pictureRepository.find({ where: { id: In(ids) } });
+                const byId = new Map(pics.map(p => [p.id, p]));
+                pictures = ids
+                    .map(id => byId.get(id))
+                    .filter((p): p is Picture => !!p && !p.deletedAt);
+            }
+        }
+        this.shareRepository.increment({ id: share.id }, 'views', 1).catch(() => undefined);
+        const items = await Promise.all(
+            pictures.map(async p => ({
+                id: p.id,
+                filename: p.filename,
+                mimeType: p.mimeType,
+                kind: p.kind,
+                width: p.width,
+                height: p.height,
+                durationSeconds: p.durationSeconds,
+                takenAt: p.takenAt,
+                url: await this.fileUrl(p),
+            })),
+        );
+        return {
+            share: {
+                token: share.token,
+                kind: share.kind,
+                title: share.title,
+                count: pictures.length,
+                expiresAt: share.expiresAt,
+                createdAt: share.createdAt,
+            },
+            items,
+        };
+    }
+
+    @Throttle({ default: { limit: 120, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Get('/collections')
     async collections(@Req() req: Request) {
         const owner = this.ownerId(req);
@@ -306,7 +375,7 @@ export class PicturesController {
             const qb = base().orderBy('p.createdAt', 'DESC').take(1);
             apply(qb);
             const p = await qb.getOne();
-            return p ? `/api/pictures/${p.id}/file` : null;
+            return p ? await this.fileUrl(p) : null;
         };
         const [allCover, favCover, archiveCover, trashCover] = await Promise.all([
             cover(q => q.andWhere('p.archived = false').andWhere('p.deletedAt IS NULL')),
@@ -324,6 +393,7 @@ export class PicturesController {
     }
 
     @Throttle({ default: { limit: 120, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Get()
     async list(
         @Req() req: Request,
@@ -354,13 +424,14 @@ export class PicturesController {
         }
         const rows = await qb.getMany();
         const hasMore = rows.length > limit;
-        const items = hasMore ? rows.slice(0, limit) : rows;
-        const last = items[items.length - 1];
+        const pageRows = hasMore ? rows.slice(0, limit) : rows;
+        const last = pageRows[pageRows.length - 1];
         const nextCursor = hasMore && last ? this.encodeCursor(last.createdAt, last.id) : null;
-        return { items: items.map(p => this.pictureDto(p)), nextCursor };
+        return { items: await Promise.all(pageRows.map(p => this.pictureDto(p))), nextCursor };
     }
 
     @Throttle({ default: { limit: 60, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @UseInterceptors(FilesInterceptor('files', MAX_FILES_PER_UPLOAD, { limits: { fileSize: MAX_FILE_BYTES } }))
@@ -390,22 +461,11 @@ export class PicturesController {
             );
             created.push(pic);
         }
-        return { success: true, items: created.map(p => this.pictureDto(p)) };
-    }
-
-    @Throttle({ default: { limit: 600, ttl: 60000 } })
-    @Get('/:id/file')
-    async file(@Param('id', new ParseUUIDPipe()) id: string, @Req() req: Request) {
-        const picture = await this.pictureRepository.findOne({ where: { id, ownerId: this.ownerId(req) } });
-        if (!picture) throw new HttpException({ code: 'NOT_FOUND' }, HttpStatus.NOT_FOUND);
-        const stream = (await this.storage.download(picture.storageKey)) as Readable;
-        return new StreamableFile(stream, {
-            type: picture.mimeType,
-            disposition: `inline; filename="${encodeURIComponent(picture.filename)}"`,
-        });
+        return { success: true, items: await Promise.all(created.map(p => this.pictureDto(p))) };
     }
 
     @Throttle({ default: { limit: 120, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Post('/:id/restore')
     @HttpCode(HttpStatus.OK)
     async restore(@Param('id', new ParseUUIDPipe()) id: string, @Req() req: Request) {
@@ -419,6 +479,7 @@ export class PicturesController {
     }
 
     @Throttle({ default: { limit: 120, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Patch('/:id')
     @HttpCode(HttpStatus.OK)
     async update(@Param('id', new ParseUUIDPipe()) id: string, @Body() body: UpdatePictureDto, @Req() req: Request) {
@@ -428,10 +489,11 @@ export class PicturesController {
         if (body.favorite !== undefined) picture.favorite = body.favorite;
         if (body.archived !== undefined) picture.archived = body.archived;
         await this.pictureRepository.save(picture);
-        return { success: true, picture: this.pictureDto(picture) };
+        return { success: true, picture: await this.pictureDto(picture) };
     }
 
     @Throttle({ default: { limit: 120, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Delete('/:id/permanent')
     @HttpCode(HttpStatus.OK)
     async destroy(@Param('id', new ParseUUIDPipe()) id: string, @Req() req: Request) {
@@ -444,6 +506,7 @@ export class PicturesController {
     }
 
     @Throttle({ default: { limit: 120, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
     @Delete('/:id')
     @HttpCode(HttpStatus.OK)
     async remove(@Param('id', new ParseUUIDPipe()) id: string, @Req() req: Request) {
