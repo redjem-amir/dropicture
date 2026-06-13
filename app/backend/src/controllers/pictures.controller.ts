@@ -145,6 +145,25 @@ export class PicturesController {
         };
     }
 
+    private async cleanupSharesForPicture(owner: string, pictureId: string): Promise<void> {
+        const selectionShares = await this.shareRepository.find({
+            where: { ownerId: owner, kind: ShareKind.SELECTION },
+        });
+        for (const share of selectionShares) {
+            const ids = share.pictureIds ?? [];
+            if (!ids.includes(pictureId)) continue;
+            const remaining = ids.filter(id => id !== pictureId);
+            if (remaining.length === 0) {
+                await this.shareRepository.delete({ id: share.id });
+            } else {
+                share.pictureIds = remaining;
+                share.itemCount = remaining.length;
+                share.title = `${remaining.length} photo${remaining.length > 1 ? 's' : ''}`;
+                await this.shareRepository.save(share);
+            }
+        }
+    }
+
     @Throttle({ default: { limit: 120, ttl: 60000 } })
     @UseGuards(AuthGuard('access-token'))
     @Get('/albums')
@@ -497,8 +516,10 @@ export class PicturesController {
     @Delete('/:id/permanent')
     @HttpCode(HttpStatus.OK)
     async destroy(@Param('id', new ParseUUIDPipe()) id: string, @Req() req: Request) {
-        const picture = await this.pictureRepository.findOne({ where: { id, ownerId: this.ownerId(req) } });
+        const owner = this.ownerId(req);
+        const picture = await this.pictureRepository.findOne({ where: { id, ownerId: owner } });
         if (!picture) throw new HttpException({ code: 'NOT_FOUND' }, HttpStatus.NOT_FOUND);
+        await this.cleanupSharesForPicture(owner, picture.id);
         await this.storage.remove(picture.storageKey).catch(() => undefined);
         if (picture.thumbnailKey) await this.storage.remove(picture.thumbnailKey).catch(() => undefined);
         await this.pictureRepository.delete({ id: picture.id });

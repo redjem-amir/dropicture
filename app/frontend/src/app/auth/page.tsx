@@ -2,12 +2,13 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { TbAlbum, TbArchive, TbArchiveOff, TbArrowBackUp, TbCheck, TbChevronLeft, TbChevronRight, TbHeart, TbHeartFilled, TbHeartOff, TbLink, TbPhoto, TbPlayerPlayFilled, TbPlus, TbShare2, TbShare3, TbTrash, TbUpload, TbX } from 'react-icons/tb'
+import { TbAlbum, TbArchive, TbArchiveOff, TbArrowBackUp, TbCheck, TbChevronLeft, TbChevronRight, TbDots, TbHeart, TbHeartFilled, TbHeartOff, TbLink, TbPhoto, TbPlayerPlayFilled, TbPlus, TbShare2, TbShare3, TbTrash, TbUpload, TbX } from 'react-icons/tb'
 import type { IconType } from 'react-icons'
 
 type CollectionId = 'all' | 'favorites' | 'archive' | 'trash'
 type View =
-    | { kind: 'home' }
+    | { kind: 'library' }
+    | { kind: 'collections' }
     | { kind: 'collection'; id: CollectionId }
     | { kind: 'shared' }
     | { kind: 'album'; album: AlbumCard }
@@ -39,15 +40,21 @@ const COLLECTION_LABEL: Record<CollectionId, string> = {
 }
 
 const FOCUS = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400/70 focus-visible:ring-offset-2'
-const BTN_PRIMARY = `inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-full bg-stone-900 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-stone-700 disabled:pointer-events-none disabled:opacity-60 ${FOCUS}`
-const BTN_SECONDARY = `inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-full border border-stone-200 bg-white px-4 text-sm font-medium text-stone-700 shadow-sm transition-colors hover:border-stone-300 hover:text-stone-900 disabled:pointer-events-none disabled:opacity-50 ${FOCUS}`
-const BTN_SECONDARY_SM = `inline-flex h-8 cursor-pointer items-center justify-center gap-2 rounded-full border border-stone-200 bg-white px-3 text-sm font-medium text-stone-700 shadow-sm transition-colors hover:border-stone-300 hover:text-stone-900 disabled:pointer-events-none disabled:opacity-50 ${FOCUS}`
-const BTN_GHOST_DANGER_SM = `inline-flex h-8 cursor-pointer items-center justify-center gap-2 rounded-full px-3 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:pointer-events-none disabled:opacity-50 ${FOCUS}`
-const BAR_BTN = `inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-100 hover:text-stone-900 disabled:pointer-events-none disabled:opacity-40 ${FOCUS}`
-const BAR_BTN_DANGER = `inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:pointer-events-none disabled:opacity-40 ${FOCUS}`
-const ICON_BTN = `inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-900 ${FOCUS}`
-const ICON_BTN_DARK = 'inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70'
+const BTN_PRIMARY = `inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full bg-stone-900 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-stone-700 disabled:pointer-events-none disabled:opacity-60 ${FOCUS}`
+const BTN_SECONDARY = `inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-stone-200 bg-white px-4 text-sm font-medium text-stone-700 shadow-sm transition-colors hover:border-stone-300 hover:text-stone-900 disabled:pointer-events-none disabled:opacity-50 ${FOCUS}`
+const BTN_SECONDARY_SM = `inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-full border border-stone-200 bg-white px-3.5 text-sm font-medium text-stone-700 shadow-sm transition-colors hover:border-stone-300 hover:text-stone-900 disabled:pointer-events-none disabled:opacity-50 ${FOCUS}`
+const BTN_GHOST_DANGER_SM = `inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-full px-3.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:pointer-events-none disabled:opacity-50 ${FOCUS}`
+const ICON_BTN = `inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-900 ${FOCUS}`
+const ICON_BTN_DARK = 'inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70'
 const BADGE_BASE = 'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium'
+
+const SEG_WRAP = 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white p-1 shadow-sm'
+const segBtn = (active: boolean) => `inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-full px-4 text-sm font-medium transition-colors ${FOCUS} ${active ? 'bg-stone-900 text-white shadow-sm' : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'}`
+
+const COL_BTN = `inline-flex h-14 w-16 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-medium text-stone-700 transition-colors hover:bg-stone-100 disabled:pointer-events-none disabled:opacity-40 ${FOCUS}`
+const COL_BTN_DANGER = `inline-flex h-14 w-16 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-medium text-red-600 transition-colors hover:bg-red-50 disabled:pointer-events-none disabled:opacity-40 ${FOCUS}`
+const MENU_ROW = `flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50 disabled:pointer-events-none disabled:opacity-40 ${FOCUS}`
+const MENU_ROW_DANGER = `flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:pointer-events-none disabled:opacity-40 ${FOCUS}`
 
 const SPINNER = (
     <svg viewBox="0 0 24 24" fill="none" className="size-4 animate-spin" aria-hidden="true">
@@ -76,7 +83,7 @@ function shortDate(iso: string): string {
     return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 function expiryBadge(iso: string | null): { tone: string; label: string } {
-    if (!iso) return { tone: 'border-stone-200 bg-stone-50 text-stone-600', label: 'Never expires' }
+    if (!iso) return { tone: 'border-stone-200 bg-stone-50 text-stone-600', label: 'No expiration' }
     const days = Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000)
     if (days <= 0) return { tone: 'border-red-200 bg-red-50 text-red-700', label: 'Expired' }
     if (days <= 1) return { tone: 'border-amber-200 bg-amber-50 text-amber-700', label: 'Expires today' }
@@ -84,11 +91,11 @@ function expiryBadge(iso: string | null): { tone: string; label: string } {
     return { tone: 'border-stone-200 bg-stone-50 text-stone-600', label: `${days} days left` }
 }
 function plural(n: number): string {
-    return `${n.toLocaleString()} item${n === 1 ? '' : 's'}`
+    return `${n.toLocaleString('en-US')} item${n === 1 ? '' : 's'}`
 }
 
 export default function LibraryPage() {
-    const [view, setView] = useState<View>({ kind: 'home' })
+    const [view, setView] = useState<View>({ kind: 'library' })
     const [notice, setNotice] = useState<string | null>(null)
 
     const [collections, setCollections] = useState<Collections | null>(null)
@@ -109,6 +116,7 @@ export default function LibraryPage() {
     const [selectMode, setSelectMode] = useState(false)
     const [selected, setSelected] = useState<Set<string>>(new Set())
     const [busy, setBusy] = useState(false)
+    const [actionMenuOpen, setActionMenuOpen] = useState(false)
 
     const [pickerOpen, setPickerOpen] = useState(false)
     const [nameDialog, setNameDialog] = useState<NameDialog | null>(null)
@@ -124,7 +132,7 @@ export default function LibraryPage() {
         setNotice(msg)
         window.setTimeout(() => setNotice(n => (n === msg ? null : n)), 3200)
     }
-    const exitSelect = useCallback(() => { setSelectMode(false); setSelected(new Set()) }, [])
+    const exitSelect = useCallback(() => { setSelectMode(false); setSelected(new Set()); setActionMenuOpen(false) }, [])
 
     const refreshCounts = useCallback(async () => {
         try {
@@ -159,7 +167,7 @@ export default function LibraryPage() {
             const data = await fetchPicturePage(null, id)
             setItems(data.items); setNextCursor(data.nextCursor)
         } catch {
-            setGridError('Could not load these photos. Please try again.')
+            setGridError('Couldn’t load these photos. Please try again.')
         } finally { setGridLoading(false) }
     }, [])
 
@@ -172,7 +180,7 @@ export default function LibraryPage() {
             setView(v => (v.kind === 'album' ? { kind: 'album', album: data.album } : v))
             setItems(data.items)
         } catch {
-            setGridError('Could not load this album. Please try again.')
+            setGridError('Couldn’t load this album. Please try again.')
         } finally { setGridLoading(false) }
     }, [])
 
@@ -184,54 +192,68 @@ export default function LibraryPage() {
         } catch { /* ignore */ } finally { setSharesLoading(false) }
     }, [])
 
-    useEffect(() => { void loadHome() }, [loadHome])
+    useEffect(() => { void loadCollection('all'); void refreshCounts() }, [loadCollection, refreshCounts])
 
     const toTop = () => window.scrollTo({ top: 0 })
-    const goHome = () => { exitSelect(); setItems([]); setNextCursor(null); setView({ kind: 'home' }); toTop(); void loadHome() }
+    const openLibrary = () => { exitSelect(); setView({ kind: 'library' }); toTop(); void loadCollection('all'); void refreshCounts() }
+    const openCollections = () => { exitSelect(); setItems([]); setNextCursor(null); setView({ kind: 'collections' }); toTop(); void loadHome() }
     const openCollection = (id: CollectionId) => { exitSelect(); setView({ kind: 'collection', id }); toTop(); void loadCollection(id) }
     const openAlbum = (album: AlbumCard) => { exitSelect(); setView({ kind: 'album', album }); toTop(); void loadAlbum(album.id) }
     const openShared = () => { exitSelect(); setView({ kind: 'shared' }); toTop(); void loadShares() }
 
     const refreshCurrentGrid = async () => {
-        if (view.kind === 'collection') await loadCollection(view.id)
+        if (view.kind === 'library') await loadCollection('all')
+        else if (view.kind === 'collection') await loadCollection(view.id)
         else if (view.kind === 'album') { await loadAlbum(view.album.id); void refreshAlbums() }
         void refreshCounts()
     }
 
+    const currentFilter = (): CollectionId | null => {
+        if (view.kind === 'library') return 'all'
+        if (view.kind === 'collection') return view.id
+        return null
+    }
+
     async function loadMore() {
-        if (view.kind !== 'collection' || !nextCursor || loadingMore) return
+        const filter = currentFilter()
+        if (!filter || !nextCursor || loadingMore) return
         setLoadingMore(true)
         try {
-            const data = await fetchPicturePage(nextCursor, view.id)
+            const data = await fetchPicturePage(nextCursor, filter)
             setItems(prev => [...prev, ...data.items]); setNextCursor(data.nextCursor)
         } catch { /* ignore */ } finally { setLoadingMore(false) }
     }
 
-    const isAll = view.kind === 'collection' && view.id === 'all'
+    const isLibrary = view.kind === 'library'
     const isTrash = view.kind === 'collection' && view.id === 'trash'
-    const showsPhotoGrid = view.kind === 'collection' || view.kind === 'album'
-    const canUploadHere = view.kind === 'home' || isAll
+    const showsPhotoGrid = view.kind === 'library' || view.kind === 'collection' || view.kind === 'album'
+    const canUploadHere = view.kind === 'library' || view.kind === 'collections'
+    const isSubView = view.kind === 'collection' || view.kind === 'album' || view.kind === 'shared'
+    const showSegmented = view.kind === 'library' || view.kind === 'collections'
+    const activeTab: 'library' | 'collections' = view.kind === 'library' ? 'library' : 'collections'
     const overlayOpen = pickerOpen || !!nameDialog || !!confirmDialog || !!lightboxId
 
     const viewKey = view.kind === 'collection' ? `c-${view.id}` : view.kind === 'album' ? `a-${view.album.id}` : view.kind
 
     const headerTitle =
-        view.kind === 'home' ? 'Albums'
-            : view.kind === 'collection' ? COLLECTION_LABEL[view.id]
-                : view.kind === 'shared' ? 'Shared'
-                    : view.album.name
+        view.kind === 'library' ? 'Library'
+            : view.kind === 'collections' ? 'Collections'
+                : view.kind === 'collection' ? COLLECTION_LABEL[view.id]
+                    : view.kind === 'shared' ? 'Shared'
+                        : view.album.name
 
     const headerSubtitle = (() => {
-        if (selectMode) return `${selected.size} selected`
-        if (view.kind === 'home') return 'Your photos, albums and shared links.'
-        if (view.kind === 'shared') return 'Links you\u2019ve created \u2014 you stay in control.'
+        if (selectMode) return `${selected.size.toLocaleString('en-US')} selected`
+        if (view.kind === 'library') return plural(collections?.all.count ?? items.length)
+        if (view.kind === 'collections') return 'Your albums, favorites, and shared links.'
+        if (view.kind === 'shared') return 'Links you’ve created — you stay in control.'
         if (view.kind === 'album') return plural(view.album.count)
         const total = collections?.[view.id]?.count
         return plural(total ?? items.length)
     })()
 
     const grouped = useMemo(() => {
-        if (!isAll) return null
+        if (!isLibrary) return null
         const out: { label: string; items: Picture[] }[] = []
         for (const p of items) {
             const label = dateLabel(p.createdAt)
@@ -240,7 +262,7 @@ export default function LibraryPage() {
             else out.push({ label, items: [p] })
         }
         return out
-    }, [items, isAll])
+    }, [items, isLibrary])
 
     const lightboxIndex = useMemo(
         () => (lightboxId ? items.findIndex(p => p.id === lightboxId) : -1),
@@ -255,6 +277,7 @@ export default function LibraryPage() {
                 if (confirmDialog) { setConfirmDialog(null); return }
                 if (nameDialog) { setNameDialog(null); return }
                 if (pickerOpen) { setPickerOpen(false); return }
+                if (actionMenuOpen) { setActionMenuOpen(false); return }
                 if (selectMode) exitSelect()
                 return
             }
@@ -265,8 +288,7 @@ export default function LibraryPage() {
         }
         window.addEventListener('keydown', onKey)
         return () => window.removeEventListener('keydown', onKey)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lightboxId, lightboxIndex, items, confirmDialog, nameDialog, pickerOpen, selectMode])
+    }, [lightboxId, lightboxIndex, items, confirmDialog, nameDialog, pickerOpen, actionMenuOpen, selectMode])
 
     useEffect(() => {
         document.body.style.overflow = overlayOpen ? 'hidden' : ''
@@ -275,17 +297,18 @@ export default function LibraryPage() {
 
     async function uploadFiles(list: FileList | File[]) {
         const files = Array.from(list).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'))
-        if (files.length === 0) { flash('Only images and videos can be uploaded.'); return }
+        if (files.length === 0) { flash('Only images and videos can be imported.'); return }
         setUploading(true)
         try {
             const fd = new FormData()
             files.forEach(f => fd.append('files', f))
             const res = await fetch('/api/pictures', { method: 'POST', body: fd, credentials: 'same-origin' })
-            if (!res.ok) { flash(res.status === 415 ? 'Only images and videos can be uploaded.' : 'Upload failed. Please try again.'); return }
-            flash(`${plural(files.length)} uploaded.`)
-            if (isAll) await loadCollection('all')
+            if (!res.ok) { flash(res.status === 415 ? 'Only images and videos can be imported.' : 'Import failed. Please try again.'); return }
+            flash(`${files.length.toLocaleString('en-US')} item${files.length === 1 ? '' : 's'} imported.`)
             void refreshCounts()
-        } catch { flash('Upload failed. Please try again.') } finally {
+            if (view.kind === 'library') await loadCollection('all')
+            else openLibrary()
+        } catch { flash('Import failed. Please try again.') } finally {
             setUploading(false)
             if (fileInputRef.current) fileInputRef.current.value = ''
         }
@@ -331,15 +354,15 @@ export default function LibraryPage() {
     }
 
     const bulkTrash = () => setConfirmDialog({
-        title: 'Delete photos?',
+        title: 'Delete these photos?',
         message: `${plural(selected.size)} will be moved to Recently Deleted.`,
         confirmLabel: 'Delete',
         action: () => void doBulkTrash(),
     })
     const bulkDestroy = () => setConfirmDialog({
-        title: 'Delete forever?',
-        message: `${plural(selected.size)} will be permanently deleted. This can\u2019t be undone.`,
-        confirmLabel: 'Delete forever',
+        title: 'Delete permanently?',
+        message: `${plural(selected.size)} will be permanently deleted. This can’t be undone.`,
+        confirmLabel: 'Delete Permanently',
         action: () => void doBulkDestroy(),
     })
 
@@ -351,9 +374,9 @@ export default function LibraryPage() {
             const url = data.items?.[0]?.url
             if (!url) throw new Error()
             await navigator.clipboard.writeText(url)
-            flash('Direct link copied to clipboard.')
+            flash('Direct link copied.')
         } catch {
-            flash('Could not copy the link.')
+            flash('Couldn’t copy link.')
         }
     }
 
@@ -365,11 +388,11 @@ export default function LibraryPage() {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
                 body: JSON.stringify({ pictureIds: Array.from(selected) }),
             })
-            if (!res.ok) { flash('Could not create the share link.'); return }
+            if (!res.ok) { flash('Couldn’t create share link.'); return }
             await copyShare((await res.json()).share as Share)
             void refreshCounts()
             openShared()
-        } catch { flash('Could not create the share link.') } finally { setBusy(false) }
+        } catch { flash('Couldn’t create share link.') } finally { setBusy(false) }
     }
 
     async function shareAlbum(album: AlbumCard) {
@@ -380,16 +403,16 @@ export default function LibraryPage() {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
                 body: JSON.stringify({ albumId: album.id }),
             })
-            if (!res.ok) { flash('Could not create the share link.'); return }
+            if (!res.ok) { flash('Couldn’t create share link.'); return }
             await copyShare((await res.json()).share as Share)
             void refreshCounts()
             openShared()
-        } catch { flash('Could not create the share link.') } finally { setBusy(false) }
+        } catch { flash('Couldn’t create share link.') } finally { setBusy(false) }
     }
 
     const revokeShare = (share: Share) => setConfirmDialog({
         title: 'Revoke this link?',
-        message: `\u201C${share.title}\u201D will stop working for anyone who has it.`,
+        message: `“${share.title}” will stop working for anyone who has it.`,
         confirmLabel: 'Revoke',
         action: () => void (async () => {
             setBusy(true)
@@ -412,7 +435,7 @@ export default function LibraryPage() {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
                     body: JSON.stringify({ name }),
                 })
-                if (!res.ok) { flash('Could not create the album.'); return }
+                if (!res.ok) { flash('Couldn’t create album.'); return }
                 const album = (await res.json()).album as AlbumCard
                 setNameDialog(null)
                 await refreshAlbums()
@@ -423,7 +446,7 @@ export default function LibraryPage() {
                     method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
                     body: JSON.stringify({ name }),
                 })
-                if (!res.ok) { flash('Could not rename the album.'); return }
+                if (!res.ok) { flash('Couldn’t rename album.'); return }
                 setNameDialog(null)
                 setView(v => (v.kind === 'album' ? { kind: 'album', album: { ...v.album, name } } : v))
                 void refreshAlbums()
@@ -440,19 +463,19 @@ export default function LibraryPage() {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
                 body: JSON.stringify({ pictureIds: Array.from(selected) }),
             })
-            if (!res.ok) { flash('Could not add to the album.'); return }
+            if (!res.ok) { flash('Couldn’t add to album.'); return }
             setPickerOpen(false); exitSelect(); flash('Added to album.')
             void refreshAlbums()
-        } catch { flash('Could not add to the album.') } finally { setBusy(false) }
+        } catch { flash('Couldn’t add to album.') } finally { setBusy(false) }
     }
 
     const deleteAlbum = (album: AlbumCard) => setConfirmDialog({
         title: 'Delete this album?',
-        message: `\u201C${album.name}\u201D will be deleted. The photos themselves are kept.`,
-        confirmLabel: 'Delete album',
+        message: `“${album.name}” will be deleted. The photos themselves are kept.`,
+        confirmLabel: 'Delete Album',
         action: () => void (async () => {
             setBusy(true)
-            try { await fetch(`/api/pictures/albums/${album.id}`, { method: 'DELETE', credentials: 'same-origin' }); flash('Album deleted.'); goHome() }
+            try { await fetch(`/api/pictures/albums/${album.id}`, { method: 'DELETE', credentials: 'same-origin' }); flash('Album deleted.'); openCollections() }
             catch { /* ignore */ } finally { setBusy(false) }
         })(),
     })
@@ -474,37 +497,53 @@ export default function LibraryPage() {
             if (!res.ok) throw new Error()
         } catch {
             setItems(arr => arr.map(x => (x.id === p.id ? { ...x, favorite: !next } : x)))
-            flash('Could not update this photo.')
+            flash('Couldn’t update photo.')
+        }
+    }
+    async function lightboxTrash(p: Picture) {
+        const idx = items.findIndex(x => x.id === p.id)
+        const next = items[idx + 1] ?? items[idx - 1] ?? null
+        setItems(arr => arr.filter(x => x.id !== p.id))
+        lightboxDirty.current = true
+        try {
+            const res = await fetch(`/api/pictures/${p.id}`, { method: 'DELETE', credentials: 'same-origin' })
+            if (!res.ok) throw new Error()
+            if (next) setLightboxId(next.id)
+            else closeLightbox()
+        } catch {
+            flash('Couldn’t delete photo.')
+            void refreshCurrentGrid()
         }
     }
 
-    const selectionActions: SelectionAction[] = (() => {
+    const selection = (() => {
         const fav: SelectionAction = { key: 'fav', label: 'Favorite', icon: TbHeart, onClick: () => void bulkFavorite(true) }
         const unfav: SelectionAction = { key: 'unfav', label: 'Unfavorite', icon: TbHeartOff, onClick: () => void bulkFavorite(false) }
-        const album: SelectionAction = { key: 'album', label: 'Add to album', icon: TbAlbum, onClick: () => { if (!albums.length) void refreshAlbums(); setPickerOpen(true) } }
+        const album: SelectionAction = { key: 'album', label: 'Add', icon: TbAlbum, onClick: () => { if (!albums.length) void refreshAlbums(); setActionMenuOpen(false); setPickerOpen(true) } }
         const share: SelectionAction = { key: 'share', label: 'Share', icon: TbShare3, onClick: () => void shareSelection() }
         const archive: SelectionAction = { key: 'archive', label: 'Archive', icon: TbArchive, onClick: () => void bulkArchive(true) }
         const unarchive: SelectionAction = { key: 'unarchive', label: 'Unarchive', icon: TbArchiveOff, onClick: () => void bulkArchive(false) }
-        const removeFromAlbum: SelectionAction = { key: 'remove', label: 'Remove', icon: TbX, onClick: () => void bulkRemoveFromAlbum() }
+        const removeFromAlbum: SelectionAction = { key: 'remove', label: 'Remove from Album', icon: TbX, onClick: () => void bulkRemoveFromAlbum() }
         const trash: SelectionAction = { key: 'trash', label: 'Delete', icon: TbTrash, danger: true, onClick: bulkTrash }
-        const restore: SelectionAction = { key: 'restore', label: 'Restore', icon: TbArrowBackUp, onClick: () => void bulkRestore() }
-        const destroy: SelectionAction = { key: 'destroy', label: 'Delete forever', icon: TbTrash, danger: true, onClick: bulkDestroy }
+        const restore: SelectionAction = { key: 'restore', label: 'Recover', icon: TbArrowBackUp, onClick: () => void bulkRestore() }
+        const destroy: SelectionAction = { key: 'destroy', label: 'Delete', icon: TbTrash, danger: true, onClick: bulkDestroy }
 
-        if (isTrash) return [restore, destroy]
-        if (view.kind === 'collection' && view.id === 'archive') return [unarchive, trash]
-        if (view.kind === 'collection' && view.id === 'favorites') return [unfav, album, share, trash]
-        if (view.kind === 'album') return [fav, album, removeFromAlbum, share, trash]
-        return [fav, album, share, archive, trash]
+        const empty: SelectionAction[] = []
+        if (isTrash) return { primary: [restore, destroy], secondary: empty }
+        if (view.kind === 'collection' && view.id === 'archive') return { primary: [unarchive, trash], secondary: empty }
+        if (view.kind === 'collection' && view.id === 'favorites') return { primary: [unfav, album, share, trash], secondary: empty }
+        if (view.kind === 'album') return { primary: [fav, album, share, trash], secondary: [removeFromAlbum] }
+        return { primary: [fav, album, share, trash], secondary: [archive] }
     })()
 
     function emptyCopy(): { title: string; hint: string; icon: IconType } {
-        if (view.kind === 'album') return { title: 'This album is empty', hint: 'Open All Photos, select pictures, then choose Add to album.', icon: TbAlbum }
+        if (view.kind === 'album') return { title: 'This album is empty', hint: 'Open All Photos, select some pictures, then choose Add to Album.', icon: TbAlbum }
         if (view.kind === 'collection') {
-            if (view.id === 'favorites') return { title: 'No favorites yet', hint: 'Select photos and tap Favorite to keep them close.', icon: TbHeart }
-            if (view.id === 'archive') return { title: 'Nothing archived', hint: 'Archived photos are hidden from All Photos but kept safe.', icon: TbArchive }
-            if (view.id === 'trash') return { title: 'Recently Deleted is empty', hint: 'Deleted photos rest here before they\u2019re removed for good.', icon: TbTrash }
+            if (view.id === 'favorites') return { title: 'No favorites yet', hint: 'Select photos and tap Favorite to keep them close at hand.', icon: TbHeart }
+            if (view.id === 'archive') return { title: 'Nothing in the archive', hint: 'Archived photos are hidden from your Library but kept safe.', icon: TbArchive }
+            if (view.id === 'trash') return { title: 'Recently Deleted is empty', hint: 'Deleted photos wait here before they’re removed for good.', icon: TbTrash }
         }
-        return { title: 'No photos yet', hint: 'Upload your first photos \u2014 or simply drag and drop them anywhere on this page.', icon: TbPhoto }
+        return { title: 'No photos yet', hint: 'Import your first photos — or just drag them anywhere on this page.', icon: TbPhoto }
     }
 
     const tile = (p: Picture) => {
@@ -535,14 +574,14 @@ export default function LibraryPage() {
                     type="button"
                     aria-label={isSelected ? 'Deselect' : 'Select'}
                     onClick={e => { e.stopPropagation(); if (!selectMode) setSelectMode(true); toggleSelect(p.id) }}
-                    className={`absolute left-2 top-2 flex size-5 cursor-pointer items-center justify-center rounded-full border-2 shadow-sm transition-opacity ${FOCUS} ${isSelected
+                    className={`absolute left-2 top-2 flex size-6 cursor-pointer items-center justify-center rounded-full border-2 shadow-sm transition-opacity ${FOCUS} ${isSelected
                         ? 'border-white bg-stone-900 text-white opacity-100'
                         : selectMode
                             ? 'border-white/90 bg-stone-950/25 text-transparent opacity-100'
                             : 'border-white/90 bg-stone-950/15 text-transparent opacity-0 group-hover:opacity-100'
                         }`}
                 >
-                    <TbCheck className="size-3" strokeWidth={3} />
+                    <TbCheck className="size-3.5" strokeWidth={3} />
                 </button>
 
                 {p.kind === 'video' && (
@@ -559,7 +598,7 @@ export default function LibraryPage() {
     const loadMoreButton = nextCursor && (
         <div className="flex justify-center pt-4">
             <button className={BTN_SECONDARY} onClick={() => void loadMore()} disabled={loadingMore}>
-                {loadingMore && SPINNER}{loadingMore ? 'Loading\u2026' : 'Load more'}
+                {loadingMore && SPINNER}{loadingMore ? 'Loading…' : 'Show More'}
             </button>
         </div>
     )
@@ -568,7 +607,7 @@ export default function LibraryPage() {
         gridError ? (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-stone-200/70 bg-white px-6 py-16 text-center shadow-sm">
                 <p className="text-sm text-stone-500">{gridError}</p>
-                <button onClick={() => void refreshCurrentGrid()} className={`${BTN_SECONDARY} mt-4`}>Try again</button>
+                <button onClick={() => void refreshCurrentGrid()} className={`${BTN_SECONDARY} mt-4`}>Try Again</button>
             </div>
         ) : gridLoading ? (
             <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6" aria-hidden>
@@ -582,9 +621,9 @@ export default function LibraryPage() {
                         <span className="flex size-12 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-400 shadow-sm"><e.icon className="size-6" strokeWidth={1.5} /></span>
                         <h3 className="mt-4 text-sm font-semibold text-stone-900">{e.title}</h3>
                         <p className="mt-1 max-w-sm text-sm text-stone-500">{e.hint}</p>
-                        {isAll && (
+                        {isLibrary && (
                             <button className={`${BTN_PRIMARY} mt-5`} onClick={() => fileInputRef.current?.click()} disabled={uploading}>
-                                {uploading ? SPINNER : <TbUpload className="size-4" />} Upload
+                                {uploading ? SPINNER : <TbUpload className="size-4" />} Import
                             </button>
                         )}
                     </div>
@@ -625,9 +664,22 @@ export default function LibraryPage() {
         </button>
     )
 
+    const collectionRow = (opts: { key: string; label: string; sublabel: string; icon: IconType; onClick: () => void }) => (
+        <button key={opts.key} onClick={opts.onClick} className={`flex w-full cursor-pointer items-center gap-4 px-4 py-3.5 text-left transition-colors hover:bg-stone-50 ${FOCUS}`}>
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-stone-200 bg-stone-50 text-stone-600">
+                <opts.icon className="size-5" strokeWidth={1.75} />
+            </span>
+            <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium text-stone-900">{opts.label}</span>
+                <span className="block text-xs text-stone-400">{opts.sublabel}</span>
+            </span>
+            <TbChevronRight className="size-5 shrink-0 text-stone-300" />
+        </button>
+    )
+
     return (
         <div
-            className={`relative space-y-6 ${selectMode && showsPhotoGrid ? 'pb-28' : 'pb-10'}`}
+            className={`relative space-y-6 ${selectMode && showsPhotoGrid ? 'pb-32' : 'pb-10'}`}
             onDragEnter={onDragEnter}
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
@@ -639,12 +691,24 @@ export default function LibraryPage() {
                 @keyframes dpScaleIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
             `}</style>
             <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={e => { if (e.target.files?.length) void uploadFiles(e.target.files) }} />
+            {showSegmented && (
+                <div className="flex justify-center sm:justify-start">
+                    <div className={SEG_WRAP} role="tablist" aria-label="Sections">
+                        <button role="tab" aria-selected={activeTab === 'library'} className={segBtn(activeTab === 'library')} onClick={() => { if (view.kind !== 'library') openLibrary() }}>
+                            <TbPhoto className="size-4.5" /> Library
+                        </button>
+                        <button role="tab" aria-selected={activeTab === 'collections'} className={segBtn(activeTab === 'collections')} onClick={() => { if (view.kind !== 'collections') openCollections() }}>
+                            <TbAlbum className="size-4.5" /> Collections
+                        </button>
+                    </div>
+                </div>
+            )}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex min-w-0 items-center gap-3">
-                    {view.kind !== 'home' && (
-                        <button onClick={goHome} className={`${BTN_SECONDARY} h-9 shrink-0 pl-2.5 pr-3.5`} aria-label="Back to albums">
+                    {isSubView && (
+                        <button onClick={openCollections} className={`${BTN_SECONDARY} shrink-0 pl-2.5 pr-3.5`} aria-label="Back to Collections">
                             <TbChevronLeft className="size-4.5" />
-                            <span className="hidden sm:inline">Albums</span>
+                            <span className="hidden sm:inline">Collections</span>
                         </button>
                     )}
                     <div className="min-w-0">
@@ -656,7 +720,7 @@ export default function LibraryPage() {
                     {selectMode ? (
                         <>
                             <button className={BTN_SECONDARY} onClick={toggleSelectAll} disabled={busy || items.length === 0}>
-                                {allSelected ? 'Deselect all' : 'Select all'}
+                                {allSelected ? 'Deselect All' : 'Select All'}
                             </button>
                             <button className={BTN_SECONDARY} onClick={exitSelect} disabled={busy}>
                                 <TbX className="size-4" /> Cancel
@@ -667,14 +731,14 @@ export default function LibraryPage() {
                             {showsPhotoGrid && items.length > 0 && (
                                 <button className={BTN_SECONDARY} onClick={() => setSelectMode(true)}>Select</button>
                             )}
-                            {view.kind === 'home' && (
+                            {view.kind === 'collections' && (
                                 <button className={BTN_SECONDARY} onClick={() => openCreateAlbum()}>
-                                    <TbPlus className="size-4" /> New album
+                                    <TbPlus className="size-4" /> New Album
                                 </button>
                             )}
                             {canUploadHere && (
                                 <button className={BTN_PRIMARY} onClick={() => fileInputRef.current?.click()} disabled={uploading}>
-                                    {uploading ? SPINNER : <TbUpload className="size-4" />}{uploading ? 'Uploading\u2026' : 'Upload'}
+                                    {uploading ? SPINNER : <TbUpload className="size-4" />}{uploading ? 'Importing…' : 'Import'}
                                 </button>
                             )}
                         </>
@@ -683,32 +747,29 @@ export default function LibraryPage() {
             </div>
             {view.kind === 'album' && !selectMode && (
                 <div className="flex flex-wrap items-center gap-2 animate-[dpFadeUp_0.25s_ease]">
-                    <button className={BTN_SECONDARY_SM} onClick={() => void shareAlbum(view.album)} disabled={busy}><TbShare2 className="size-4" /> Share album</button>
+                    <button className={BTN_SECONDARY_SM} onClick={() => void shareAlbum(view.album)} disabled={busy}><TbShare2 className="size-4" /> Share Album</button>
                     <button className={BTN_SECONDARY_SM} onClick={() => openRenameAlbum(view.album)} disabled={busy}>Rename</button>
-                    <button className={BTN_GHOST_DANGER_SM} onClick={() => deleteAlbum(view.album)} disabled={busy}>Delete album</button>
+                    <button className={BTN_GHOST_DANGER_SM} onClick={() => deleteAlbum(view.album)} disabled={busy}>Delete Album</button>
                 </div>
             )}
             <div key={viewKey} className="animate-[dpFadeUp_0.3s_ease]">
-                {view.kind === 'home' && (
+                {view.kind === 'collections' && (
                     homeLoading ? (
                         <div className="space-y-10" aria-hidden>
+                            <div className="h-64 animate-pulse rounded-2xl bg-stone-100" />
                             <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                                {Array.from({ length: 5 }).map((_, i) => <div key={i} className="aspect-square animate-pulse rounded-xl bg-stone-100" />)}
-                            </div>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                                {Array.from({ length: 3 }).map((_, i) => <div key={i} className="aspect-square animate-pulse rounded-xl bg-stone-100" />)}
+                                {Array.from({ length: 4 }).map((_, i) => <div key={i} className="aspect-square animate-pulse rounded-xl bg-stone-100" />)}
                             </div>
                         </div>
                     ) : (
                         <div className="space-y-10">
                             <section className="space-y-4">
-                                <h2 className="text-lg font-semibold tracking-tight text-stone-900">Library</h2>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                                    {albumCard({ key: 'all', name: 'All Photos', sublabel: plural(collections?.all.count ?? 0), coverUrl: collections?.all.coverUrl ?? null, onClick: () => openCollection('all'), fallback: TbPhoto })}
-                                    {albumCard({ key: 'favorites', name: 'Favorites', sublabel: plural(collections?.favorites.count ?? 0), coverUrl: collections?.favorites.coverUrl ?? null, onClick: () => openCollection('favorites'), fallback: TbHeart })}
-                                    {albumCard({ key: 'shared', name: 'Shared', sublabel: `${(collections?.shared.count ?? 0).toLocaleString()} link${(collections?.shared.count ?? 0) === 1 ? '' : 's'}`, coverUrl: null, onClick: openShared, fallback: TbShare2 })}
-                                    {albumCard({ key: 'archive', name: 'Archive', sublabel: plural(collections?.archive.count ?? 0), coverUrl: collections?.archive.coverUrl ?? null, onClick: () => openCollection('archive'), fallback: TbArchive })}
-                                    {albumCard({ key: 'trash', name: 'Recently Deleted', sublabel: plural(collections?.trash.count ?? 0), coverUrl: collections?.trash.coverUrl ?? null, onClick: () => openCollection('trash'), fallback: TbTrash })}
+                                <h2 className="text-lg font-semibold tracking-tight text-stone-900">My Collections</h2>
+                                <div className="divide-y divide-stone-200/70 overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-sm">
+                                    {collectionRow({ key: 'favorites', label: 'Favorites', sublabel: plural(collections?.favorites.count ?? 0), icon: TbHeart, onClick: () => openCollection('favorites') })}
+                                    {collectionRow({ key: 'archive', label: 'Archive', sublabel: plural(collections?.archive.count ?? 0), icon: TbArchive, onClick: () => openCollection('archive') })}
+                                    {collectionRow({ key: 'shared', label: 'Shared', sublabel: `${(collections?.shared.count ?? 0).toLocaleString('en-US')} link${(collections?.shared.count ?? 0) === 1 ? '' : 's'}`, icon: TbShare2, onClick: openShared })}
+                                    {collectionRow({ key: 'trash', label: 'Recently Deleted', sublabel: plural(collections?.trash.count ?? 0), icon: TbTrash, onClick: () => openCollection('trash') })}
                                 </div>
                             </section>
                             <section className="space-y-4">
@@ -720,7 +781,7 @@ export default function LibraryPage() {
                                         className={`flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-stone-300 bg-white/40 text-stone-400 transition-colors hover:border-stone-400 hover:bg-white hover:text-stone-600 ${FOCUS}`}
                                     >
                                         <TbPlus className="size-7" strokeWidth={1.5} />
-                                        <span className="text-xs font-medium">New album</span>
+                                        <span className="text-xs font-medium">New Album</span>
                                     </button>
                                 </div>
                             </section>
@@ -735,7 +796,7 @@ export default function LibraryPage() {
                         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-stone-300 bg-white/40 px-6 py-16 text-center">
                             <span className="flex size-12 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-400 shadow-sm"><TbShare2 className="size-6" strokeWidth={1.5} /></span>
                             <h3 className="mt-4 text-sm font-semibold text-stone-900">Nothing shared</h3>
-                            <p className="mt-1 max-w-sm text-sm text-stone-500">Open All Photos or an album, select what you want, then tap Share to create a link.</p>
+                            <p className="mt-1 max-w-sm text-sm text-stone-500">Open your Library or an album, select what you want, then tap Share to create a link.</p>
                         </div>
                     ) : (
                         <div className="divide-y divide-stone-200/70 rounded-2xl border border-stone-200/70 bg-white shadow-sm">
@@ -754,7 +815,7 @@ export default function LibraryPage() {
                                         </div>
                                         <div className="hidden shrink-0 sm:block"><span className={`${BADGE_BASE} ${e.tone}`}>{e.label}</span></div>
                                         <div className="flex shrink-0 items-center gap-2">
-                                            <button className={BTN_SECONDARY_SM} onClick={() => void copyShare(share)}><TbLink className="size-4" /><span className="hidden md:inline">Copy link</span></button>
+                                            <button className={BTN_SECONDARY_SM} onClick={() => void copyShare(share)}><TbLink className="size-4" /><span className="hidden md:inline">Copy Link</span></button>
                                             <button className={BTN_GHOST_DANGER_SM} onClick={() => revokeShare(share)} disabled={busy}>Revoke</button>
                                         </div>
                                     </div>
@@ -765,21 +826,40 @@ export default function LibraryPage() {
                 )}
             </div>
             {selectMode && showsPhotoGrid && (
-                <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center px-4 animate-[dpFadeUp_0.25s_ease]">
-                    <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-stone-200/70 bg-white/95 px-2 py-1.5 shadow-xl shadow-stone-900/10 backdrop-blur">
-                        <span className="shrink-0 whitespace-nowrap px-3 text-sm font-semibold text-stone-900">{selected.size} selected</span>
-                        <span className="h-5 w-px shrink-0 bg-stone-200" aria-hidden />
-                        {selectionActions.map(a => (
-                            <button key={a.key} className={a.danger ? BAR_BTN_DANGER : BAR_BTN} disabled={!selected.size || busy} onClick={a.onClick}>
-                                <a.icon className="size-4.5" />
-                                <span className="hidden whitespace-nowrap sm:inline">{a.label}</span>
-                            </button>
-                        ))}
+                <>
+                    {actionMenuOpen && <div aria-hidden className="fixed inset-0 z-40" onClick={() => setActionMenuOpen(false)} />}
+                    <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center px-4 animate-[dpFadeUp_0.25s_ease]">
+                        <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-3xl border border-stone-200/70 bg-white/95 px-2 py-2 shadow-xl shadow-stone-900/10 backdrop-blur">
+                            {selection.primary.map(a => (
+                                <button key={a.key} className={a.danger ? COL_BTN_DANGER : COL_BTN} disabled={!selected.size || busy} onClick={() => { setActionMenuOpen(false); a.onClick() }}>
+                                    <a.icon className="size-6" strokeWidth={1.75} />
+                                    <span className="leading-none">{a.label}</span>
+                                </button>
+                            ))}
+                            {selection.secondary.length > 0 && (
+                                <button className={COL_BTN} aria-expanded={actionMenuOpen} aria-label="More actions" disabled={!selected.size || busy} onClick={() => setActionMenuOpen(o => !o)}>
+                                    <TbDots className="size-6" strokeWidth={1.75} />
+                                    <span className="leading-none">More</span>
+                                </button>
+                            )}
+                        </div>
                     </div>
-                </div>
+                    {actionMenuOpen && selection.secondary.length > 0 && (
+                        <div className="fixed inset-x-0 bottom-22 z-50 flex justify-center px-4 animate-[dpFadeUp_0.18s_ease]">
+                            <div className="w-full max-w-[16rem] rounded-2xl border border-stone-200/70 bg-white p-1.5 shadow-xl shadow-stone-900/10">
+                                {selection.secondary.map(a => (
+                                    <button key={a.key} className={a.danger ? MENU_ROW_DANGER : MENU_ROW} disabled={!selected.size || busy} onClick={() => { setActionMenuOpen(false); a.onClick() }}>
+                                        <a.icon className="size-5 shrink-0" strokeWidth={1.75} />
+                                        <span>{a.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </>
             )}
             {notice && (
-                <div className={`pointer-events-none fixed inset-x-0 z-80 flex justify-center px-4 ${selectMode && showsPhotoGrid ? 'bottom-20' : 'bottom-6'}`}>
+                <div className={`pointer-events-none fixed inset-x-0 z-80 flex justify-center px-4 ${selectMode && showsPhotoGrid ? 'bottom-24' : 'bottom-6'}`}>
                     <button
                         onClick={() => setNotice(null)}
                         className="pointer-events-auto cursor-pointer rounded-full bg-stone-900/95 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur animate-[dpFadeUp_0.25s_ease]"
@@ -792,7 +872,7 @@ export default function LibraryPage() {
                 <div className="pointer-events-none fixed inset-0 z-40 flex items-center justify-center bg-stone-50/80 backdrop-blur-sm animate-[dpFade_0.15s_ease]">
                     <div className="flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed border-stone-400 bg-white px-12 py-10 shadow-xl">
                         <TbUpload className="size-8 text-stone-500" strokeWidth={1.5} />
-                        <p className="text-sm font-semibold text-stone-900">Drop to upload</p>
+                        <p className="text-sm font-semibold text-stone-900">Drop to import</p>
                         <p className="text-xs text-stone-500">Images and videos</p>
                     </div>
                 </div>
@@ -800,16 +880,16 @@ export default function LibraryPage() {
             {pickerOpen && (
                 <div className="fixed inset-0 z-50 flex items-end justify-center bg-stone-900/25 p-4 backdrop-blur-sm sm:items-center animate-[dpFade_0.15s_ease]">
                     <div aria-hidden className="absolute inset-0 cursor-pointer" onClick={() => setPickerOpen(false)} />
-                    <div role="dialog" aria-modal="true" aria-label="Add to album" className="relative flex max-h-[80vh] w-full max-w-md flex-col rounded-2xl border border-stone-200/70 bg-white p-6 shadow-xl shadow-stone-900/10 animate-[dpScaleIn_0.18s_ease]">
+                    <div role="dialog" aria-modal="true" aria-label="Add to Album" className="relative flex max-h-[80vh] w-full max-w-md flex-col rounded-2xl border border-stone-200/70 bg-white p-6 shadow-xl shadow-stone-900/10 animate-[dpScaleIn_0.18s_ease]">
                         <div className="flex items-start justify-between gap-4">
                             <div>
-                                <h2 className="text-base font-semibold tracking-tight text-stone-900">Add to album</h2>
-                                <p className="mt-1 text-sm text-stone-500">{plural(selected.size)} selected.</p>
+                                <h2 className="text-base font-semibold tracking-tight text-stone-900">Add to Album</h2>
+                                <p className="mt-1 text-sm text-stone-500">{selected.size.toLocaleString('en-US')} selected.</p>
                             </div>
                             <button type="button" onClick={() => setPickerOpen(false)} aria-label="Close" className={ICON_BTN}><TbX className="size-4.5" /></button>
                         </div>
                         <button className={`${BTN_SECONDARY} mt-5 w-full`} disabled={busy} onClick={() => openCreateAlbum('addSelection')}>
-                            <TbPlus className="size-4" /> New album…
+                            <TbPlus className="size-4" /> New Album…
                         </button>
                         <div className="mt-3 -mx-1 flex-1 space-y-1 overflow-y-auto px-1">
                             {albums.length === 0 ? (
@@ -833,8 +913,8 @@ export default function LibraryPage() {
             {nameDialog && (
                 <div className="fixed inset-0 z-60 flex items-center justify-center bg-stone-900/25 p-4 backdrop-blur-sm animate-[dpFade_0.15s_ease]">
                     <div aria-hidden className="absolute inset-0 cursor-pointer" onClick={() => setNameDialog(null)} />
-                    <div role="dialog" aria-modal="true" aria-label={nameDialog.mode === 'create' ? 'New album' : 'Rename album'} className="relative w-full max-w-sm rounded-2xl border border-stone-200/70 bg-white p-6 shadow-xl shadow-stone-900/10 animate-[dpScaleIn_0.18s_ease]">
-                        <h2 className="text-base font-semibold tracking-tight text-stone-900">{nameDialog.mode === 'create' ? 'New album' : 'Rename album'}</h2>
+                    <div role="dialog" aria-modal="true" aria-label={nameDialog.mode === 'create' ? 'New Album' : 'Rename Album'} className="relative w-full max-w-sm rounded-2xl border border-stone-200/70 bg-white p-6 shadow-xl shadow-stone-900/10 animate-[dpScaleIn_0.18s_ease]">
+                        <h2 className="text-base font-semibold tracking-tight text-stone-900">{nameDialog.mode === 'create' ? 'New Album' : 'Rename Album'}</h2>
                         <p className="mt-1 text-sm text-stone-500">{nameDialog.mode === 'create' ? 'Give your album a name.' : 'Choose a new name for this album.'}</p>
                         <form
                             onSubmit={e => { e.preventDefault(); void submitNameDialog() }}
@@ -846,7 +926,7 @@ export default function LibraryPage() {
                                 onChange={e => setNameValue(e.target.value)}
                                 maxLength={80}
                                 placeholder="e.g. Summer 2026"
-                                className="h-10 w-full rounded-lg border border-stone-200 bg-white px-3 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-200"
+                                className="h-11 w-full rounded-lg border border-stone-200 bg-white px-3 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-200"
                             />
                             <div className="flex justify-end gap-2">
                                 <button type="button" className={BTN_SECONDARY} onClick={() => setNameDialog(null)} disabled={busy}>Cancel</button>
@@ -869,7 +949,7 @@ export default function LibraryPage() {
                             <button type="button" className={BTN_SECONDARY} onClick={() => setConfirmDialog(null)} disabled={busy}>Cancel</button>
                             <button
                                 type="button"
-                                className={`inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-full bg-red-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-red-700 disabled:pointer-events-none disabled:opacity-60 ${FOCUS}`}
+                                className={`inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full bg-red-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-red-700 disabled:pointer-events-none disabled:opacity-60 ${FOCUS}`}
                                 disabled={busy}
                                 onClick={() => { const a = confirmDialog.action; setConfirmDialog(null); a() }}
                             >
@@ -896,10 +976,19 @@ export default function LibraryPage() {
                             {!isTrash && (
                                 <button
                                     className={ICON_BTN_DARK}
-                                    aria-label={lightboxItem.favorite ? 'Remove from favorites' : 'Add to favorites'}
+                                    aria-label={lightboxItem.favorite ? 'Remove from Favorites' : 'Add to Favorites'}
                                     onClick={() => void lightboxToggleFavorite(lightboxItem)}
                                 >
                                     {lightboxItem.favorite ? <TbHeartFilled className="size-5 text-red-400" /> : <TbHeart className="size-5" />}
+                                </button>
+                            )}
+                            {!isTrash && (
+                                <button
+                                    className={ICON_BTN_DARK}
+                                    aria-label="Delete"
+                                    onClick={() => void lightboxTrash(lightboxItem)}
+                                >
+                                    <TbTrash className="size-5" />
                                 </button>
                             )}
                             <button className={ICON_BTN_DARK} aria-label="Close" onClick={closeLightbox}><TbX className="size-5" /></button>
@@ -924,7 +1013,6 @@ export default function LibraryPage() {
                                 className="max-h-full max-w-full rounded-lg shadow-2xl animate-[dpScaleIn_0.18s_ease]"
                             />
                         )}
-
                         {lightboxIndex > 0 && (
                             <button
                                 className={`${ICON_BTN_DARK} absolute left-3 top-1/2 -translate-y-1/2 sm:left-5`}
