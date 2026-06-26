@@ -2,7 +2,7 @@
 
 > The backend talks to PgBouncer (not PostgreSQL directly), DragonflyDB and
 > the Garage S3 store. The full data layer comes from
-> [`docker-compose.local.yml`](../../docker-compose.local.yml) at the
+> [`docker-compose.dev.yml`](../../docker-compose.dev.yml) at the
 > repository root — see [`HELP.md`](../../HELP.md) for the one-time `.env`
 > setup there.
 
@@ -12,7 +12,7 @@ From the **repository root**:
 
 ```bash
 set -a; source .env; set +a
-docker compose -f docker-compose.local.yml up -d
+docker compose -f docker-compose.dev.yml up -d
 ```
 
 This brings up PgBouncer on `localhost:5432` (the app's entry point),

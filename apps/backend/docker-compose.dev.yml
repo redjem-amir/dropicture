@@ -50,17 +50,19 @@ services:
       start_period: 15s
     restart: always
 
-  dropicture-dragonfly:
-    container_name: dropicture-dragonfly
-    image: ghcr.io/dragonflydb/dragonfly:v1.38.1
+  dropicture-redis:
+    container_name: dropicture-redis
+    image: redis:8.8.0-alpine
     command:
-      - "--default_lua_flags=allow-undeclared-keys"
-    ulimits:
-      memlock: -1
+      - "redis-server"
+      - "--protected-mode"
+      - "no"
+      - "--dir"
+      - "/data"
     ports:
       - "6379:6379"
     volumes:
-      - dragonfly_data_dropicture:/data
+      - redis_data_dropicture:/data
     restart: always
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -87,6 +89,6 @@ services:
 
 volumes:
   postgres_data_dropicture:
-  dragonfly_data_dropicture:
+  redis_data_dropicture:
   garage_meta_dropicture:
   garage_data_dropicture:
