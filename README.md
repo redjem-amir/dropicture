@@ -21,7 +21,7 @@ Most photo services keep your library on someone else's cloud, usually a big US 
 There are three ways to run it:
 
 - **On your own machine.** One Compose file brings up the whole stack locally, and your photos stay on your disk.
-- **On your own cloud.** Any Linux box running Docker Swarm can host the production stack.
+- **On your own cloud.** Any Linux box running Docker Swarm can host the production stack, and it fits on a small VPS.
 - **On European infrastructure.** The reference setup targets [Hetzner](https://www.hetzner.com/) (Falkenstein, Germany) and is described entirely as code in this repo: one `terraform apply` and one Ansible playbook.
 
 Whichever mode you pick, media is stored in a self-hosted, S3-compatible [Garage](https://garagehq.deuxfleurs.fr/) bucket and metadata goes in PostgreSQL. No third-party object storage, no vendor lock-in.
@@ -36,10 +36,10 @@ flowchart LR
         T["Traefik<br/>edge TLS · reverse proxy"]
         SP["socket-proxy<br/>read-only Docker API"]
         T -. "swarm provider" .-> SP
-        T --> FE["frontend ×3 · Next.js"]
-        T --> BE["backend ×3 · NestJS"]
-        BE --> PB["PgBouncer ×2"] --> PG[("PostgreSQL 18")]
-        BE --> DF[("DragonflyDB")]
+        T --> FE["frontend · Next.js"]
+        T --> BE["backend · NestJS"]
+        BE --> PB["PgBouncer"] --> PG[("PostgreSQL 18")]
+        BE --> RD[("Redis")]
         BE --> GA[("Garage · S3")]
     end
     FW --> T
@@ -49,11 +49,11 @@ flowchart LR
 |---|---|---|
 | `proxy` | Edge TLS termination and Swarm-aware reverse proxy | `traefik:v3.7.4` |
 | `socket-proxy` | Read-only Docker API for Traefik's Swarm provider | `tecnativa/docker-socket-proxy:v0.4.2` |
-| `dropicture-frontend` | Web client (3 replicas) | `ghcr.io/redjem-amir/dropicture/frontend` |
-| `dropicture-backend` | REST API, NestJS and TypeORM, rate limiting (3 replicas) | `ghcr.io/redjem-amir/dropicture/backend` |
-| `dropicture-pgbouncer` | Transaction-level connection pooling (2 replicas) | `edoburu/pgbouncer:v1.24.1-p1` |
+| `dropicture-frontend` | Web client | `ghcr.io/redjem-amir/dropicture/frontend` |
+| `dropicture-backend` | REST API, NestJS and TypeORM, rate limiting | `ghcr.io/redjem-amir/dropicture/backend` |
+| `dropicture-pgbouncer` | Transaction-level connection pooling | `edoburu/pgbouncer:v1.24.1-p1` |
 | `dropicture-db` | Relational store for metadata | `postgres:18.4` |
-| `dropicture-dragonfly` | Redis-compatible cache and throttle storage | `ghcr.io/dragonflydb/dragonfly:v1.38.1` |
+| `dropicture-redis` | In-memory cache and throttle storage | `redis:8.8.0-alpine` |
 | `dropicture-garage` | S3-compatible object storage for media | `dxflrs/garage:v2.3.0` |
 
 ## Repository layout
@@ -115,7 +115,7 @@ Once the containers are healthy, you can reach everything here:
 | Backend API | `http://localhost:3001` |
 | PgBouncer (pooled Postgres) | `localhost:5432` |
 | PostgreSQL (direct, for psql/IDEs) | `localhost:5433` |
-| DragonflyDB | `localhost:6379` |
+| Redis | `localhost:6379` |
 | Garage S3 API | `localhost:3900` |
 
 The data layer behaves like production: the backend talks to PostgreSQL through PgBouncer in transaction-pooling mode, same as the deployed stack. The one difference is that there's no Traefik in front locally, so each service publishes its port straight on `localhost`. To work on the apps themselves, see [`apps/`](apps/) and run the backend and frontend in dev mode against the running data layer.
@@ -124,7 +124,7 @@ The data layer behaves like production: the backend talks to PostgreSQL through 
 
 ### On your own cloud
 
-The production stack ([`docker-compose.yml`](docker-compose.yml)) runs on any Docker Swarm host:
+The production stack ([`docker-compose.yml`](docker-compose.yml)) runs on any Docker Swarm host. It runs one replica of each service and is sized to fit a small VPS, around 4 GB of RAM and 2 vCPU, with room to breathe on 8 GB:
 
 ```bash
 docker swarm init
@@ -133,7 +133,7 @@ docker stack deploy -c docker-compose.yml dropicture
 
 Before you deploy, the stack needs a few things in place:
 
-- The same environment variables as the local stack (database, Garage/S3, `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD`, `NEXT_PUBLIC_URL`) available in the shell that runs the deploy.
+- The required environment variables in the shell that runs the deploy: `APP_DOMAIN` (your public hostname, which the Traefik routes match), the database and Garage/S3 credentials, `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD`, and `NEXT_PUBLIC_URL`.
 - Three external Swarm resources holding your TLS material and proxy config:
   - config `dropicture_origin_cert`: the origin certificate (PEM)
   - config `dropicture_traefik_dynamic_v1`: Traefik's dynamic TLS config
@@ -164,10 +164,11 @@ The pipeline ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) bu
 | `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD` | Database credentials |
 | `GARAGE_RPC_SECRET` | Garage RPC secret |
 | `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | Garage access key for the media bucket |
+| `APP_DOMAIN` | Public hostname the Traefik routers match (frontend and API) |
 | `DEFAULT_ADMIN_EMAIL` / `DEFAULT_ADMIN_PASSWORD` | First admin account created by the backend |
 | `NEXT_PUBLIC_URL` | Public site URL used by the frontend |
 
-> Right now the workflow only exports the first five groups in its `env:` block. `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD` and `NEXT_PUBLIC_URL` are required by `docker-compose.yml`, so add them to the deploy job's environment too. Otherwise `docker stack deploy` stops on the first missing variable.
+> Right now the workflow only exports the first five groups in its `env:` block. `APP_DOMAIN`, `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD` and `NEXT_PUBLIC_URL` are required by `docker-compose.yml`, so add them to the deploy job's environment too. Otherwise `docker stack deploy` stops on the first missing variable.
 
 Provisioning with Terraform and Ansible also needs `TF_VAR_hcloud_token` and `TF_VAR_ssh_public_key_b64`, plus the AWS credentials for the state backend.
 
@@ -179,7 +180,7 @@ A few things worth knowing about how this is locked down:
 - Port 22 is open to the internet, but Ansible turns off password and keyboard-interactive auth, limits root to key-based login, and caps `MaxAuthTries` at 3.
 - Cloudflare terminates TLS at the edge. The origin serves a Cloudflare Origin CA certificate with SSL mode Full (strict), a minimum of TLS 1.2, and Always Use HTTPS.
 - Traefik never mounts the Docker socket itself. It reads Swarm state through a read-only socket-proxy that only exposes the endpoints it needs.
-- PostgreSQL, PgBouncer, DragonflyDB and Garage live on an internal overlay network with no published ports, so nothing in the data layer is reachable from outside the Swarm.
+- PostgreSQL, PgBouncer, Redis and Garage live on an internal overlay network with no published ports, so nothing in the data layer is reachable from outside the Swarm.
 - Credentials and the TLS private key are stored as Swarm secrets; the certificate and Traefik's dynamic config as Swarm configs.
 
 Found a vulnerability? Please use [GitHub Security Advisories](https://github.com/redjem-amir/dropicture/security/advisories/new) instead of opening a public issue.
@@ -194,4 +195,4 @@ Contributions are welcome. Fork, branch, open a pull request. For anything subst
 
 ## Acknowledgments
 
-Built on a stack of open source projects: [Traefik](https://traefik.io/), [Garage](https://garagehq.deuxfleurs.fr/), [DragonflyDB](https://www.dragonflydb.io/), [PgBouncer](https://www.pgbouncer.org/), [NestJS](https://nestjs.com/), [Next.js](https://nextjs.org/), [PostgreSQL](https://www.postgresql.org/) and [Docker Swarm](https://docs.docker.com/engine/swarm/).
+Built on a stack of open source projects: [Traefik](https://traefik.io/), [Garage](https://garagehq.deuxfleurs.fr/), [Redis](https://redis.io/), [PgBouncer](https://www.pgbouncer.org/), [NestJS](https://nestjs.com/), [Next.js](https://nextjs.org/), [PostgreSQL](https://www.postgresql.org/) and [Docker Swarm](https://docs.docker.com/engine/swarm/).

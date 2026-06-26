@@ -2,6 +2,7 @@
 services:
   dropicture-db:
     image: postgres:18.4
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
       POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
@@ -19,6 +20,7 @@ services:
 
   dropicture-pgbouncer:
     image: edoburu/pgbouncer:v1.24.1-p1
+    restart: unless-stopped
     depends_on:
       dropicture-db:
         condition: service_healthy
@@ -46,13 +48,22 @@ services:
       retries: 5
       start_period: 15s
 
-  dropicture-dragonfly:
-    image: ghcr.io/dragonflydb/dragonfly:v1.38.1
-    command: ["--maxmemory=512mb", "--dir=/data"]
-    ulimits: { memlock: -1 }
+  dropicture-redis:
+    image: redis:8.8.0-alpine
+    restart: unless-stopped
+    command:
+      - "redis-server"
+      - "--protected-mode"
+      - "no"
+      - "--maxmemory"
+      - "512mb"
+      - "--maxmemory-policy"
+      - "allkeys-lru"
+      - "--dir"
+      - "/data"
     ports: ["6379:6379"]
     volumes:
-      - dfly_data:/data
+      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -61,6 +72,7 @@ services:
 
   dropicture-garage:
     image: dxflrs/garage:v2.3.0
+    restart: unless-stopped
     command: ["/garage", "server", "--single-node", "--default-bucket"]
     environment:
       GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET:?GARAGE_RPC_SECRET is required}
@@ -75,6 +87,7 @@ services:
 
   dropicture-backend:
     image: ghcr.io/redjem-amir/dropicture/backend:${IMAGE_TAG:-latest}
+    restart: unless-stopped
     environment:
       DEFAULT_ADMIN_EMAIL: ${DEFAULT_ADMIN_EMAIL}
       DEFAULT_ADMIN_PASSWORD: ${DEFAULT_ADMIN_PASSWORD}
@@ -83,7 +96,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      REDIS_HOST: dropicture-dragonfly
+      REDIS_HOST: dropicture-redis
       S3_ENDPOINT: http://dropicture-garage:3900
       S3_REGION: garage
       S3_BUCKET: ${S3_BUCKET:-dropicture-media}
@@ -94,13 +107,14 @@ services:
     depends_on:
       dropicture-pgbouncer:
         condition: service_healthy
-      dropicture-dragonfly:
+      dropicture-redis:
         condition: service_healthy
       dropicture-garage:
         condition: service_started
 
   dropicture-frontend:
     image: ghcr.io/redjem-amir/dropicture/frontend:${IMAGE_TAG:-latest}
+    restart: unless-stopped
     environment:
       NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
     ports: ["3000:3000"]
@@ -109,6 +123,6 @@ services:
 
 volumes:
   pg_data:
-  dfly_data:
+  redis_data:
   garage_meta:
   garage_data:

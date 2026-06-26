@@ -35,10 +35,7 @@ services:
       retries: 3
       start_period: 10s
     deploy:
-      mode: global
-      placement:
-        constraints:
-          - node.role == manager
+      replicas: 1
       update_config:
         parallelism: 1
         order: stop-first
@@ -46,13 +43,14 @@ services:
         failure_action: rollback
       rollback_config:
         parallelism: 1
+        order: stop-first
       restart_policy:
         condition: any
         delay: 5s
         window: 30s
       resources:
-        reservations: { cpus: "0.25", memory: 128M }
-        limits: { cpus: "1.00", memory: 256M }
+        reservations: { cpus: "0.05", memory: 32M }
+        limits: { cpus: "0.50", memory: 128M }
 
   socket-proxy:
     image: tecnativa/docker-socket-proxy:v0.4.2
@@ -75,9 +73,6 @@ services:
       start_period: 10s
     deploy:
       replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
       update_config:
         parallelism: 1
         order: start-first
@@ -91,8 +86,8 @@ services:
         delay: 5s
         window: 30s
       resources:
-        reservations: { cpus: "0.05", memory: 16M }
-        limits: { cpus: "0.25", memory: 64M }
+        reservations: { cpus: "0.02", memory: 8M }
+        limits: { cpus: "0.10", memory: 32M }
 
   dropicture-frontend:
     image: ghcr.io/redjem-amir/dropicture/frontend:${IMAGE_TAG:-latest}
@@ -107,33 +102,31 @@ services:
       retries: 3
       start_period: 30s
     deploy:
-      replicas: 3
+      replicas: 1
       labels:
         - traefik.enable=true
-        - traefik.http.routers.frontend.rule=Host(`dropicture.com`)
+        - traefik.http.routers.frontend.rule=Host(`${APP_DOMAIN:?APP_DOMAIN is required}`)
         - traefik.http.routers.frontend.entrypoints=websecure
         - traefik.http.routers.frontend.tls=true
         - traefik.http.routers.frontend.priority=1
         - traefik.http.services.frontend.loadbalancer.server.port=3000
-        - traefik.http.services.frontend.loadbalancer.strategy=p2c
         - traefik.http.services.frontend.loadbalancer.healthcheck.path=/
         - traefik.http.services.frontend.loadbalancer.healthcheck.interval=10s
       update_config:
         parallelism: 1
-        order: start-first
+        order: stop-first
         monitor: 30s
         failure_action: rollback
-        delay: 10s
       rollback_config:
         parallelism: 1
-        order: start-first
+        order: stop-first
       restart_policy:
         condition: any
         delay: 5s
         window: 30s
       resources:
-        reservations: { cpus: "0.50", memory: 256M }
-        limits: { cpus: "1.50", memory: 1G }
+        reservations: { cpus: "0.10", memory: 128M }
+        limits: { cpus: "1.00", memory: 512M }
 
   dropicture-backend:
     image: ghcr.io/redjem-amir/dropicture/backend:${IMAGE_TAG:-latest}
@@ -148,7 +141,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
       POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
-      REDIS_HOST: dropicture-dragonfly
+      REDIS_HOST: dropicture-redis
       S3_ENDPOINT: http://dropicture-garage:3900
       S3_REGION: garage
       S3_BUCKET: dropicture-media
@@ -162,33 +155,31 @@ services:
       retries: 3
       start_period: 30s
     deploy:
-      replicas: 3
+      replicas: 1
       labels:
         - traefik.enable=true
-        - traefik.http.routers.backend.rule=Host(`dropicture.com`) && PathPrefix(`/api`)
+        - traefik.http.routers.backend.rule=Host(`${APP_DOMAIN}`) && PathPrefix(`/api`)
         - traefik.http.routers.backend.entrypoints=websecure
         - traefik.http.routers.backend.tls=true
         - traefik.http.routers.backend.priority=100
         - traefik.http.services.backend.loadbalancer.server.port=8080
-        - traefik.http.services.backend.loadbalancer.strategy=p2c
         - traefik.http.services.backend.loadbalancer.healthcheck.path=/health
         - traefik.http.services.backend.loadbalancer.healthcheck.interval=10s
       update_config:
         parallelism: 1
-        order: start-first
+        order: stop-first
         monitor: 30s
         failure_action: rollback
-        delay: 10s
       rollback_config:
         parallelism: 1
-        order: start-first
+        order: stop-first
       restart_policy:
         condition: any
         delay: 5s
         window: 30s
       resources:
-        reservations: { cpus: "0.50", memory: 384M }
-        limits: { cpus: "2.00", memory: 2G }
+        reservations: { cpus: "0.15", memory: 256M }
+        limits: { cpus: "1.50", memory: 768M }
 
   dropicture-pgbouncer:
     image: edoburu/pgbouncer:v1.24.1-p1
@@ -202,11 +193,11 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       AUTH_TYPE: scram-sha-256
       POOL_MODE: transaction
-      DEFAULT_POOL_SIZE: "20"
-      MIN_POOL_SIZE: "5"
-      RESERVE_POOL_SIZE: "5"
+      DEFAULT_POOL_SIZE: "10"
+      MIN_POOL_SIZE: "2"
+      RESERVE_POOL_SIZE: "2"
       RESERVE_POOL_TIMEOUT: "3"
-      MAX_CLIENT_CONN: "1000"
+      MAX_CLIENT_CONN: "200"
       MAX_PREPARED_STATEMENTS: "200"
       IGNORE_STARTUP_PARAMETERS: extra_float_digits
     healthcheck:
@@ -216,22 +207,22 @@ services:
       retries: 5
       start_period: 15s
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         parallelism: 1
-        order: start-first
+        order: stop-first
         monitor: 30s
         failure_action: rollback
       rollback_config:
         parallelism: 1
-        order: start-first
+        order: stop-first
       restart_policy:
         condition: any
         delay: 5s
         window: 30s
       resources:
-        reservations: { cpus: "0.10", memory: 32M }
-        limits: { cpus: "0.50", memory: 128M }
+        reservations: { cpus: "0.05", memory: 16M }
+        limits: { cpus: "0.25", memory: 64M }
 
   dropicture-db:
     image: postgres:18.4
@@ -244,16 +235,16 @@ services:
     command:
       - "postgres"
       - "-c"
-      - "max_connections=80"
+      - "max_connections=50"
       - "-c"
-      - "shared_buffers=2GB"
+      - "shared_buffers=256MB"
       - "-c"
-      - "effective_cache_size=4GB"
+      - "effective_cache_size=768MB"
     volumes:
       - /opt/dropicture/data/postgres:/var/lib/postgresql
       - type: tmpfs
         target: /dev/shm
-        tmpfs: { size: 2147483648 }
+        tmpfs: { size: 134217728 }
     stop_grace_period: 1m
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
@@ -272,21 +263,28 @@ services:
         delay: 5s
         window: 60s
       resources:
-        reservations: { cpus: "1.50", memory: 2G }
-        limits: { cpus: "4.00", memory: 6G }
+        reservations: { cpus: "0.25", memory: 512M }
+        limits: { cpus: "1.50", memory: 1G }
 
-  dropicture-dragonfly:
-    image: ghcr.io/dragonflydb/dragonfly:v1.38.1
+  dropicture-redis:
+    image: redis:8.8.0-alpine
     command:
-      - "--maxmemory=2gb"
-      - "--dir=/data"
-      - "--snapshot_cron=*/30 * * * *"
-    ulimits:
-      memlock: -1
+      - "redis-server"
+      - "--protected-mode"
+      - "no"
+      - "--maxmemory"
+      - "256mb"
+      - "--maxmemory-policy"
+      - "allkeys-lru"
+      - "--save"
+      - "1800"
+      - "1"
+      - "--dir"
+      - "/data"
     networks:
       - backend
     volumes:
-      - /opt/dropicture/data/dragonfly:/data
+      - /opt/dropicture/data/redis:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -303,8 +301,8 @@ services:
         delay: 5s
         window: 60s
       resources:
-        reservations: { cpus: "0.75", memory: 2304M }
-        limits: { cpus: "2.00", memory: 3072M }
+        reservations: { cpus: "0.05", memory: 64M }
+        limits: { cpus: "0.50", memory: 384M }
 
   dropicture-garage:
     image: dxflrs/garage:v2.3.0
@@ -334,8 +332,8 @@ services:
         delay: 5s
         window: 60s
       resources:
-        reservations: { cpus: "0.50", memory: 768M }
-        limits: { cpus: "2.00", memory: 3G }
+        reservations: { cpus: "0.10", memory: 256M }
+        limits: { cpus: "1.00", memory: 768M }
 
 networks:
   frontend:

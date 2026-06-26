@@ -1,0 +1,85 @@
+@startuml stack
+!pragma layout smetana
+title dropicture - Application stack (Docker Swarm, docker-compose.yml)
+footer Author: Amir Redjem   |   2026-06-05   |   v1.0
+
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam roundCorner 12
+skinparam ArrowColor #2F6FED
+skinparam ArrowFontColor #41505F
+skinparam cloudBackgroundColor #FFF6EC
+skinparam cloudBorderColor #F3B27A
+skinparam nodeBackgroundColor #FDF4F4
+skinparam nodeBorderColor #E6BCBC
+skinparam rectangleBackgroundColor #FFFFFF
+skinparam rectangleBorderColor #B8C4D0
+skinparam databaseBackgroundColor #FFFFFF
+skinparam databaseBorderColor #B7E0C9
+skinparam componentBackgroundColor #F6F1FC
+skinparam componentBorderColor #CDBCE8
+skinparam noteBackgroundColor #FFF6EC
+skinparam noteBorderColor #F3B27A
+
+actor "User" as user
+cloud "Cloudflare\nDNS, proxy, edge TLS" as cf
+rectangle "Hetzner firewall\n80/443  <-  Cloudflare only\n22 + ICMP  <-  anywhere" as fw
+
+node "Single-node Docker Swarm  -  manager-1\nstack: dropicture   |   1 replica per service\n//deployed via docker stack deploy (Ansible / CI)//" as swarm {
+
+  component "**proxy**  -  traefik:v3.7.4\nedge TLS + reverse proxy, ports 80/443 (host)\nrouters: Host(APP_DOMAIN), file + swarm providers\nlimit 0.50 vCPU / 128M" as proxy
+
+  component "**socket-proxy**  -  tecnativa/docker-socket-proxy:v0.4.2\nread-only Docker API :2375\nmounts /var/run/docker.sock:ro\nlimit 0.10 vCPU / 32M" as sock
+
+  component "**dropicture-frontend**  -  Next.js\nghcr.io/redjem-amir/dropicture/frontend\nserves :3000\nlimit 1.00 vCPU / 512M" as fe
+
+  component "**dropicture-backend**  -  NestJS\nghcr.io/redjem-amir/dropicture/backend\nREST API :8080  (/health)\nlimit 1.50 vCPU / 768M" as be
+
+  component "**dropicture-pgbouncer**  -  edoburu/pgbouncer:v1.24.1-p1\ntransaction pooling :5432\npool 10, max client 200, scram-sha-256\nlimit 0.25 vCPU / 64M" as pgb
+
+  database "**dropicture-db**  -  postgres:18.4\nmax_connections=50, shared_buffers=256MB\nvol /opt/dropicture/data/postgres\nlimit 1.50 vCPU / 1G" as db
+
+  database "**dropicture-redis**  -  redis:8.8.0-alpine\nmaxmemory 256mb, allkeys-lru, save 1800 1\nvol /opt/dropicture/data/redis\nlimit 0.50 vCPU / 384M" as redis
+
+  database "**dropicture-garage**  -  dxflrs/garage:v2.3.0\nS3 :3900, single-node, default-bucket\nvol meta + data (/opt/dropicture/data/garage)\nlimit 1.00 vCPU / 768M" as garage
+
+  rectangle "config\ndropicture_traefik_dynamic_v1\n(external)" as cfgtls
+  rectangle "config\ndropicture_origin_cert\n(external)" as cfgcert
+  rectangle "secret\ndropicture_origin_key\n(external)" as seckey
+  rectangle "config\ndropicture_garage_config_v2\n(file ./garage.toml)" as cfggar
+}
+
+user --> cf : HTTPS 443
+cf --> fw : Origin CA\nFull (strict)
+fw --> proxy : 80/443 (host)
+
+proxy --> fe : frontend overlay\nHost(APP_DOMAIN)  ->  :3000
+proxy --> be : frontend overlay\nHost(APP_DOMAIN) /api (prio 100)  ->  :8080
+proxy ..> sock : socket overlay (internal)\nswarm provider :2375
+
+be --> pgb : backend overlay  ->  :5432
+pgb --> db : :5432
+be --> redis : backend overlay  ->  :6379
+be --> garage : backend overlay  ->  S3 :3900
+
+cfgtls  ..> proxy : /etc/traefik/dynamic/tls.yml
+cfgcert ..> proxy : /etc/traefik/certs/origin.crt
+seckey  ..> proxy : /run/secrets/origin.key
+cfggar  ..> garage : /etc/garage.toml
+
+note as legend
+  **Overlay networks**
+  frontend: external-facing  (proxy, frontend, backend)
+  backend: internal, no published ports
+    (backend, pgbouncer, db, redis, garage)
+  socket: internal  (proxy  ->  socket-proxy)
+
+  **Persistence**: bind mounts on the local SSD
+  under /opt/dropicture/data  (db, redis, garage)
+
+  **Updates**: rolling, stop-first, restart on failure
+  required env: APP_DOMAIN, NEXT_PUBLIC_URL,
+  DEFAULT_ADMIN_*, POSTGRES_*, S3_*, GARAGE_RPC_SECRET
+end note
+
+@enduml
