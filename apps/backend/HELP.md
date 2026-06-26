@@ -22,7 +22,7 @@ key and the media bucket auto-created on first boot.
 
 ### 2. Backend — Environment variables
 
-Create the backend `.env` (in `app/backend/`), reusing the credentials from
+Create the backend `.env` (in `apps/backend/`), reusing the credentials from
 the **root** `.env` so the app matches what the containers were started with:
 
 ```bash
@@ -50,7 +50,7 @@ S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
 EOF
 ```
 
-> **Notes:** this overwrites any existing `app/backend/.env` (`>` not `>>`).
+> **Notes:** this overwrites any existing `apps/backend/.env` (`>` not `>>`).
 > Never commit `.env` files — both are gitignored. Don't generate fresh
 > random credentials here: the containers were initialised with the root
 > `.env` values, and Garage only reads its key on **first** boot.

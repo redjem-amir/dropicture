@@ -1,6 +1,6 @@
 @startuml ansible
 title dropicture - Ansible provisioning (single-node Docker Swarm)
-footer Author: Amir Redjem   |   2026-06-05   |   v1.2
+footer Author: Amir Redjem   |   2026-06-05   |   v1.3
 
 skinparam shadowing false
 skinparam defaultFontName Helvetica
@@ -49,8 +49,7 @@ note over srv
   to the local disk, drop the link,
   then re-run the playbook
 end note
-ans -> srv : create data dirs on the local SSD\n/opt/dropicture/data/{postgres,\ndragonfly, garage/meta, garage/data}
-ans -> srv : write Origin CA cert + key\nto /opt/dropicture/tls (0644 / 0600)
+ans -> srv : create data dirs on the local SSD\n/opt/dropicture/data/{postgres,\nredis, garage/meta, garage/data}
 ans -> srv : flush handlers\n(restart docker if needed)
 
 == Play 3 - Initialise the single-node Swarm (SSH) ==
@@ -66,6 +65,7 @@ end note
 == Play 4 - Configure the Swarm (SSH) ==
 ans -> srv : store Swarm config\ndropicture_origin_cert
 ans -> srv : store Swarm secret\ndropicture_origin_key (no_log)
+ans -> srv : store Swarm config\ndropicture_traefik_dynamic_v1 (TLS stores)
 ans -> srv : create /opt/dropicture/stacks
 
 == Play 5 - Clean up (localhost) ==

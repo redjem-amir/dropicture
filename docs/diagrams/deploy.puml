@@ -1,6 +1,6 @@
 @startuml deploy
 title dropicture - CI/CD pipeline (build, publish and deploy)
-footer Author: Amir Redjem   |   2026-06-05   |   v1.0
+footer Author: Amir Redjem   |   2026-06-05   |   v1.1
 
 skinparam shadowing false
 skinparam defaultFontName Helvetica
@@ -33,7 +33,7 @@ participant "Swarm server\nmanager-1 (SSH root)" as srv
 participant "Cloudflare\nedge proxy" as cf
 
 == Trigger ==
-dev -> build : push main / tag v*.*.* / dispatch\npaths: app/**, compose, nginx.conf,\ngarage.toml, workflow
+dev -> build : push main / tag v*.*.* / dispatch\npaths: apps/**, docker-compose.yml,\ngarage.toml, workflow
 note right of build
   concurrency: workflow-ref
   cancel-in-progress: false
@@ -46,8 +46,8 @@ build -> ghcr : docker login\n(GITHUB_TOKEN, packages: write)
 build -> build : metadata-action -> tags\nsemver | branch | sha-long | latest (main)
 build -> ghcr : build and push linux/amd64\ncache type=gha, scope=component
 note over build, ghcr
-  amd64 only: the cpx42 target
-  is AMD EPYC (x86_64) -
+  amd64 only: the Hetzner CPX target
+  is AMD EPYC (x86_64),
   no QEMU, no arm64 build
 end note
 
@@ -55,8 +55,8 @@ end note
 note over deploy
   concurrency: deploy-production
   env: IMAGE_TAG=sha-<sha>
-  + app secrets (POSTGRES_*,
-  GARAGE_RPC_SECRET, S3_*)
+  + APP_DOMAIN, NEXT_PUBLIC_URL, DEFAULT_ADMIN_*,
+  POSTGRES_*, GARAGE_RPC_SECRET, S3_*
 end note
 deploy -> s3 : GET terraform.tfstate\n(AWS creds, read-only)
 s3 --> deploy : state JSON
@@ -65,9 +65,9 @@ deploy -> deploy : ssh-agent (key in memory only,\nnever on disk) + ssh-keyscan
 deploy -> srv : docker stack deploy --prune --detach=false\nDOCKER_HOST=ssh://root@MANAGER_IP
 srv -> ghcr : pull images :sha-<sha>
 note over srv
-  rolling updates start-first
-  (frontend, backend, pgbouncer)
-  stop-first for db, dragonfly, garage
+  1 replica per service
+  rolling updates stop-first (brief downtime)
+  rollback on failure (app services)
   --detach=false waits for convergence
 end note
 srv --> deploy : services converged

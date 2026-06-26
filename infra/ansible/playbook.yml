@@ -234,7 +234,7 @@
         mode: "0700"
       loop:
         - postgres
-        - dragonfly
+        - redis
         - garage/meta
         - garage/data
 
