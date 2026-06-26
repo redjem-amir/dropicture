@@ -4,11 +4,14 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, IsNull, Repository } from 'typeorm';
 import { Throttle } from '@nestjs/throttler';
 import { ArrayNotEmpty, IsArray, IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, IsUUID, Max, MaxLength, Min } from 'class-validator';
-import { randomBytes, randomUUID } from 'crypto';
+import { createHash, randomBytes, randomUUID } from 'crypto';
 import { extname } from 'path';
+import { Readable } from 'stream';
+import sharp from 'sharp';
+import exifReader from 'exif-reader';
 import { Picture, PictureKind } from '../models/picture.model';
 import { Album } from '../models/album.model';
 import { ShareLink, ShareKind } from '../models/share-link.model';
@@ -21,11 +24,22 @@ const MAX_FILES_PER_UPLOAD = 50;
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
 const FILE_URL_TTL = 3600;
 
+const MAX_SIMILAR_SCAN = 6000;
+const REINDEX_BATCH = 25;
+
 interface UploadedFileLike {
     originalname: string;
     mimetype: string;
     size: number;
     buffer: Buffer;
+}
+
+interface ImageAnalysis {
+    sha256: string;
+    phash: string | null;
+    width: number | null;
+    height: number | null;
+    takenAt: Date | null;
 }
 
 export class UpdatePictureDto {
@@ -52,6 +66,14 @@ export class CreateShareDto {
 
     @IsOptional() @IsInt() @Min(1) @Max(365)
     expiresInDays?: number;
+}
+
+export class CreateAlbumFromSuggestionDto {
+    @IsString() @IsNotEmpty({ message: 'MISSING_FIELDS' }) @MaxLength(80, { message: 'INVALID_ALBUM_NAME' })
+    name: string | undefined;
+
+    @IsArray() @ArrayNotEmpty() @IsUUID('4', { each: true })
+    pictureIds: string[] = [];
 }
 
 @Controller('/api/pictures')
@@ -468,15 +490,30 @@ export class PicturesController {
             const ext = extname(f.originalname || '').slice(0, 12);
             const key = `pictures/${owner}/${randomUUID()}${ext}`;
             await this.storage.upload(key, f.buffer, f.mimetype);
+            const base = {
+                ownerId: owner,
+                filename: (f.originalname || 'upload').slice(0, 255),
+                mimeType: f.mimetype.slice(0, 127),
+                kind,
+                sizeBytes: String(f.size),
+                storageKey: key,
+            };
+            let extra: Partial<Picture> = { sha256: this.sha256(f.buffer) };
+            if (kind === PictureKind.IMAGE) {
+                const a = await this.analyzeImage(f.buffer).catch(() => null);
+                if (a) {
+                    extra = {
+                        sha256: a.sha256,
+                        phash: a.phash,
+                        width: a.width,
+                        height: a.height,
+                        takenAt: a.takenAt,
+                    };
+                }
+            }
+
             const pic = await this.pictureRepository.save(
-                this.pictureRepository.create({
-                    ownerId: owner,
-                    filename: (f.originalname || 'upload').slice(0, 255),
-                    mimeType: f.mimetype.slice(0, 127),
-                    kind,
-                    sizeBytes: String(f.size),
-                    storageKey: key,
-                }),
+                this.pictureRepository.create({ ...base, ...extra }),
             );
             created.push(pic);
         }
@@ -538,5 +575,321 @@ export class PicturesController {
             await this.pictureRepository.save(picture);
         }
         return { success: true };
+    }
+
+    @Throttle({ default: { limit: 12, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
+    @Get('/duplicates')
+    async duplicates(@Req() req: Request, @Query('distance') distanceRaw?: string) {
+        const owner = this.ownerId(req);
+        const distance = this.clampInt(distanceRaw, 8, 0, 24);
+        const pics = await this.pictureRepository.find({ where: { ownerId: owner, deletedAt: IsNull() } });
+        const includeSimilar = pics.length <= MAX_SIMILAR_SCAN;
+        const clusters = this.groupDuplicates(
+            pics.map(p => ({ id: p.id, sha256: p.sha256, phash: p.phash })),
+            includeSimilar,
+            distance,
+        );
+        const byId = new Map(pics.map(p => [p.id, p]));
+        const area = (p: Picture) => (p.width ?? 0) * (p.height ?? 0);
+        const groups = await Promise.all(
+            clusters.map(async ids => {
+                const members = ids.map(id => byId.get(id)).filter((p): p is Picture => !!p);
+                const sha = members[0].sha256;
+                const exact = !!sha && members.every(m => m.sha256 === sha);
+                const ordered = [...members].sort(
+                    (a, b) =>
+                        area(b) - area(a) ||
+                        Number(b.sizeBytes) - Number(a.sizeBytes) ||
+                        +new Date(a.createdAt) - +new Date(b.createdAt),
+                );
+                return {
+                    kind: exact ? 'exact' : 'similar',
+                    count: members.length,
+                    keep: await this.pictureDto(ordered[0]),
+                    duplicates: await Promise.all(ordered.slice(1).map(p => this.pictureDto(p))),
+                };
+            }),
+        );
+        groups.sort((a, b) => (a.kind === b.kind ? b.count - a.count : a.kind === 'exact' ? -1 : 1));
+        return { scanned: pics.length, similarScan: includeSimilar, groups };
+    }
+
+    @Throttle({ default: { limit: 12, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
+    @Get('/suggestions/albums')
+    async suggestAlbums(
+        @Req() req: Request,
+        @Query('gapHours') gapHoursRaw?: string,
+        @Query('min') minRaw?: string,
+    ) {
+        const owner = this.ownerId(req);
+        const gapMs = this.clampInt(gapHoursRaw, 24, 1, 24 * 14) * 3600000;
+        const minCount = this.clampInt(minRaw, 4, 2, 100);
+        const pics = await this.pictureRepository.find({
+            where: { ownerId: owner, archived: false, deletedAt: IsNull() },
+        });
+        const albums = await this.albumRepository.find({ where: { ownerId: owner }, relations: { pictures: true } });
+        const inAlbum = new Set<string>();
+        for (const a of albums) for (const p of a.pictures ?? []) inAlbum.add(p.id);
+        const candidates = pics.filter(p => !inAlbum.has(p.id));
+        const items = candidates.map(p => ({ id: p.id, date: +new Date(p.takenAt ?? p.createdAt) }));
+        const events = this.suggestEvents(items, gapMs, minCount);
+        const byId = new Map(candidates.map(p => [p.id, p]));
+        const suggestions = await Promise.all(
+            events
+                .sort((a, b) => b.end - a.end)
+                .slice(0, 30)
+                .map(async ev => {
+                    const cover = byId.get(ev.ids[0])!;
+                    return {
+                        id: `sug_${ev.ids[0]}`,
+                        name: this.eventName(new Date(ev.start), new Date(ev.end)),
+                        count: ev.ids.length,
+                        coverUrl: await this.fileUrl(cover),
+                        pictureIds: ev.ids,
+                        start: new Date(ev.start),
+                        end: new Date(ev.end),
+                    };
+                }),
+        );
+        return { suggestions };
+    }
+
+    @Throttle({ default: { limit: 30, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
+    @Post('/suggestions/albums')
+    @HttpCode(HttpStatus.CREATED)
+    async createSuggestedAlbum(@Body() body: CreateAlbumFromSuggestionDto, @Req() req: Request) {
+        const owner = this.ownerId(req);
+        const name = (body.name ?? '').trim().slice(0, 80);
+        if (!name) throw new HttpException({ code: 'MISSING_FIELDS' }, HttpStatus.BAD_REQUEST);
+        const owned = await this.pictureRepository.find({
+            where: { id: In(body.pictureIds), ownerId: owner, deletedAt: IsNull() },
+        });
+        if (owned.length === 0) throw new HttpException({ code: 'NOTHING_TO_ADD' }, HttpStatus.BAD_REQUEST);
+        const album = await this.albumRepository.save(
+            this.albumRepository.create({ ownerId: owner, name, pictures: owned }),
+        );
+        return { success: true, album: await this.albumDto(album) };
+    }
+
+    @Throttle({ default: { limit: 20, ttl: 60000 } })
+    @UseGuards(AuthGuard('access-token'))
+    @Post('/reindex')
+    @HttpCode(HttpStatus.OK)
+    async reindex(@Req() req: Request) {
+        const owner = this.ownerId(req);
+        const batch = await this.pictureRepository.find({
+            where: { ownerId: owner, deletedAt: IsNull(), sha256: IsNull() },
+            order: { createdAt: 'DESC' },
+            take: REINDEX_BATCH,
+        });
+        let processed = 0;
+        for (const p of batch) {
+            try {
+                const buf = await this.streamToBuffer(await this.storage.download(p.storageKey));
+                p.sha256 = this.sha256(buf);
+                if (p.kind === PictureKind.IMAGE) {
+                    const a = await this.analyzeImage(buf).catch(() => null);
+                    if (a) {
+                        if (a.phash) p.phash = a.phash;
+                        if (a.width) p.width = a.width;
+                        if (a.height) p.height = a.height;
+                        if (a.takenAt && !p.takenAt) p.takenAt = a.takenAt;
+                    }
+                }
+                await this.pictureRepository.save(p);
+                processed++;
+            } catch {
+                // Storage object unreadable this round; leave it for a later pass.
+            }
+        }
+        const remaining = await this.pictureRepository.count({
+            where: { ownerId: owner, deletedAt: IsNull(), sha256: IsNull() },
+        });
+        return { processed, remaining };
+    }
+
+    private sha256(buffer: Buffer): string {
+        return createHash('sha256').update(buffer).digest('hex');
+    }
+
+    private async analyzeImage(buffer: Buffer): Promise<ImageAnalysis> {
+        const sha256 = this.sha256(buffer);
+        let width: number | null = null;
+        let height: number | null = null;
+        let takenAt: Date | null = null;
+        let phash: string | null = null;
+        try {
+            const meta = await sharp(buffer).metadata();
+            width = meta.width ?? null;
+            height = meta.height ?? null;
+            if (meta.orientation && meta.orientation >= 5 && width && height) {
+                [width, height] = [height, width];
+            }
+            if (meta.exif) {
+                try {
+                    const ex = exifReader(meta.exif) as Record<string, any>;
+                    const raw =
+                        ex?.Photo?.DateTimeOriginal ??
+                        ex?.Image?.DateTime ??
+                        ex?.Photo?.DateTimeDigitized;
+                    if (raw instanceof Date && !Number.isNaN(raw.getTime())) takenAt = raw;
+                    else if (typeof raw === 'string') takenAt = this.parseExifDate(raw);
+                } catch {
+                    /* unreadable EXIF, ignore */
+                }
+            }
+            phash = await this.dHash(buffer);
+        } catch {
+            /* sharp could not decode; keep sha256 only */
+        }
+
+        return { sha256, phash, width, height, takenAt };
+    }
+
+    private async dHash(buffer: Buffer): Promise<string | null> {
+        try {
+            const raw = await sharp(buffer)
+                .rotate()
+                .greyscale()
+                .resize(9, 8, { fit: 'fill' })
+                .raw()
+                .toBuffer();
+            if (raw.length < 72) return null;
+            let hash = 0n;
+            let bit = 0n;
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (raw[r * 9 + c] > raw[r * 9 + c + 1]) hash |= 1n << bit;
+                    bit++;
+                }
+            }
+            return hash.toString(16).padStart(16, '0');
+        } catch {
+            return null;
+        }
+    }
+
+    private parseExifDate(s: string): Date | null {
+        const m = s.match(/^(\d{4}):(\d{2}):(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/);
+        if (!m) {
+            const d = new Date(s);
+            return Number.isNaN(d.getTime()) ? null : d;
+        }
+        const [, y, mo, d, h, mi, se] = m;
+        const dt = new Date(Number(y), Number(mo) - 1, Number(d), Number(h), Number(mi), Number(se));
+        return Number.isNaN(dt.getTime()) ? null : dt;
+    }
+
+    private clampInt(raw: string | undefined, def: number, lo: number, hi: number): number {
+        const n = parseInt(raw ?? '', 10);
+        return Math.min(Math.max(Number.isNaN(n) ? def : n, lo), hi);
+    }
+
+    private async streamToBuffer(stream: Readable): Promise<Buffer> {
+        const chunks: Buffer[] = [];
+        for await (const chunk of stream) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        return Buffer.concat(chunks);
+    }
+
+    private eventName(start: Date, end: Date): string {
+        const full = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        if (start.toDateString() === end.toDateString()) return full(end);
+        if (start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth()) {
+            return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}-${end.getDate()}, ${end.getFullYear()}`;
+        }
+        return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${full(end)}`;
+    }
+
+    private groupDuplicates(
+        items: { id: string; sha256: string | null; phash: string | null }[],
+        includeSimilar: boolean,
+        maxDistance: number,
+    ): string[][] {
+        const parent = new Map<string, string>();
+        for (const it of items) parent.set(it.id, it.id);
+
+        const find = (x: string): string => {
+            let root = x;
+            while (parent.get(root) !== root) root = parent.get(root)!;
+            while (parent.get(x) !== root) {
+                const next = parent.get(x)!;
+                parent.set(x, root);
+                x = next;
+            }
+            return root;
+        };
+        const union = (a: string, b: string) => {
+            const ra = find(a);
+            const rb = find(b);
+            if (ra !== rb) parent.set(ra, rb);
+        };
+        const bySha = new Map<string, string>();
+        for (const it of items) {
+            if (!it.sha256) continue;
+            const seen = bySha.get(it.sha256);
+            if (seen) union(seen, it.id);
+            else bySha.set(it.sha256, it.id);
+        }
+        if (includeSimilar) {
+            const withP = items.filter(
+                (i): i is { id: string; sha256: string | null; phash: string } => !!i.phash,
+            );
+            const parsed = withP.map(i => ({
+                id: i.id,
+                hi: parseInt(i.phash.slice(0, 8), 16) >>> 0,
+                lo: parseInt(i.phash.slice(8), 16) >>> 0,
+            }));
+            for (let i = 0; i < parsed.length; i++) {
+                for (let j = i + 1; j < parsed.length; j++) {
+                    const d =
+                        this.popcount((parsed[i].hi ^ parsed[j].hi) >>> 0) +
+                        this.popcount((parsed[i].lo ^ parsed[j].lo) >>> 0);
+                    if (d <= maxDistance) union(parsed[i].id, parsed[j].id);
+                }
+            }
+        }
+        const groups = new Map<string, string[]>();
+        for (const it of items) {
+            const root = find(it.id);
+            const arr = groups.get(root);
+            if (arr) arr.push(it.id);
+            else groups.set(root, [it.id]);
+        }
+        return [...groups.values()].filter(g => g.length > 1);
+    }
+
+    private popcount(v: number): number {
+        v = v - ((v >>> 1) & 0x55555555);
+        v = (v & 0x33333333) + ((v >>> 2) & 0x33333333);
+        return (((v + (v >>> 4)) & 0x0f0f0f0f) * 0x01010101) >>> 24;
+    }
+
+    private suggestEvents(
+        items: { id: string; date: number }[],
+        gapMs: number,
+        minCount: number,
+    ): { ids: string[]; start: number; end: number }[] {
+        const sorted = [...items].sort((a, b) => a.date - b.date);
+        const clusters: { id: string; date: number }[][] = [];
+        let cur: { id: string; date: number }[] = [];
+        for (let i = 0; i < sorted.length; i++) {
+            if (cur.length === 0) {
+                cur = [sorted[i]];
+                continue;
+            }
+            if (sorted[i].date - sorted[i - 1].date > gapMs) {
+                clusters.push(cur);
+                cur = [sorted[i]];
+            } else {
+                cur.push(sorted[i]);
+            }
+        }
+        if (cur.length) clusters.push(cur);
+        return clusters
+            .filter(c => c.length >= minCount)
+            .map(c => ({ ids: c.map(x => x.id), start: c[0].date, end: c[c.length - 1].date }));
     }
 }

@@ -52,6 +52,9 @@ export class Picture {
     @Column({ type: 'varchar', length: 64, nullable: true })
     sha256: string | null;
 
+    @Column({ type: 'varchar', length: 16, nullable: true })
+    phash: string | null;
+
     @Column({ type: 'boolean', default: false })
     favorite: boolean;
 

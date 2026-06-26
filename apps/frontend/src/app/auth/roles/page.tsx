@@ -18,25 +18,14 @@ type Role = {
 const SCOPE_GROUPS: { group: string; scopes: { value: string; label: string }[] }[] = [
     {
         group: 'Accounts', scopes: [
-            { value: 'accounts.read', label: 'View accounts' },
-            { value: 'accounts.write', label: 'Manage accounts' },
+            { value: 'read:accounts', label: 'View accounts' },
+            { value: 'write:accounts', label: 'Manage accounts' },
         ]
     },
     {
         group: 'Roles', scopes: [
-            { value: 'roles.read', label: 'View roles' },
-            { value: 'roles.write', label: 'Manage roles' },
-        ]
-    },
-    {
-        group: 'Moderation', scopes: [
-            { value: 'moderation.read', label: 'View reports' },
-            { value: 'moderation.write', label: 'Act on reports' },
-        ]
-    },
-    {
-        group: 'Instance', scopes: [
-            { value: 'system.read', label: 'View instance health' },
+            { value: 'read:roles', label: 'View roles' },
+            { value: 'write:roles', label: 'Manage roles' },
         ]
     },
 ]

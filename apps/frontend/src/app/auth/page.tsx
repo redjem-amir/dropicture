@@ -2,7 +2,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { TbAlbum, TbArchive, TbArchiveOff, TbArrowBackUp, TbCheck, TbChevronLeft, TbChevronRight, TbDots, TbHeart, TbHeartFilled, TbHeartOff, TbLink, TbPhoto, TbPlayerPlayFilled, TbPlus, TbShare2, TbShare3, TbTrash, TbUpload, TbX } from 'react-icons/tb'
+import { TbAlbum, TbArchive, TbArchiveOff, TbArrowBackUp, TbCheck, TbChevronLeft, TbChevronRight, TbCopyCheck, TbDots, TbHeart, TbHeartFilled, TbHeartOff, TbLink, TbLoader2, TbPhoto, TbPlayerPlayFilled, TbPlus, TbShare2, TbShare3, TbTrash, TbUpload, TbX } from 'react-icons/tb'
 import type { IconType } from 'react-icons'
 
 type CollectionId = 'all' | 'favorites' | 'archive' | 'trash'
@@ -11,6 +11,7 @@ type View =
     | { kind: 'collections' }
     | { kind: 'collection'; id: CollectionId }
     | { kind: 'shared' }
+    | { kind: 'duplicates' }
     | { kind: 'album'; album: AlbumCard }
 
 type Picture = {
@@ -28,6 +29,10 @@ type Share = { id: string; token: string; kind: 'album' | 'selection'; title: st
 type CollMeta = { count: number; coverUrl: string | null }
 type Collections = { all: CollMeta; favorites: CollMeta; archive: CollMeta; trash: CollMeta; shared: { count: number } }
 
+type TidyDto = { id: string; filename: string; kind: 'image' | 'video'; sizeBytes: number; width: number | null; height: number | null; url: string }
+type DupGroup = { kind: 'exact' | 'similar'; count: number; keep: TidyDto; duplicates: TidyDto[] }
+type Suggestion = { id: string; name: string; count: number; coverUrl: string | null; pictureIds: string[] }
+
 type NameDialog = { mode: 'create' | 'rename'; albumId?: string; after?: 'addSelection' }
 type ConfirmDialog = { title: string; message: string; confirmLabel: string; action: () => void }
 type SelectionAction = { key: string; label: string; icon: IconType; danger?: boolean; onClick: () => void }
@@ -44,6 +49,7 @@ const BTN_PRIMARY = `inline-flex h-10 cursor-pointer items-center justify-center
 const BTN_SECONDARY = `inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-stone-200 bg-white px-4 text-sm font-medium text-stone-700 shadow-sm transition-colors hover:border-stone-300 hover:text-stone-900 disabled:pointer-events-none disabled:opacity-50 ${FOCUS}`
 const BTN_SECONDARY_SM = `inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-full border border-stone-200 bg-white px-3.5 text-sm font-medium text-stone-700 shadow-sm transition-colors hover:border-stone-300 hover:text-stone-900 disabled:pointer-events-none disabled:opacity-50 ${FOCUS}`
 const BTN_GHOST_DANGER_SM = `inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-full px-3.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:pointer-events-none disabled:opacity-50 ${FOCUS}`
+const BTN_DANGER = `inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full bg-red-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-red-700 disabled:pointer-events-none disabled:opacity-60 ${FOCUS}`
 const ICON_BTN = `inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-900 ${FOCUS}`
 const ICON_BTN_DARK = 'inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70'
 const BADGE_BASE = 'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium'
@@ -93,6 +99,11 @@ function expiryBadge(iso: string | null): { tone: string; label: string } {
 function plural(n: number): string {
     return `${n.toLocaleString('en-US')} item${n === 1 ? '' : 's'}`
 }
+function fileSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
+    return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
 
 export default function LibraryPage() {
     const [view, setView] = useState<View>({ kind: 'library' })
@@ -110,6 +121,16 @@ export default function LibraryPage() {
 
     const [shares, setShares] = useState<Share[]>([])
     const [sharesLoading, setSharesLoading] = useState(false)
+
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([])
+    const [dismissed, setDismissed] = useState<Set<string>>(new Set())
+    const [dupGroups, setDupGroups] = useState<DupGroup[]>([])
+    const [similarScan, setSimilarScan] = useState(true)
+    const [dupSelected, setDupSelected] = useState<Set<string>>(new Set())
+    const [dupLoading, setDupLoading] = useState(false)
+    const [indexing, setIndexing] = useState(false)
+    const [indexStatus, setIndexStatus] = useState<string | null>(null)
+    const didIndex = useRef(false)
 
     const [uploading, setUploading] = useState(false)
     const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -153,6 +174,53 @@ export default function LibraryPage() {
         try { await Promise.all([refreshCounts(), refreshAlbums()]) } finally { setHomeLoading(false) }
     }, [refreshCounts, refreshAlbums])
 
+    const loadSuggestions = useCallback(async () => {
+        try {
+            const res = await fetch('/api/pictures/suggestions/albums', { credentials: 'same-origin' })
+            if (res.ok) setSuggestions((await res.json()).suggestions as Suggestion[])
+        } catch { /* ignore */ }
+    }, [])
+
+    const loadDuplicates = useCallback(async (): Promise<DupGroup[]> => {
+        setDupLoading(true)
+        try {
+            const res = await fetch('/api/pictures/duplicates', { credentials: 'same-origin' })
+            if (!res.ok) throw new Error()
+            const data = (await res.json()) as { groups: DupGroup[]; similarScan: boolean }
+            setDupGroups(data.groups)
+            setSimilarScan(data.similarScan)
+            setDupSelected(new Set(data.groups.flatMap(g => g.duplicates.map(d => d.id))))
+            return data.groups
+        } catch { return [] } finally { setDupLoading(false) }
+    }, [])
+
+    const runIndexInBackground = useCallback(async () => {
+        setIndexing(true)
+        try {
+            let processedTotal = 0
+            for (let i = 0; i < 1000; i++) {
+                const res = await fetch('/api/pictures/reindex', { method: 'POST', credentials: 'same-origin' })
+                if (!res.ok) break
+                const data = (await res.json()) as { processed: number; remaining: number }
+                processedTotal += data.processed
+                if (data.processed > 0 && data.remaining > 0) {
+                    setIndexStatus(`Organizing your library… ${data.remaining.toLocaleString('en-US')} left`)
+                }
+                if (data.processed === 0 || data.remaining === 0) break
+            }
+            if (processedTotal > 0) void refreshCounts()
+        } catch { /* ignore */ } finally {
+            setIndexing(false); setIndexStatus(null)
+            await Promise.all([loadDuplicates(), loadSuggestions()])
+        }
+    }, [loadDuplicates, loadSuggestions, refreshCounts])
+
+    const maybeIndex = useCallback(() => {
+        if (didIndex.current) return
+        didIndex.current = true
+        void runIndexInBackground()
+    }, [runIndexInBackground])
+
     const fetchPicturePage = async (cursor: string | null, filter: CollectionId) => {
         const params = new URLSearchParams({ limit: '60', filter })
         if (cursor) params.set('cursor', cursor)
@@ -192,14 +260,15 @@ export default function LibraryPage() {
         } catch { /* ignore */ } finally { setSharesLoading(false) }
     }, [])
 
-    useEffect(() => { void loadCollection('all'); void refreshCounts() }, [loadCollection, refreshCounts])
+    useEffect(() => { void loadCollection('all'); void refreshCounts(); maybeIndex() }, [loadCollection, refreshCounts, maybeIndex])
 
     const toTop = () => window.scrollTo({ top: 0 })
     const openLibrary = () => { exitSelect(); setView({ kind: 'library' }); toTop(); void loadCollection('all'); void refreshCounts() }
-    const openCollections = () => { exitSelect(); setItems([]); setNextCursor(null); setView({ kind: 'collections' }); toTop(); void loadHome() }
+    const openCollections = () => { exitSelect(); setItems([]); setNextCursor(null); setView({ kind: 'collections' }); toTop(); void loadHome(); void loadSuggestions(); void loadDuplicates() }
     const openCollection = (id: CollectionId) => { exitSelect(); setView({ kind: 'collection', id }); toTop(); void loadCollection(id) }
     const openAlbum = (album: AlbumCard) => { exitSelect(); setView({ kind: 'album', album }); toTop(); void loadAlbum(album.id) }
     const openShared = () => { exitSelect(); setView({ kind: 'shared' }); toTop(); void loadShares() }
+    const openDuplicates = () => { exitSelect(); setView({ kind: 'duplicates' }); toTop(); void loadDuplicates() }
 
     const refreshCurrentGrid = async () => {
         if (view.kind === 'library') await loadCollection('all')
@@ -228,25 +297,31 @@ export default function LibraryPage() {
     const isTrash = view.kind === 'collection' && view.id === 'trash'
     const showsPhotoGrid = view.kind === 'library' || view.kind === 'collection' || view.kind === 'album'
     const canUploadHere = view.kind === 'library' || view.kind === 'collections'
-    const isSubView = view.kind === 'collection' || view.kind === 'album' || view.kind === 'shared'
+    const isSubView = view.kind === 'collection' || view.kind === 'album' || view.kind === 'shared' || view.kind === 'duplicates'
     const showSegmented = view.kind === 'library' || view.kind === 'collections'
     const activeTab: 'library' | 'collections' = view.kind === 'library' ? 'library' : 'collections'
     const overlayOpen = pickerOpen || !!nameDialog || !!confirmDialog || !!lightboxId
+    const showBottomBar = (selectMode && showsPhotoGrid) || (view.kind === 'duplicates' && dupGroups.length > 0)
 
     const viewKey = view.kind === 'collection' ? `c-${view.id}` : view.kind === 'album' ? `a-${view.album.id}` : view.kind
+
+    const visibleSuggestions = suggestions.filter(s => !dismissed.has(s.id))
+    const dupCount = dupGroups.reduce((n, g) => n + g.duplicates.length, 0)
 
     const headerTitle =
         view.kind === 'library' ? 'Library'
             : view.kind === 'collections' ? 'Collections'
                 : view.kind === 'collection' ? COLLECTION_LABEL[view.id]
                     : view.kind === 'shared' ? 'Shared'
-                        : view.album.name
+                        : view.kind === 'duplicates' ? 'Duplicates'
+                            : view.album.name
 
     const headerSubtitle = (() => {
         if (selectMode) return `${selected.size.toLocaleString('en-US')} selected`
         if (view.kind === 'library') return plural(collections?.all.count ?? items.length)
         if (view.kind === 'collections') return 'Your albums, favorites, and shared links.'
         if (view.kind === 'shared') return 'Links you’ve created — you stay in control.'
+        if (view.kind === 'duplicates') return dupGroups.length > 0 ? `${dupGroups.length.toLocaleString('en-US')} set${dupGroups.length === 1 ? '' : 's'} to review` : 'No duplicates found'
         if (view.kind === 'album') return plural(view.album.count)
         const total = collections?.[view.id]?.count
         return plural(total ?? items.length)
@@ -306,6 +381,8 @@ export default function LibraryPage() {
             if (!res.ok) { flash(res.status === 415 ? 'Only images and videos can be imported.' : 'Import failed. Please try again.'); return }
             flash(`${files.length.toLocaleString('en-US')} item${files.length === 1 ? '' : 's'} imported.`)
             void refreshCounts()
+            void loadSuggestions()
+            void loadDuplicates()
             if (view.kind === 'library') await loadCollection('all')
             else openLibrary()
         } catch { flash('Import failed. Please try again.') } finally {
@@ -479,6 +556,38 @@ export default function LibraryPage() {
             catch { /* ignore */ } finally { setBusy(false) }
         })(),
     })
+
+    const dismissSuggestion = (id: string) => setDismissed(prev => { const n = new Set(prev); n.add(id); return n })
+
+    async function createFromSuggestion(s: Suggestion) {
+        if (busy) return
+        setBusy(true)
+        try {
+            const res = await fetch('/api/pictures/suggestions/albums', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                body: JSON.stringify({ name: s.name, pictureIds: s.pictureIds }),
+            })
+            if (!res.ok) { flash('Couldn’t create album.'); return }
+            setSuggestions(prev => prev.filter(x => x.id !== s.id))
+            void refreshAlbums()
+            flash(`Added “${s.name}” to your albums.`)
+        } catch { flash('Couldn’t create album.') } finally { setBusy(false) }
+    }
+
+    const dupToggle = (id: string) => setDupSelected(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n })
+
+    async function deleteDuplicates() {
+        if (!dupSelected.size || busy) return
+        const count = dupSelected.size
+        setBusy(true)
+        try {
+            await Promise.all([...dupSelected].map(id => fetch(`/api/pictures/${id}`, { method: 'DELETE', credentials: 'same-origin' })))
+            void refreshCounts()
+            const remaining = await loadDuplicates()
+            flash(`Moved ${count.toLocaleString('en-US')} item${count === 1 ? '' : 's'} to Recently Deleted.`)
+            if (remaining.length === 0) openCollections()
+        } catch { flash('Couldn’t delete some photos.') } finally { setBusy(false) }
+    }
 
     function openLightbox(id: string) { lightboxDirty.current = false; setLightboxId(id) }
     function closeLightbox() {
@@ -677,9 +786,50 @@ export default function LibraryPage() {
         </button>
     )
 
+    const suggestionStrip = visibleSuggestions.length > 0 && (
+        <section className="space-y-4">
+            <div className="flex items-baseline justify-between gap-3">
+                <h2 className="text-lg font-semibold tracking-tight text-stone-900">Suggestions</h2>
+                <span className="shrink-0 text-xs text-stone-400">Group photos taken together</span>
+            </div>
+            <div className="-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-1">
+                {visibleSuggestions.map(s => (
+                    <div key={s.id} className="relative w-60 shrink-0 snap-start">
+                        <button
+                            onClick={() => void createFromSuggestion(s)}
+                            disabled={busy}
+                            className={`group block w-full cursor-pointer overflow-hidden rounded-2xl border border-stone-200/70 bg-white text-left shadow-sm transition-shadow hover:shadow-md disabled:pointer-events-none disabled:opacity-60 ${FOCUS}`}
+                        >
+                            <div className="relative aspect-4/3 bg-stone-100">
+                                {s.coverUrl && <img src={s.coverUrl} alt="" loading="lazy" className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />}
+                                <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/55 via-black/0 to-black/0" />
+                                <div className="absolute inset-x-0 bottom-0 p-3">
+                                    <p className="truncate text-sm font-semibold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]">{s.name}</p>
+                                    <p className="text-xs text-white/80">{plural(s.count)}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between gap-2 px-3 py-2.5">
+                                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-stone-900"><TbAlbum className="size-4 text-stone-400" strokeWidth={1.75} /> Add to Albums</span>
+                                <TbPlus className="size-4 text-stone-400" />
+                            </div>
+                        </button>
+                        <button
+                            type="button"
+                            aria-label="Dismiss suggestion"
+                            onClick={() => dismissSuggestion(s.id)}
+                            className="absolute right-2 top-2 inline-flex size-7 cursor-pointer items-center justify-center rounded-full bg-stone-950/45 text-white backdrop-blur transition-colors hover:bg-stone-950/65"
+                        >
+                            <TbX className="size-4" />
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </section>
+    )
+
     return (
         <div
-            className={`relative space-y-6 ${selectMode && showsPhotoGrid ? 'pb-32' : 'pb-10'}`}
+            className={`relative space-y-6 ${showBottomBar ? 'pb-32' : 'pb-10'}`}
             onDragEnter={onDragEnter}
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
@@ -763,12 +913,20 @@ export default function LibraryPage() {
                         </div>
                     ) : (
                         <div className="space-y-10">
+                            {indexing && (
+                                <div className="flex items-center gap-2.5 rounded-xl border border-stone-200/70 bg-white px-4 py-3 text-sm text-stone-600 shadow-sm">
+                                    <TbLoader2 className="size-4 animate-spin text-stone-400" />
+                                    <span>{indexStatus ?? 'Looking for duplicates and album suggestions…'}</span>
+                                </div>
+                            )}
+                            {suggestionStrip}
                             <section className="space-y-4">
                                 <h2 className="text-lg font-semibold tracking-tight text-stone-900">My Collections</h2>
                                 <div className="divide-y divide-stone-200/70 overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-sm">
                                     {collectionRow({ key: 'favorites', label: 'Favorites', sublabel: plural(collections?.favorites.count ?? 0), icon: TbHeart, onClick: () => openCollection('favorites') })}
                                     {collectionRow({ key: 'archive', label: 'Archive', sublabel: plural(collections?.archive.count ?? 0), icon: TbArchive, onClick: () => openCollection('archive') })}
                                     {collectionRow({ key: 'shared', label: 'Shared', sublabel: `${(collections?.shared.count ?? 0).toLocaleString('en-US')} link${(collections?.shared.count ?? 0) === 1 ? '' : 's'}`, icon: TbShare2, onClick: openShared })}
+                                    {dupGroups.length > 0 && collectionRow({ key: 'duplicates', label: 'Duplicates', sublabel: `${dupCount.toLocaleString('en-US')} duplicate${dupCount === 1 ? '' : 's'} to review`, icon: TbCopyCheck, onClick: openDuplicates })}
                                     {collectionRow({ key: 'trash', label: 'Recently Deleted', sublabel: plural(collections?.trash.count ?? 0), icon: TbTrash, onClick: () => openCollection('trash') })}
                                 </div>
                             </section>
@@ -789,6 +947,38 @@ export default function LibraryPage() {
                     )
                 )}
                 {showsPhotoGrid && photoGrid}
+                {view.kind === 'duplicates' && (
+                    dupLoading ? (
+                        <div className="space-y-4" aria-hidden>
+                            {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-40 animate-pulse rounded-2xl bg-stone-100" />)}
+                        </div>
+                    ) : dupGroups.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-stone-300 bg-white/40 px-6 py-16 text-center">
+                            <span className="flex size-12 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-400 shadow-sm"><TbCopyCheck className="size-6" strokeWidth={1.5} /></span>
+                            <h3 className="mt-4 text-sm font-semibold text-stone-900">No duplicates found</h3>
+                            <p className="mt-1 max-w-sm text-sm text-stone-500">Your library looks clean. New imports are checked automatically.</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-5">
+                            <p className="text-sm text-stone-500">For each set, the best copy is marked <span className="font-medium text-stone-700">Keep</span>. The rest are selected to move to Recently Deleted. Tap any photo to change what stays.</p>
+                            {!similarScan && <p className="text-xs text-amber-700">Large library: only exact copies were scanned. Near-duplicates were skipped.</p>}
+                            {dupGroups.map((g, gi) => (
+                                <div key={gi} className="rounded-2xl border border-stone-200/70 bg-white p-4 shadow-sm">
+                                    <div className="mb-3 flex items-center justify-between">
+                                        <p className="text-sm font-medium text-stone-900">{g.kind === 'exact' ? 'Exact copies' : 'Looks similar'}</p>
+                                        <span className="text-xs text-stone-400">{g.count} photos</span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6">
+                                        <DupTile dto={g.keep} keep />
+                                        {g.duplicates.map(d => (
+                                            <DupTile key={d.id} dto={d} selected={dupSelected.has(d.id)} onToggle={() => dupToggle(d.id)} />
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                )}
                 {view.kind === 'shared' && (
                     sharesLoading ? (
                         <div className="h-40 animate-pulse rounded-2xl bg-stone-100" aria-hidden />
@@ -858,8 +1048,18 @@ export default function LibraryPage() {
                     )}
                 </>
             )}
+            {view.kind === 'duplicates' && dupGroups.length > 0 && (
+                <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center px-4 animate-[dpFadeUp_0.25s_ease]">
+                    <div className="flex items-center gap-3 rounded-3xl border border-stone-200/70 bg-white/95 px-3 py-2.5 shadow-xl shadow-stone-900/10 backdrop-blur">
+                        <span className="px-1 text-sm text-stone-600">{dupSelected.size.toLocaleString('en-US')} selected</span>
+                        <button className={BTN_DANGER} disabled={!dupSelected.size || busy} onClick={() => void deleteDuplicates()}>
+                            {busy ? SPINNER : <TbTrash className="size-4" />} Move to Recently Deleted
+                        </button>
+                    </div>
+                </div>
+            )}
             {notice && (
-                <div className={`pointer-events-none fixed inset-x-0 z-80 flex justify-center px-4 ${selectMode && showsPhotoGrid ? 'bottom-24' : 'bottom-6'}`}>
+                <div className={`pointer-events-none fixed inset-x-0 z-80 flex justify-center px-4 ${showBottomBar ? 'bottom-24' : 'bottom-6'}`}>
                     <button
                         onClick={() => setNotice(null)}
                         className="pointer-events-auto cursor-pointer rounded-full bg-stone-900/95 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur animate-[dpFadeUp_0.25s_ease]"
@@ -949,7 +1149,7 @@ export default function LibraryPage() {
                             <button type="button" className={BTN_SECONDARY} onClick={() => setConfirmDialog(null)} disabled={busy}>Cancel</button>
                             <button
                                 type="button"
-                                className={`inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full bg-red-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-red-700 disabled:pointer-events-none disabled:opacity-60 ${FOCUS}`}
+                                className={BTN_DANGER}
                                 disabled={busy}
                                 onClick={() => { const a = confirmDialog.action; setConfirmDialog(null); a() }}
                             >
@@ -1034,6 +1234,33 @@ export default function LibraryPage() {
                     </div>
                 </div>
             )}
+        </div>
+    )
+}
+
+function DupTile({ dto, keep, selected, onToggle }: { dto: TidyDto; keep?: boolean; selected?: boolean; onToggle?: () => void }) {
+    return (
+        <div className={`group relative aspect-square overflow-hidden rounded-lg border bg-stone-100 ${selected ? 'border-red-400 ring-2 ring-red-300' : 'border-stone-200'}`}>
+            {dto.kind === 'image' ? (
+                <img src={dto.url} alt={dto.filename} loading="lazy" className="absolute inset-0 size-full object-cover" />
+            ) : (
+                <video src={dto.url} muted playsInline preload="metadata" className="absolute inset-0 size-full object-cover" />
+            )}
+            {keep ? (
+                <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-600 px-1.5 py-0.5 text-[10px] font-semibold text-white shadow">Keep</span>
+            ) : (
+                <button
+                    type="button"
+                    aria-label={selected ? 'Keep this one' : 'Mark for deletion'}
+                    onClick={onToggle}
+                    className={`absolute left-1.5 top-1.5 flex size-6 cursor-pointer items-center justify-center rounded-full border-2 shadow transition-colors ${selected ? 'border-white bg-red-600 text-white' : 'border-white/90 bg-stone-950/30 text-transparent hover:bg-stone-950/50'}`}
+                >
+                    <TbCheck className="size-3.5" strokeWidth={3} />
+                </button>
+            )}
+            <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 to-transparent px-1.5 pb-1 pt-3 text-[10px] font-medium text-white">
+                {dto.width && dto.height ? `${dto.width}×${dto.height}` : dto.kind} · {fileSize(dto.sizeBytes)}
+            </span>
         </div>
     )
 }
