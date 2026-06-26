@@ -3,7 +3,7 @@
 # 📸 Dropicture
 
 **Free, open source photo platform built for data ownership.**
-Run it on your own machine, on any server you control, or on European cloud infrastructure — your photos never have to leave hardware you trust.
+Run it on your own machine, on a server you control, or on European cloud infrastructure. Your photos never have to leave hardware you trust.
 
 [![Build, publish and deploy](https://github.com/redjem-amir/dropicture/actions/workflows/deploy.yml/badge.svg)](https://github.com/redjem-amir/dropicture/actions/workflows/deploy.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -16,133 +16,182 @@ Run it on your own machine, on any server you control, or on European cloud infr
 
 ## Why Dropicture
 
-Photo storage today usually means handing your library to a US hyperscaler. Dropicture is the alternative: a complete, MIT-licensed photo service you actually own, with three ways to run it.
+Most photo services keep your library on someone else's cloud, usually a big US provider. Dropicture is the opposite of that. It's a full photo service, MIT-licensed, that you host yourself.
 
-- 🖥️ **On your machine** — a single Compose file brings up the whole data layer locally. Your photos stay on your disk.
-- ☁️ **On your own cloud** — any Linux box with Docker can run the production stack.
-- 🇪🇺 **On European infrastructure** — the reference deployment targets [Hetzner](https://www.hetzner.com/) (Falkenstein, Germany), fully described as code in this repository: one `terraform apply` and one Ansible playbook away.
+There are three ways to run it:
 
-In every mode, media lives in a self-hosted, S3-compatible [Garage](https://garagehq.deuxfleurs.fr/) store and metadata in PostgreSQL — no third-party object storage, no vendor lock-in.
+- **On your own machine.** One Compose file brings up the whole stack locally, and your photos stay on your disk.
+- **On your own cloud.** Any Linux box running Docker Swarm can host the production stack.
+- **On European infrastructure.** The reference setup targets [Hetzner](https://www.hetzner.com/) (Falkenstein, Germany) and is described entirely as code in this repo: one `terraform apply` and one Ansible playbook.
+
+Whichever mode you pick, media is stored in a self-hosted, S3-compatible [Garage](https://garagehq.deuxfleurs.fr/) bucket and metadata goes in PostgreSQL. No third-party object storage, no vendor lock-in.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
     U((User)) -- "HTTPS 443" --> CF["Cloudflare<br/>DNS · proxy · edge TLS"]
-    CF -- "Origin CA · Full (strict)" --> FW["Hetzner firewall<br/>80/443 from Cloudflare only"]
+    CF -- "Origin CA · Full (strict)" --> FW["Hetzner firewall<br/>80/443 from Cloudflare<br/>22 key-only SSH"]
     subgraph SRV["Single-node Docker Swarm"]
-        N[nginx]
-        N --> FE["frontend ×2"]
-        N --> BE["backend ×2 · NestJS"]
+        T["Traefik<br/>edge TLS · reverse proxy"]
+        SP["socket-proxy<br/>read-only Docker API"]
+        T -. "swarm provider" .-> SP
+        T --> FE["frontend ×3 · Next.js"]
+        T --> BE["backend ×3 · NestJS"]
         BE --> PB["PgBouncer ×2"] --> PG[("PostgreSQL 18")]
         BE --> DF[("DragonflyDB")]
         BE --> GA[("Garage · S3")]
     end
-    FW --> N
+    FW --> T
 ```
 
 | Service | Role | Image |
 |---|---|---|
-| `proxy` | TLS termination, reverse proxy, real client IP | `nginx:stable-alpine` |
-| `frontend` | Web client | `ghcr.io/redjem-amir/dropicture/frontend` |
-| `backend` | REST API — NestJS, TypeORM, rate limiting | `ghcr.io/redjem-amir/dropicture/backend` |
-| `pgbouncer` | Transaction-level connection pooling | `edoburu/pgbouncer` |
-| `db` | Relational store | `postgres:18` |
-| `dragonfly` | Redis-compatible cache & throttle storage | `dragflydb/dragonfly` |
-| `garage` | S3-compatible object storage (media) | `dxflrs/garage` |
+| `proxy` | Edge TLS termination and Swarm-aware reverse proxy | `traefik:v3.7.4` |
+| `socket-proxy` | Read-only Docker API for Traefik's Swarm provider | `tecnativa/docker-socket-proxy:v0.4.2` |
+| `dropicture-frontend` | Web client (3 replicas) | `ghcr.io/redjem-amir/dropicture/frontend` |
+| `dropicture-backend` | REST API, NestJS and TypeORM, rate limiting (3 replicas) | `ghcr.io/redjem-amir/dropicture/backend` |
+| `dropicture-pgbouncer` | Transaction-level connection pooling (2 replicas) | `edoburu/pgbouncer:v1.24.1-p1` |
+| `dropicture-db` | Relational store for metadata | `postgres:18.4` |
+| `dropicture-dragonfly` | Redis-compatible cache and throttle storage | `ghcr.io/dragonflydb/dragonfly:v1.38.1` |
+| `dropicture-garage` | S3-compatible object storage for media | `dxflrs/garage:v2.3.0` |
 
 ## Repository layout
 
 ```
 dropicture/
-├── .github/workflows/         # CI/CD — build, publish, deploy
-├── ansible/                   # Server provisioning & Swarm bootstrap
-├── app/                       # Application source (backend, frontend)
-├── docs/                      # Diagrams
-├── terraform/                 # Hetzner + Cloudflare infrastructure (IaC)
-├── docker-compose.local.yml   # Local stack
+├── .github/workflows/         # CI/CD: build, publish to GHCR, deploy over SSH
+├── apps/
+│   ├── backend/               # REST API (NestJS, TypeORM)
+│   └── frontend/              # Web client (Next.js)
+├── docs/diagrams/             # Architecture, deploy and Ansible diagrams (PlantUML)
+├── infra/
+│   ├── ansible/               # Server provisioning and Swarm bootstrap
+│   └── terraform/             # Hetzner and Cloudflare infrastructure (IaC)
+├── docker-compose.local.yml   # Local full stack (data layer plus apps)
 ├── docker-compose.yml         # Production stack (Docker Swarm)
-├── garage.toml                # Object storage configuration
-├── nginx.conf                 # Reverse proxy configuration
+├── garage.toml                # Garage (S3) object-storage config
 ├── HELP.md
 └── LICENSE                    # MIT
 ```
 
 ## Run it on your machine
 
-**Prerequisites:** Docker with Compose v2, Node.js ≥ 20.
+**Prerequisites:** Docker with Compose v2. You only need Node.js (20 or newer) if you want to run the apps outside Docker in watch mode.
 
-Create a `.env` at the repository root (it is gitignored):
+Create a `.env` at the repo root. It's gitignored. The heredoc delimiter is left unquoted on purpose so the `openssl` calls actually run and produce real secrets:
 
 ```bash
-cat <<'EOF' > .env
+cat > .env <<EOF
+# Database
 POSTGRES_DB=dropicture
 POSTGRES_USER=dropicture
 POSTGRES_PASSWORD=change-me
+
+# Object storage (Garage S3)
 GARAGE_RPC_SECRET=$(openssl rand -hex 32)
 S3_ACCESS_KEY_ID=GK$(openssl rand -hex 16)
 S3_SECRET_ACCESS_KEY=$(openssl rand -hex 32)
 S3_BUCKET=dropicture-media
+
+# Application
+DEFAULT_ADMIN_EMAIL=admin@example.com
+DEFAULT_ADMIN_PASSWORD=change-me-too
+NEXT_PUBLIC_URL=http://localhost:3000
 EOF
 ```
 
-Then bring up the data layer and start the apps:
+Bring up the whole local stack (data layer plus backend and frontend):
 
 ```bash
 docker compose -f docker-compose.local.yml up -d
 ```
 
-The local stack mirrors production: the backend talks to **PgBouncer on `localhost:5432`**, PostgreSQL is reachable directly on `localhost:5433` for psql and IDEs, DragonflyDB on `6379`, the Garage S3 API on `3900`. See [`app/`](app/) for running the backend and frontend in dev mode.
+Once the containers are healthy, you can reach everything here:
+
+| Component | Address |
+|---|---|
+| Frontend | `http://localhost:3000` |
+| Backend API | `http://localhost:3001` |
+| PgBouncer (pooled Postgres) | `localhost:5432` |
+| PostgreSQL (direct, for psql/IDEs) | `localhost:5433` |
+| DragonflyDB | `localhost:6379` |
+| Garage S3 API | `localhost:3900` |
+
+The data layer behaves like production: the backend talks to PostgreSQL through PgBouncer in transaction-pooling mode, same as the deployed stack. The one difference is that there's no Traefik in front locally, so each service publishes its port straight on `localhost`. To work on the apps themselves, see [`apps/`](apps/) and run the backend and frontend in dev mode against the running data layer.
 
 ## Deploy it
 
 ### On your own cloud
 
-The production stack ([`docker-compose.yml`](docker-compose.yml)) runs on any Docker host:
+The production stack ([`docker-compose.yml`](docker-compose.yml)) runs on any Docker Swarm host:
 
 ```bash
 docker swarm init
 docker stack deploy -c docker-compose.yml dropicture
 ```
 
-Bring your own TLS material: the stack expects the certificate as an external Swarm config (`dropicture_origin_cert`) and the key as an external Swarm secret (`dropicture_origin_key`).
+Before you deploy, the stack needs a few things in place:
 
-### Reference deployment — European cloud
+- The same environment variables as the local stack (database, Garage/S3, `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD`, `NEXT_PUBLIC_URL`) available in the shell that runs the deploy.
+- Three external Swarm resources holding your TLS material and proxy config:
+  - config `dropicture_origin_cert`: the origin certificate (PEM)
+  - config `dropicture_traefik_dynamic_v1`: Traefik's dynamic TLS config
+  - secret `dropicture_origin_key`: the matching private key
 
-The fully automated path provisions a hardened single-node Swarm on Hetzner Cloud (EU), fronted by Cloudflare DNS with edge TLS:
+`garage.toml` ships from the repo as a file-based config, so you don't have to create that one externally.
+
+The reference Ansible playbook creates all three external resources for you. Only do it by hand if you're deploying without it.
+
+### Reference deployment on European cloud
+
+This is the fully automated path. It provisions a hardened single-node Swarm on Hetzner Cloud (EU), with Cloudflare DNS and edge TLS in front:
 
 ```bash
-cd terraform && terraform init && terraform apply   # server, firewall, DNS, TLS
-cd ../ansible && ansible-playbook playbook.yml      # Docker, Swarm, secrets
-git push origin main                                # CI builds and deploys
+cd infra/terraform && terraform init && terraform apply   # server, firewall, DNS, Origin CA cert
+cd ../ansible && ansible-playbook playbook.yml            # Docker, Swarm, configs and secrets
+git push origin main                                      # CI builds the images and deploys
 ```
 
-Step-by-step guides: [`terraform/README.md`](terraform/README.md) · [`ansible/README.md`](ansible/README.md).
+Step-by-step guides: [`infra/terraform/README.md`](infra/terraform/README.md) · [`infra/ansible/README.md`](infra/ansible/README.md).
 
-The pipeline ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) builds the images, publishes them to GHCR tagged with the commit SHA, then deploys over SSH with `docker stack deploy` and smoke-tests the public URL. The `production` environment requires these secrets:
+The pipeline ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) builds the backend and frontend images, pushes them to GHCR tagged with the commit SHA (plus `latest` on the default branch), then deploys over SSH with `docker stack deploy` and smoke-tests the public URL. A working production deploy needs these secrets and variables available to the deploy job:
 
-| Secret | Purpose |
+| Secret / variable | Purpose |
 |---|---|
-| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | Read-only access to the Terraform state bucket |
-| `SSH_PRIVATE_KEY_B64` | Base64-encoded deploy key |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | Read the Terraform state from S3 to find the server IP |
+| `SSH_PRIVATE_KEY_B64` | Base64-encoded SSH deploy key |
 | `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD` | Database credentials |
 | `GARAGE_RPC_SECRET` | Garage RPC secret |
 | `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | Garage access key for the media bucket |
+| `DEFAULT_ADMIN_EMAIL` / `DEFAULT_ADMIN_PASSWORD` | First admin account created by the backend |
+| `NEXT_PUBLIC_URL` | Public site URL used by the frontend |
+
+> Right now the workflow only exports the first five groups in its `env:` block. `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD` and `NEXT_PUBLIC_URL` are required by `docker-compose.yml`, so add them to the deploy job's environment too. Otherwise `docker stack deploy` stops on the first missing variable.
+
+Provisioning with Terraform and Ansible also needs `TF_VAR_hcloud_token` and `TF_VAR_ssh_public_key_b64`, plus the AWS credentials for the state backend.
 
 ## Security
 
-Ingress on 80/443 is restricted to Cloudflare's IP ranges at the cloud firewall, TLS terminates on an Origin CA certificate (Full strict), SSH is key-only, and the data plane (PostgreSQL, DragonflyDB, Garage) lives on an internal overlay network with no published ports. Credentials and TLS keys are distributed as Swarm secrets.
+A few things worth knowing about how this is locked down:
 
-To report a vulnerability, please use [GitHub Security Advisories](https://github.com/redjem-amir/dropicture/security/advisories/new) rather than a public issue.
+- The Hetzner firewall only accepts ports 80 and 443 from Cloudflare's published IP ranges, which Terraform fetches at apply time. Port 80 redirects straight to 443.
+- Port 22 is open to the internet, but Ansible turns off password and keyboard-interactive auth, limits root to key-based login, and caps `MaxAuthTries` at 3.
+- Cloudflare terminates TLS at the edge. The origin serves a Cloudflare Origin CA certificate with SSL mode Full (strict), a minimum of TLS 1.2, and Always Use HTTPS.
+- Traefik never mounts the Docker socket itself. It reads Swarm state through a read-only socket-proxy that only exposes the endpoints it needs.
+- PostgreSQL, PgBouncer, DragonflyDB and Garage live on an internal overlay network with no published ports, so nothing in the data layer is reachable from outside the Swarm.
+- Credentials and the TLS private key are stored as Swarm secrets; the certificate and Traefik's dynamic config as Swarm configs.
+
+Found a vulnerability? Please use [GitHub Security Advisories](https://github.com/redjem-amir/dropicture/security/advisories/new) instead of opening a public issue.
 
 ## Contributing
 
-Contributions are welcome — fork, branch, and open a pull request. For substantial changes (architecture, infrastructure), please open an issue first to discuss the approach. Infrastructure changes should come with updated docs and diagrams.
+Contributions are welcome. Fork, branch, open a pull request. For anything substantial (architecture, infrastructure), open an issue first so we can talk through the approach. Infra changes should come with updated docs and diagrams.
 
 ## License
 
-Released under the [MIT License](LICENSE) — free to use, self-host, modify and redistribute.
+[MIT License](LICENSE). Free to use, self-host, modify and redistribute.
 
 ## Acknowledgments
 
-Dropicture stands on excellent open source software: [Garage](https://garagehq.deuxfleurs.fr/), [DragonflyDB](https://www.dragonflydb.io/), [PgBouncer](https://www.pgbouncer.org/), [NestJS](https://nestjs.com/), [PostgreSQL](https://www.postgresql.org/) and [nginx](https://nginx.org/).
+Built on a stack of open source projects: [Traefik](https://traefik.io/), [Garage](https://garagehq.deuxfleurs.fr/), [DragonflyDB](https://www.dragonflydb.io/), [PgBouncer](https://www.pgbouncer.org/), [NestJS](https://nestjs.com/), [Next.js](https://nextjs.org/), [PostgreSQL](https://www.postgresql.org/) and [Docker Swarm](https://docs.docker.com/engine/swarm/).

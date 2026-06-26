@@ -1,0 +1,44 @@
+// dropicture/apps/frontend/src/lib/routeAccess.ts
+import { IconType } from 'react-icons'
+import { TbPhoto, TbShieldCheck, TbUsers } from 'react-icons/tb'
+
+export type Scope = string
+
+export type NavTarget = string
+
+type BaseItem = {
+    scopes?: Scope[]
+    navTarget?: NavTarget
+}
+
+export type RouteItem =
+    | (BaseItem & {
+        type: 'route'
+        path: string
+        nav?: {
+            label: string
+            icon?: IconType
+        }
+    })
+    | (BaseItem & {
+        type: 'section'
+        nav?: {
+            label: string
+        }
+    })
+
+export function isRoute(
+    item: RouteItem,
+): item is Extract<RouteItem, { type: 'route' }> {
+    return item.type === 'route'
+}
+
+export const ROUTE_ACCESS: RouteItem[] = [
+    { type: 'section', nav: { label: '' } },
+    { type: 'route', path: '/', nav: { label: 'Photos', icon: TbPhoto } },
+    { type: 'section', nav: { label: 'Library' } },
+    { type: 'route', path: '/settings' },
+    { type: 'section', nav: { label: 'Administration' } },
+    { type: 'route', path: '/accounts', scopes: ['read:accounts', 'write:accounts'], nav: { label: 'Accounts', icon: TbUsers } },
+    { type: 'route', path: '/roles', scopes: ['read:roles', 'write:roles'], nav: { label: 'Roles', icon: TbShieldCheck } },
+]

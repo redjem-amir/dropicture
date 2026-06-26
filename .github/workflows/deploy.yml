@@ -6,9 +6,8 @@ on:
     branches: [main]
     tags: ["v*.*.*"]
     paths:
-      - "app/**"
+      - "apps/**"
       - "docker-compose.yml"
-      - "nginx.conf"
       - "garage.toml"
       - ".github/workflows/deploy.yml"
   workflow_dispatch:
@@ -59,7 +58,7 @@ jobs:
       - name: Build and push ${{ matrix.component }} image
         uses: docker/build-push-action@v7
         with:
-          context: ./app/${{ matrix.component }}
+          context: ./apps/${{ matrix.component }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
