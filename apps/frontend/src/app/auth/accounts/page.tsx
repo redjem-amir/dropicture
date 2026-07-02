@@ -137,7 +137,7 @@ export default function AccountsPage() {
             params.set('pageSize', String(PAGE_SIZE))
             if (debounced) params.set('q', debounced)
             if (statusFilter) params.set('status', statusFilter)
-            const res = await fetch(`/api/accounts?${params.toString()}`, { credentials: 'same-origin' })
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/accounts?${params.toString()}`, { credentials: 'include' })
             if (res.status === 403) {
                 setData(null)
                 setError("You don't have permission to view accounts.")
@@ -218,7 +218,7 @@ export default function AccountsPage() {
         act(
             id,
             () =>
-                fetch(`/api/accounts/${id}/status`, {
+                fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/accounts/${id}/status`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status }),
@@ -227,7 +227,7 @@ export default function AccountsPage() {
         )
 
     const remove = (id: string) =>
-        act(id, () => fetch(`/api/accounts/${id}`, { method: 'DELETE' }), 'Delete this account permanently? This cannot be undone.')
+        act(id, () => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/accounts/${id}`, { method: 'DELETE' }), 'Delete this account permanently? This cannot be undone.')
 
     const createValid =
         cFirst.trim().length >= 2 &&
@@ -241,7 +241,7 @@ export default function AccountsPage() {
         setCreating(true)
         setCreateError(null)
         try {
-            const res = await fetch('/api/accounts', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/accounts`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

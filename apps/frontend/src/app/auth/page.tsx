@@ -22,6 +22,7 @@ type Picture = {
     favorite: boolean
     createdAt: string
     url: string
+    posterUrl: string | null
 }
 
 type AlbumCard = { id: string; name: string; count: number; coverUrl: string | null; createdAt: string }
@@ -29,7 +30,7 @@ type Share = { id: string; token: string; kind: 'album' | 'selection'; title: st
 type CollMeta = { count: number; coverUrl: string | null }
 type Collections = { all: CollMeta; favorites: CollMeta; archive: CollMeta; trash: CollMeta; shared: { count: number } }
 
-type TidyDto = { id: string; filename: string; kind: 'image' | 'video'; sizeBytes: number; width: number | null; height: number | null; url: string }
+type TidyDto = { id: string; filename: string; kind: 'image' | 'video'; sizeBytes: number; width: number | null; height: number | null; url: string; posterUrl: string | null }
 type DupGroup = { kind: 'exact' | 'similar'; count: number; keep: TidyDto; duplicates: TidyDto[] }
 type Suggestion = { id: string; name: string; count: number; coverUrl: string | null; pictureIds: string[] }
 
@@ -157,14 +158,14 @@ export default function LibraryPage() {
 
     const refreshCounts = useCallback(async () => {
         try {
-            const res = await fetch('/api/pictures/collections', { credentials: 'same-origin' })
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/collections`, { credentials: 'include' })
             if (res.ok) setCollections(await res.json())
         } catch { /* ignore */ }
     }, [])
 
     const refreshAlbums = useCallback(async () => {
         try {
-            const res = await fetch('/api/pictures/albums', { credentials: 'same-origin' })
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/albums`, { credentials: 'include' })
             if (res.ok) setAlbums((await res.json()).items as AlbumCard[])
         } catch { /* ignore */ }
     }, [])
@@ -176,7 +177,7 @@ export default function LibraryPage() {
 
     const loadSuggestions = useCallback(async () => {
         try {
-            const res = await fetch('/api/pictures/suggestions/albums', { credentials: 'same-origin' })
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/suggestions/albums`, { credentials: 'include' })
             if (res.ok) setSuggestions((await res.json()).suggestions as Suggestion[])
         } catch { /* ignore */ }
     }, [])
@@ -184,7 +185,7 @@ export default function LibraryPage() {
     const loadDuplicates = useCallback(async (): Promise<DupGroup[]> => {
         setDupLoading(true)
         try {
-            const res = await fetch('/api/pictures/duplicates', { credentials: 'same-origin' })
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/duplicates`, { credentials: 'include' })
             if (!res.ok) throw new Error()
             const data = (await res.json()) as { groups: DupGroup[]; similarScan: boolean }
             setDupGroups(data.groups)
@@ -199,7 +200,7 @@ export default function LibraryPage() {
         try {
             let processedTotal = 0
             for (let i = 0; i < 1000; i++) {
-                const res = await fetch('/api/pictures/reindex', { method: 'POST', credentials: 'same-origin' })
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/reindex`, { method: 'POST', credentials: 'include' })
                 if (!res.ok) break
                 const data = (await res.json()) as { processed: number; remaining: number }
                 processedTotal += data.processed
@@ -224,7 +225,7 @@ export default function LibraryPage() {
     const fetchPicturePage = async (cursor: string | null, filter: CollectionId) => {
         const params = new URLSearchParams({ limit: '60', filter })
         if (cursor) params.set('cursor', cursor)
-        const res = await fetch(`/api/pictures?${params.toString()}`, { credentials: 'same-origin' })
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures?${params.toString()}`, { credentials: 'include' })
         if (!res.ok) throw new Error()
         return (await res.json()) as { items: Picture[]; nextCursor: string | null }
     }
@@ -242,7 +243,7 @@ export default function LibraryPage() {
     const loadAlbum = useCallback(async (id: string) => {
         setGridLoading(true); setGridError(null); setNextCursor(null)
         try {
-            const res = await fetch(`/api/pictures/albums/${id}`, { credentials: 'same-origin' })
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/albums/${id}`, { credentials: 'include' })
             if (!res.ok) throw new Error()
             const data = await res.json() as { album: AlbumCard; items: Picture[] }
             setView(v => (v.kind === 'album' ? { kind: 'album', album: data.album } : v))
@@ -255,7 +256,7 @@ export default function LibraryPage() {
     const loadShares = useCallback(async () => {
         setSharesLoading(true)
         try {
-            const res = await fetch('/api/pictures/shares', { credentials: 'same-origin' })
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/shares`, { credentials: 'include' })
             setShares((await res.json()).items as Share[])
         } catch { /* ignore */ } finally { setSharesLoading(false) }
     }, [])
@@ -377,7 +378,7 @@ export default function LibraryPage() {
         try {
             const fd = new FormData()
             files.forEach(f => fd.append('files', f))
-            const res = await fetch('/api/pictures', { method: 'POST', body: fd, credentials: 'same-origin' })
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures`, { method: 'POST', body: fd, credentials: 'include' })
             if (!res.ok) { flash(res.status === 415 ? 'Only images and videos can be imported.' : 'Import failed. Please try again.'); return }
             flash(`${files.length.toLocaleString('en-US')} item${files.length === 1 ? '' : 's'} imported.`)
             void refreshCounts()
@@ -410,7 +411,7 @@ export default function LibraryPage() {
     const toggleSelectAll = () => setSelected(allSelected ? new Set() : new Set(items.map(p => p.id)))
 
     const patchEach = (ids: string[], body: Record<string, unknown>) =>
-        Promise.all(ids.map(id => fetch(`/api/pictures/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), credentials: 'same-origin' })))
+        Promise.all(ids.map(id => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), credentials: 'include' })))
 
     async function run(fn: () => Promise<unknown>) {
         if (!selected.size || busy) return
@@ -421,13 +422,13 @@ export default function LibraryPage() {
 
     const bulkFavorite = (v: boolean) => run(() => patchEach(Array.from(selected), { favorite: v }))
     const bulkArchive = (v: boolean) => run(() => patchEach(Array.from(selected), { archived: v }))
-    const doBulkTrash = () => run(() => Promise.all(Array.from(selected).map(id => fetch(`/api/pictures/${id}`, { method: 'DELETE', credentials: 'same-origin' }))))
-    const doBulkDestroy = () => run(() => Promise.all(Array.from(selected).map(id => fetch(`/api/pictures/${id}/permanent`, { method: 'DELETE', credentials: 'same-origin' }))))
-    const bulkRestore = () => run(() => Promise.all(Array.from(selected).map(id => fetch(`/api/pictures/${id}/restore`, { method: 'POST', credentials: 'same-origin' }))))
+    const doBulkTrash = () => run(() => Promise.all(Array.from(selected).map(id => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/${id}`, { method: 'DELETE', credentials: 'include' }))))
+    const doBulkDestroy = () => run(() => Promise.all(Array.from(selected).map(id => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/${id}/permanent`, { method: 'DELETE', credentials: 'include' }))))
+    const bulkRestore = () => run(() => Promise.all(Array.from(selected).map(id => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/${id}/restore`, { method: 'POST', credentials: 'include' }))))
     const bulkRemoveFromAlbum = () => {
         if (view.kind !== 'album') return
         const albumId = view.album.id
-        return run(() => Promise.all(Array.from(selected).map(id => fetch(`/api/pictures/albums/${albumId}/pictures/${id}`, { method: 'DELETE', credentials: 'same-origin' }))))
+        return run(() => Promise.all(Array.from(selected).map(id => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/albums/${albumId}/pictures/${id}`, { method: 'DELETE', credentials: 'include' }))))
     }
 
     const bulkTrash = () => setConfirmDialog({
@@ -445,7 +446,7 @@ export default function LibraryPage() {
 
     async function copyShare(share: Share) {
         try {
-            const res = await fetch(`/api/pictures/shared/${share.token}`, { credentials: 'omit' })
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/shared/${share.token}`, { credentials: 'omit' })
             if (!res.ok) throw new Error()
             const data = (await res.json()) as { items: { url: string }[] }
             const url = data.items?.[0]?.url
@@ -461,8 +462,8 @@ export default function LibraryPage() {
         if (!selected.size || busy) return
         setBusy(true)
         try {
-            const res = await fetch('/api/pictures/shares', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/shares`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
                 body: JSON.stringify({ pictureIds: Array.from(selected) }),
             })
             if (!res.ok) { flash('Couldn’t create share link.'); return }
@@ -476,8 +477,8 @@ export default function LibraryPage() {
         if (busy) return
         setBusy(true)
         try {
-            const res = await fetch('/api/pictures/shares', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/shares`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
                 body: JSON.stringify({ albumId: album.id }),
             })
             if (!res.ok) { flash('Couldn’t create share link.'); return }
@@ -493,7 +494,7 @@ export default function LibraryPage() {
         confirmLabel: 'Revoke',
         action: () => void (async () => {
             setBusy(true)
-            try { await fetch(`/api/pictures/shares/${share.id}`, { method: 'DELETE', credentials: 'same-origin' }); await loadShares(); void refreshCounts() }
+            try { await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/shares/${share.id}`, { method: 'DELETE', credentials: 'include' }); await loadShares(); void refreshCounts() }
             catch { /* ignore */ } finally { setBusy(false) }
         })(),
     })
@@ -508,8 +509,8 @@ export default function LibraryPage() {
         setBusy(true)
         try {
             if (dialog.mode === 'create') {
-                const res = await fetch('/api/pictures/albums', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/albums`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
                     body: JSON.stringify({ name }),
                 })
                 if (!res.ok) { flash('Couldn’t create album.'); return }
@@ -519,8 +520,8 @@ export default function LibraryPage() {
                 if (dialog.after === 'addSelection') await addSelectionToAlbum(album.id)
                 else flash('Album created.')
             } else if (dialog.albumId) {
-                const res = await fetch(`/api/pictures/albums/${dialog.albumId}`, {
-                    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/albums/${dialog.albumId}`, {
+                    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
                     body: JSON.stringify({ name }),
                 })
                 if (!res.ok) { flash('Couldn’t rename album.'); return }
@@ -536,8 +537,8 @@ export default function LibraryPage() {
         if (!selected.size) return
         setBusy(true)
         try {
-            const res = await fetch(`/api/pictures/albums/${albumId}/pictures`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/albums/${albumId}/pictures`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
                 body: JSON.stringify({ pictureIds: Array.from(selected) }),
             })
             if (!res.ok) { flash('Couldn’t add to album.'); return }
@@ -552,7 +553,7 @@ export default function LibraryPage() {
         confirmLabel: 'Delete Album',
         action: () => void (async () => {
             setBusy(true)
-            try { await fetch(`/api/pictures/albums/${album.id}`, { method: 'DELETE', credentials: 'same-origin' }); flash('Album deleted.'); openCollections() }
+            try { await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/albums/${album.id}`, { method: 'DELETE', credentials: 'include' }); flash('Album deleted.'); openCollections() }
             catch { /* ignore */ } finally { setBusy(false) }
         })(),
     })
@@ -563,8 +564,8 @@ export default function LibraryPage() {
         if (busy) return
         setBusy(true)
         try {
-            const res = await fetch('/api/pictures/suggestions/albums', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/suggestions/albums`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
                 body: JSON.stringify({ name: s.name, pictureIds: s.pictureIds }),
             })
             if (!res.ok) { flash('Couldn’t create album.'); return }
@@ -581,7 +582,7 @@ export default function LibraryPage() {
         const count = dupSelected.size
         setBusy(true)
         try {
-            await Promise.all([...dupSelected].map(id => fetch(`/api/pictures/${id}`, { method: 'DELETE', credentials: 'same-origin' })))
+            await Promise.all([...dupSelected].map(id => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/${id}`, { method: 'DELETE', credentials: 'include' })))
             void refreshCounts()
             const remaining = await loadDuplicates()
             flash(`Moved ${count.toLocaleString('en-US')} item${count === 1 ? '' : 's'} to Recently Deleted.`)
@@ -599,8 +600,8 @@ export default function LibraryPage() {
         setItems(arr => arr.map(x => (x.id === p.id ? { ...x, favorite: next } : x)))
         lightboxDirty.current = true
         try {
-            const res = await fetch(`/api/pictures/${p.id}`, {
-                method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/${p.id}`, {
+                method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
                 body: JSON.stringify({ favorite: next }),
             })
             if (!res.ok) throw new Error()
@@ -615,7 +616,7 @@ export default function LibraryPage() {
         setItems(arr => arr.filter(x => x.id !== p.id))
         lightboxDirty.current = true
         try {
-            const res = await fetch(`/api/pictures/${p.id}`, { method: 'DELETE', credentials: 'same-origin' })
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pictures/${p.id}`, { method: 'DELETE', credentials: 'include' })
             if (!res.ok) throw new Error()
             if (next) setLightboxId(next.id)
             else closeLightbox()
@@ -675,6 +676,8 @@ export default function LibraryPage() {
             >
                 {p.kind === 'image' ? (
                     <img src={p.url} alt={p.filename} loading="lazy" draggable={false} className="absolute inset-0 size-full object-cover" />
+                ) : p.posterUrl ? (
+                    <img src={p.posterUrl} alt={p.filename} loading="lazy" draggable={false} className="absolute inset-0 size-full object-cover" />
                 ) : (
                     <video src={p.url} muted playsInline preload="metadata" className="absolute inset-0 size-full object-cover" />
                 )}
@@ -1243,6 +1246,8 @@ function DupTile({ dto, keep, selected, onToggle }: { dto: TidyDto; keep?: boole
         <div className={`group relative aspect-square overflow-hidden rounded-lg border bg-stone-100 ${selected ? 'border-red-400 ring-2 ring-red-300' : 'border-stone-200'}`}>
             {dto.kind === 'image' ? (
                 <img src={dto.url} alt={dto.filename} loading="lazy" className="absolute inset-0 size-full object-cover" />
+            ) : dto.posterUrl ? (
+                <img src={dto.posterUrl} alt={dto.filename} loading="lazy" className="absolute inset-0 size-full object-cover" />
             ) : (
                 <video src={dto.url} muted playsInline preload="metadata" className="absolute inset-0 size-full object-cover" />
             )}

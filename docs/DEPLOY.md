@@ -54,7 +54,7 @@ Runs once per component (backend and frontend) through a matrix.
 
 Runs after the build, only on `main` or a `v*` tag, in the `production` environment (concurrency group `deploy-production`).
 
-- Passes `IMAGE_TAG=sha-<commit>` plus the stack's required variables: `APP_DOMAIN`, `NEXT_PUBLIC_URL`, `DEFAULT_ADMIN_*`, `POSTGRES_*`, `GARAGE_RPC_SECRET`, `S3_*`.
+- Passes `IMAGE_TAG=sha-<commit>` plus the stack's required variables: `APP_DOMAIN`, `NEXT_PUBLIC_API_URL`, `DEFAULT_ADMIN_*`, `POSTGRES_*`, `GARAGE_RPC_SECRET`, `S3_*`.
 - Reads `terraform.tfstate` from S3 (AWS creds, read-only) and pulls `manager_public_ip` with `jq`, asserting it is non-empty.
 - Loads the SSH key into an ssh-agent (in memory only, never written to disk) and runs `ssh-keyscan`.
 - Runs `docker stack deploy --prune --detach=false` against the server over SSH (`DOCKER_HOST=ssh://root@...`). The server pulls the SHA-tagged images.

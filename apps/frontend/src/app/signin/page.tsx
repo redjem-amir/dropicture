@@ -2,9 +2,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { use, useState, type FormEvent } from 'react'
 import { SessionExpired } from '@/components/SessionExpired'
+import { useUser } from '@/components/UserProvider'
 
 const ERROR_MESSAGES: Record<string, string> = {
     MISSING_CREDENTIALS: 'Please enter your email and password.',
@@ -34,7 +34,7 @@ export default function SigninPage({
 }) {
     const params = use(searchParams)
     const next = safeNext(params.next)
-    const router = useRouter()
+    const { login } = useUser()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
@@ -47,14 +47,8 @@ export default function SigninPage({
         setError(null)
         setLoading(true)
         try {
-            const res = await fetch('/api/auth/signin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            })
+            const res = await login(email, password, next)
             if (res.ok) {
-                router.replace(next)
-                router.refresh()
                 return
             }
             if (res.status === 429) {

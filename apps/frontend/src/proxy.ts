@@ -69,10 +69,6 @@ function buildRequestHeaders(req: NextRequest, refreshedCookies: string[]): Head
   return newHeaders
 }
 
-function backendBase(): string {
-  return process.env.BACKEND_INTERNAL_URL ?? 'http://localhost:3001'
-}
-
 function isPrefetchRequest(req: NextRequest): boolean {
   return (
     req.headers.get('next-router-prefetch') === '1' ||
@@ -84,7 +80,7 @@ function isPrefetchRequest(req: NextRequest): boolean {
 
 async function resolveSession(cookie: string): Promise<ResolvePayload | null> {
   try {
-    const res = await fetch(`${backendBase()}/api/auth/resolve`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/resolve`, {
       method: 'POST',
       headers: { Cookie: `session=${cookie}` },
     })
@@ -99,7 +95,7 @@ async function rotate(
   cookie: string,
 ): Promise<{ setCookies: string[]; value: string } | null> {
   try {
-    const res = await fetch(`${backendBase()}/api/auth/session`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/session`, {
       method: 'POST',
       headers: { Cookie: `session=${cookie}` },
     })

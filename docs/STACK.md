@@ -68,7 +68,7 @@ The first three external resources are created by Ansible; `garage.toml` ships f
 
 ## Deploy
 
-One replica per service, rolling updates stop-first (a brief downtime per service), restart on failure. The stack requires `APP_DOMAIN`, `NEXT_PUBLIC_URL`, `DEFAULT_ADMIN_*`, `POSTGRES_*`, `S3_*` and `GARAGE_RPC_SECRET` in the deploy environment.
+One replica per service, rolling updates stop-first (a brief downtime per service), restart on failure. The stack requires `APP_DOMAIN`, `NEXT_PUBLIC_API_URL`, `DEFAULT_ADMIN_*`, `POSTGRES_*`, `S3_*` and `GARAGE_RPC_SECRET` in the deploy environment.
 
 ---
 

@@ -17,13 +17,13 @@ S3_BUCKET=dropicture-media
 DEFAULT_ADMIN_EMAIL=admin@dropicture.com
 DEFAULT_ADMIN_PASSWORD=$(openssl rand -hex 16)
 APP_DOMAIN=dropicture.com
-NEXT_PUBLIC_URL=https://dropicture.com
+NEXT_PUBLIC_API_URL=https://dropicture.com
 EOF
 ```
 
-`.env` is gitignored, so don't commit it. Your generated admin password is in there: `grep DEFAULT_ADMIN_PASSWORD .env`. For a local run, set `NEXT_PUBLIC_URL=http://localhost:3000` instead (`APP_DOMAIN` is unused locally).
+`.env` is gitignored, so don't commit it. Your generated admin password is in there: `grep DEFAULT_ADMIN_PASSWORD .env`. For a local run, set `NEXT_PUBLIC_API_URL=http://localhost:3001` instead (`APP_DOMAIN` is unused locally).
 
-> `docker-compose.yml` requires `APP_DOMAIN`, `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD` and `NEXT_PUBLIC_URL`, so `docker stack deploy` aborts if they aren't set. That's why they're in the file above.
+> `docker-compose.yml` requires `APP_DOMAIN`, `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD` and `NEXT_PUBLIC_API_URL`, so `docker stack deploy` aborts if they aren't set. That's why they're in the file above.
 
 > You don't need to set Garage up by hand. On first boot, `--single-node` assigns the layout and `--default-bucket` creates the access key and bucket from the `GARAGE_DEFAULT_*` variables in the compose files. Those S3 values are only read on the first start, so changing them later won't touch the existing key.
 
@@ -56,7 +56,7 @@ To stop: `docker compose -f docker-compose.local.yml down` (add `-v` to wipe dat
 
 | Symptom | Fix |
 |---|---|
-| `"VAR is required"` | Run `set -a; source .env; set +a`, and check `APP_DOMAIN`, `DEFAULT_ADMIN_*` and `NEXT_PUBLIC_URL` are set |
+| `"VAR is required"` | Run `set -a; source .env; set +a`, and check `APP_DOMAIN`, `DEFAULT_ADMIN_*` and `NEXT_PUBLIC_API_URL` are set |
 | `permission denied (publickey)` | Load the deploy key with `ssh-add` |
 | `config not found: dropicture_origin_*` | Re-run the Ansible playbook |
 | pull denied / `No such image` | The GHCR package goes private after the first push, so set it to Public. Or the tag wasn't built |

@@ -8,10 +8,14 @@ import { In, IsNull, Repository } from 'typeorm';
 import { Throttle } from '@nestjs/throttler';
 import { ArrayNotEmpty, IsArray, IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, IsUUID, Max, MaxLength, Min } from 'class-validator';
 import { createHash, randomBytes, randomUUID } from 'crypto';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { Readable } from 'stream';
+import { spawn } from 'child_process';
+import { mkdtemp, readFile, writeFile, rm } from 'fs/promises';
+import { tmpdir } from 'os';
 import sharp from 'sharp';
 import exifReader from 'exif-reader';
+import ffmpegPath from 'ffmpeg-static';
 import { Picture, PictureKind } from '../models/picture.model';
 import { Album } from '../models/album.model';
 import { ShareLink, ShareKind } from '../models/share-link.model';
@@ -119,6 +123,17 @@ export class PicturesController {
         return this.storage.getPresignedUrl(p.storageKey, FILE_URL_TTL);
     }
 
+    private async posterUrlFor(p: Picture): Promise<string | null> {
+        return p.thumbnailKey ? this.storage.getPresignedUrl(p.thumbnailKey, FILE_URL_TTL) : null;
+    }
+
+    private async coverUrlFor(p: Picture): Promise<string> {
+        if (p.kind === PictureKind.VIDEO && p.thumbnailKey) {
+            return this.storage.getPresignedUrl(p.thumbnailKey, FILE_URL_TTL);
+        }
+        return this.fileUrl(p);
+    }
+
     private async pictureDto(p: Picture) {
         return {
             id: p.id,
@@ -134,6 +149,7 @@ export class PicturesController {
             takenAt: p.takenAt,
             createdAt: p.createdAt,
             url: await this.fileUrl(p),
+            posterUrl: await this.posterUrlFor(p),
         };
     }
 
@@ -146,7 +162,7 @@ export class PicturesController {
             id: album.id,
             name: album.name,
             count: pics.length,
-            coverUrl: cover ? await this.fileUrl(cover) : null,
+            coverUrl: cover ? await this.coverUrlFor(cover) : null,
             createdAt: album.createdAt,
             updatedAt: album.updatedAt,
         };
@@ -384,6 +400,7 @@ export class PicturesController {
                 durationSeconds: p.durationSeconds,
                 takenAt: p.takenAt,
                 url: await this.fileUrl(p),
+                posterUrl: await this.posterUrlFor(p),
             })),
         );
         return {
@@ -416,7 +433,7 @@ export class PicturesController {
             const qb = base().orderBy('p.createdAt', 'DESC').take(1);
             apply(qb);
             const p = await qb.getOne();
-            return p ? await this.fileUrl(p) : null;
+            return p ? await this.coverUrlFor(p) : null;
         };
         const [allCover, favCover, archiveCover, trashCover] = await Promise.all([
             cover(q => q.andWhere('p.archived = false').andWhere('p.deletedAt IS NULL')),
@@ -509,6 +526,21 @@ export class PicturesController {
                         height: a.height,
                         takenAt: a.takenAt,
                     };
+                }
+            } else if (kind === PictureKind.VIDEO) {
+                const thumb = await this.extractVideoThumbnail(f.buffer).catch(() => null);
+                if (thumb) {
+                    const thumbKey = `thumbnails/${owner}/${randomUUID()}.jpg`;
+                    const uploaded = await this.storage.upload(thumbKey, thumb, 'image/jpeg').then(() => true).catch(() => false);
+                    if (uploaded) {
+                        const dims = await sharp(thumb).metadata().catch(() => null);
+                        extra = {
+                            ...extra,
+                            thumbnailKey: thumbKey,
+                            width: dims?.width ?? null,
+                            height: dims?.height ?? null,
+                        };
+                    }
                 }
             }
 
@@ -646,7 +678,7 @@ export class PicturesController {
                         id: `sug_${ev.ids[0]}`,
                         name: this.eventName(new Date(ev.start), new Date(ev.end)),
                         count: ev.ids.length,
-                        coverUrl: await this.fileUrl(cover),
+                        coverUrl: await this.coverUrlFor(cover),
                         pictureIds: ev.ids,
                         start: new Date(ev.start),
                         end: new Date(ev.end),
@@ -681,7 +713,10 @@ export class PicturesController {
     async reindex(@Req() req: Request) {
         const owner = this.ownerId(req);
         const batch = await this.pictureRepository.find({
-            where: { ownerId: owner, deletedAt: IsNull(), sha256: IsNull() },
+            where: [
+                { ownerId: owner, deletedAt: IsNull(), sha256: IsNull() },
+                { ownerId: owner, deletedAt: IsNull(), kind: PictureKind.VIDEO, thumbnailKey: IsNull() },
+            ],
             order: { createdAt: 'DESC' },
             take: REINDEX_BATCH,
         });
@@ -689,7 +724,7 @@ export class PicturesController {
         for (const p of batch) {
             try {
                 const buf = await this.streamToBuffer(await this.storage.download(p.storageKey));
-                p.sha256 = this.sha256(buf);
+                if (!p.sha256) p.sha256 = this.sha256(buf);
                 if (p.kind === PictureKind.IMAGE) {
                     const a = await this.analyzeImage(buf).catch(() => null);
                     if (a) {
@@ -697,6 +732,18 @@ export class PicturesController {
                         if (a.width) p.width = a.width;
                         if (a.height) p.height = a.height;
                         if (a.takenAt && !p.takenAt) p.takenAt = a.takenAt;
+                    }
+                } else if (p.kind === PictureKind.VIDEO && !p.thumbnailKey) {
+                    const thumb = await this.extractVideoThumbnail(buf).catch(() => null);
+                    if (thumb) {
+                        const thumbKey = `thumbnails/${owner}/${randomUUID()}.jpg`;
+                        const uploaded = await this.storage.upload(thumbKey, thumb, 'image/jpeg').then(() => true).catch(() => false);
+                        if (uploaded) {
+                            p.thumbnailKey = thumbKey;
+                            const dims = await sharp(thumb).metadata().catch(() => null);
+                            if (dims?.width) p.width = dims.width;
+                            if (dims?.height) p.height = dims.height;
+                        }
                     }
                 }
                 await this.pictureRepository.save(p);
@@ -706,7 +753,10 @@ export class PicturesController {
             }
         }
         const remaining = await this.pictureRepository.count({
-            where: { ownerId: owner, deletedAt: IsNull(), sha256: IsNull() },
+            where: [
+                { ownerId: owner, deletedAt: IsNull(), sha256: IsNull() },
+                { ownerId: owner, deletedAt: IsNull(), kind: PictureKind.VIDEO, thumbnailKey: IsNull() },
+            ],
         });
         return { processed, remaining };
     }
@@ -745,7 +795,6 @@ export class PicturesController {
         } catch {
             /* sharp could not decode; keep sha256 only */
         }
-
         return { sha256, phash, width, height, takenAt };
     }
 
@@ -792,6 +841,37 @@ export class PicturesController {
         const chunks: Buffer[] = [];
         for await (const chunk of stream) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
         return Buffer.concat(chunks);
+    }
+
+    private async extractVideoThumbnail(buffer: Buffer): Promise<Buffer | null> {
+        if (!ffmpegPath) return null;
+        const dir = await mkdtemp(join(tmpdir(), 'dp-thumb-'));
+        const input = join(dir, 'input');
+        const output = join(dir, 'thumb.jpg');
+        try {
+            await writeFile(input, buffer);
+            const ok = (await this.runFfmpegFrame(input, output, '1')) || (await this.runFfmpegFrame(input, output, '0'));
+            return ok ? await readFile(output) : null;
+        } catch {
+            return null;
+        } finally {
+            await rm(dir, { recursive: true, force: true }).catch(() => undefined);
+        }
+    }
+
+    private runFfmpegFrame(input: string, output: string, seekSeconds: string): Promise<boolean> {
+        return new Promise(resolve => {
+            const proc = spawn(ffmpegPath as string, [
+                '-y',
+                '-ss', seekSeconds,
+                '-i', input,
+                '-frames:v', '1',
+                '-vf', 'scale=640:-1',
+                output,
+            ]);
+            proc.on('error', () => resolve(false));
+            proc.on('close', code => resolve(code === 0));
+        });
     }
 
     private eventName(start: Date, end: Date): string {

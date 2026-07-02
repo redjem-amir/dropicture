@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation'
 import { useUser } from '@/components/UserProvider'
 
 const API = {
-  profile: '/api/settings/profile',
-  email: '/api/settings/email',
-  password: '/api/settings/password',
-  account: '/api/settings/account',
+  profile: `${process.env.NEXT_PUBLIC_API_URL}/api/settings/profile`,
+  email: `${process.env.NEXT_PUBLIC_API_URL}/api/settings/email`,
+  password: `${process.env.NEXT_PUBLIC_API_URL}/api/settings/password`,
+  account: `${process.env.NEXT_PUBLIC_API_URL}/api/settings/account`,
 }
 
 const ERROR_MESSAGES: Record<string, string> = {

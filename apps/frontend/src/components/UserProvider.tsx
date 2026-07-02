@@ -18,7 +18,7 @@ interface UserContextValue {
   error: Error | null;
   isLoading: boolean;
   refreshProfile: () => Promise<void>;
-  login: (email: string, password: string) => Promise<Response>;
+  login: (email: string, password: string, next?: string) => Promise<Response>;
   signup: (
     firstname: string,
     lastname: string,
@@ -69,7 +69,9 @@ export const UserProvider = ({
 
   const fetchProfile = useCallback(async (): Promise<UserProfile | null> => {
     try {
-      const res = await fetch('/api/auth/me', { credentials: 'include' });
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
+        credentials: 'include',
+      });
       if (!res.ok) return null;
       const data = await res.json();
       return (data as UserProfile) ?? null;
@@ -98,7 +100,7 @@ export const UserProvider = ({
     try {
       for (let attempt = 0; attempt < MAX_REFRESH_ATTEMPTS; attempt++) {
         try {
-          const response = await fetch('/api/auth/session', {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/session`, {
             method: 'POST',
             credentials: 'include',
           });
@@ -180,11 +182,11 @@ export const UserProvider = ({
   }, [user, refreshTokenWithRetry]);
 
   const login = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string, next?: string) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch('/api/auth/signin', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signin`, {
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
@@ -193,8 +195,8 @@ export const UserProvider = ({
         if (response.ok) {
           const data = await response.clone().json().catch(() => ({}));
           scheduleTokenRefresh(data.expires_in ?? ACCESS_TOKEN_TTL_FALLBACK);
-          const returnTo = consumeReturnTo();
-          window.location.href = returnTo ?? HOME_PATH;
+          const target = next ?? consumeReturnTo() ?? HOME_PATH;
+          window.location.href = target;
         }
         return response;
       } catch (err) {
@@ -210,7 +212,7 @@ export const UserProvider = ({
 
   const signup = useCallback(
     async (firstname: string, lastname: string, email: string, password: string) => {
-      return fetch('/api/auth/signup', {
+      return fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -223,7 +225,7 @@ export const UserProvider = ({
   const logout = useCallback(() => {
     clearRefreshTimer();
     setUser(null);
-    fetch('/api/auth/signout', {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signout`, {
       method: 'POST',
       credentials: 'include',
     }).finally(() => {
@@ -253,7 +255,6 @@ export const UserProvider = ({
       cancelled = true;
       clearRefreshTimer();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

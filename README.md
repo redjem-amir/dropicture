@@ -97,7 +97,7 @@ S3_BUCKET=dropicture-media
 # Application
 DEFAULT_ADMIN_EMAIL=admin@example.com
 DEFAULT_ADMIN_PASSWORD=change-me-too
-NEXT_PUBLIC_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:3001
 EOF
 ```
 
@@ -133,7 +133,7 @@ docker stack deploy -c docker-compose.yml dropicture
 
 Before you deploy, the stack needs a few things in place:
 
-- The required environment variables in the shell that runs the deploy: `APP_DOMAIN` (your public hostname, which the Traefik routes match), the database and Garage/S3 credentials, `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD`, and `NEXT_PUBLIC_URL`.
+- The required environment variables in the shell that runs the deploy: `APP_DOMAIN` (your public hostname, which the Traefik routes match), the database and Garage/S3 credentials, `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD`, and `NEXT_PUBLIC_API_URL`.
 - Three external Swarm resources holding your TLS material and proxy config:
   - config `dropicture_origin_cert`: the origin certificate (PEM)
   - config `dropicture_traefik_dynamic_v1`: Traefik's dynamic TLS config
@@ -166,9 +166,9 @@ The pipeline ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) bu
 | `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | Garage access key for the media bucket |
 | `APP_DOMAIN` | Public hostname the Traefik routers match (frontend and API) |
 | `DEFAULT_ADMIN_EMAIL` / `DEFAULT_ADMIN_PASSWORD` | First admin account created by the backend |
-| `NEXT_PUBLIC_URL` | Public site URL used by the frontend |
+| `NEXT_PUBLIC_API_URL` | Public site URL used by the frontend |
 
-> Right now the workflow only exports the first five groups in its `env:` block. `APP_DOMAIN`, `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD` and `NEXT_PUBLIC_URL` are required by `docker-compose.yml`, so add them to the deploy job's environment too. Otherwise `docker stack deploy` stops on the first missing variable.
+> Right now the workflow only exports the first five groups in its `env:` block. `APP_DOMAIN`, `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD` and `NEXT_PUBLIC_API_URL` are required by `docker-compose.yml`, so add them to the deploy job's environment too. Otherwise `docker stack deploy` stops on the first missing variable.
 
 Provisioning with Terraform and Ansible also needs `TF_VAR_hcloud_token` and `TF_VAR_ssh_public_key_b64`, plus the AWS credentials for the state backend.
 

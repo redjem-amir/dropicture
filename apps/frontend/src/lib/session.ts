@@ -13,17 +13,11 @@ export interface Session {
   accessExpiresAt: number
 }
 
-function backendOrigin(): string {
-  return process.env.NODE_ENV === 'production'
-    ? (process.env.NEXT_PUBLIC_URL as string)
-    : 'http://localhost:3000'
-}
-
 export const getSession = cache(async (): Promise<Session | null> => {
   const cookie = (await cookies()).get('session')?.value
   if (!cookie) return null
   try {
-    const res = await fetch(`${backendOrigin()}/api/auth/resolve`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/resolve`, {
       method: 'POST',
       headers: { Cookie: `session=${cookie}` },
       cache: 'no-store',

@@ -1,4 +1,6 @@
 // dropicture/apps/frontend/src/app/signin/layout.tsx
+import { UserProvider } from "@/components/UserProvider";
+import { getSession } from "@/lib/session";
 import type { Metadata } from "next";
 
 const TITLE = "Sign in · Dropicture";
@@ -25,6 +27,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+export default async function SigninLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  const session = await getSession();
+  return (
+    <UserProvider
+      initialSessionUser={session?.user ?? null}
+      initialAccessTokenExpiresAt={session?.accessExpiresAt}
+    >
+      <>{children}</>
+    </UserProvider>
+  );
 }

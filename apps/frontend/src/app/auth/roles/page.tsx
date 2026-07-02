@@ -79,7 +79,7 @@ export default function RolesPage() {
         setError(null)
         setActionError(null)
         try {
-            const res = await fetch('/api/roles', { credentials: 'same-origin' })
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles`, { credentials: 'include' })
             if (res.status === 403) {
                 setRoles(null)
                 setError("You don't have permission to view roles.")
@@ -169,7 +169,7 @@ export default function RolesPage() {
         setModalError(null)
         try {
             const payload = { name, scopes: Array.from(mScopes) }
-            const res = await fetch(editingId ? `/api/roles/${editingId}` : '/api/roles', {
+            const res = await fetch(editingId ? `${process.env.NEXT_PUBLIC_API_URL}/api/roles/${editingId}` : `${process.env.NEXT_PUBLIC_API_URL}/api/roles`, {
                 method: editingId ? 'PATCH' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
@@ -198,7 +198,7 @@ export default function RolesPage() {
         setBusyId(role.id)
         setActionError(null)
         try {
-            const res = await fetch(`/api/roles/${role.id}`, { method: 'DELETE' })
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles/${role.id}`, { method: 'DELETE' })
             if (!res.ok) {
                 const body = await res.json().catch(() => null)
                 const code = body?.code ?? (Array.isArray(body?.message) ? body.message[0] : body?.message)
