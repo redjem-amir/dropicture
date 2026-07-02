@@ -11,6 +11,8 @@ export interface UserProfile {
   lastname: string;
   scope: string;
   roles: string[];
+  storageQuotaBytes: number;
+  storageUsedBytes: number;
 }
 
 interface UserContextValue {

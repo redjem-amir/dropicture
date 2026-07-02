@@ -13,6 +13,29 @@ import { useUser, type UserProfile } from '@/components/UserProvider'
 const APP_PATH = '/auth'
 const SIDEBAR_ID = 'app-sidebar'
 
+const KB = 1000
+const MB = KB * 1000
+const GB = MB * 1000
+const TB = GB * 1000
+
+function formatBytes(bytes: number): string {
+    if (!Number.isFinite(bytes) || bytes <= 0) return '0 GB'
+    const units: [string, number][] = [['B', 1], ['KB', KB], ['MB', MB], ['GB', GB], ['TB', TB]]
+    let i = units.length - 1
+    while (i > 0 && bytes < units[i][1]) i--
+    let value = bytes / units[i][1]
+    let digits = value >= 100 ? 0 : 1
+    let rounded = Number(value.toFixed(digits))
+    if (rounded >= 1000 && i < units.length - 1) {
+        i += 1
+        value = bytes / units[i][1]
+        digits = value >= 100 ? 0 : 1
+        rounded = Number(value.toFixed(digits))
+    }
+    const label = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(digits)
+    return `${label} ${units[i][0]}`
+}
+
 type NavRoute = Extract<RouteItem, { type: 'route' }> & { href: string }
 type NavGroup = { label: string | null; routes: NavRoute[] }
 
@@ -50,6 +73,27 @@ function UserAvatar({ user, size }: { user: UserProfile; size: number }) {
         <span className="shrink-0" style={{ width: size, height: size }}>
             <Avvvatars value={user.email} displayValue={initials(user)} style="shape" size={size} />
         </span>
+    )
+}
+
+function StorageBar({ user }: { user: UserProfile }) {
+    const used = user.storageUsedBytes
+    const quota = user.storageQuotaBytes
+    const pct = quota > 0 ? Math.min(100, Math.round((used / quota) * 100)) : used > 0 ? 100 : 0
+    const tone = pct >= 90 ? 'bg-red-500' : pct >= 75 ? 'bg-amber-500' : 'bg-emerald-500'
+    return (
+        <div className="shrink-0 border-t border-stone-200/70 px-4 py-3">
+            <div className="flex items-center justify-between text-xs">
+                <span className="font-medium text-stone-600">Storage</span>
+                <span className="tabular-nums text-stone-400">{pct}%</span>
+            </div>
+            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-stone-100">
+                <div className={`h-full rounded-full transition-all ${tone}`} style={{ width: `${pct}%` }} />
+            </div>
+            <p className="mt-1.5 text-xs text-stone-400">
+                {formatBytes(used)} of {formatBytes(quota)} used
+            </p>
+        </div>
     )
 }
 
@@ -218,6 +262,18 @@ export default function LayoutPrivate({ children }: { children: React.ReactNode 
                         ))
                     )}
                 </nav>
+                {isLoading && !user ? (
+                    <div className="shrink-0 border-t border-stone-200/70 px-4 py-3" aria-hidden>
+                        <div className="flex items-center justify-between">
+                            <div className="h-2.5 w-16 animate-pulse rounded bg-stone-100" />
+                            <div className="h-2.5 w-8 animate-pulse rounded bg-stone-100" />
+                        </div>
+                        <div className="mt-2 h-1.5 w-full animate-pulse rounded-full bg-stone-100" />
+                        <div className="mt-1.5 h-2.5 w-28 animate-pulse rounded bg-stone-100" />
+                    </div>
+                ) : user ? (
+                    <StorageBar user={user} />
+                ) : null}
                 <div ref={userMenuRef} className="shrink-0 border-t border-stone-200/70 p-3">
                     {isLoading && !user ? (
                         <div className="flex items-center gap-2.5 p-2" aria-hidden>

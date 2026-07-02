@@ -10,6 +10,7 @@ import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { AuthService, AUTH_COOKIES, SESSION_COOKIE_OPTIONS, ACCESS_TOKEN_TTL_SECONDS, type AuthenticatedUser, type SessionContext } from '../services/auth.service';
 import { Account, AccountStatus } from '../models/account.model';
+import { Picture } from '../models/picture.model';
 import { RedisService } from '../services/redis.service';
 import { getClientIp } from '../guards/throttler.guard';
 
@@ -71,6 +72,8 @@ export class AuthController {
     constructor(
         @InjectRepository(Account)
         private readonly accountRepository: Repository<Account>,
+        @InjectRepository(Picture)
+        private readonly pictureRepository: Repository<Picture>,
         private readonly authService: AuthService,
         private readonly redisService: RedisService,
     ) { }
@@ -109,6 +112,16 @@ export class AuthController {
         }
     }
 
+    private async usageForAccount(accountId: string): Promise<number> {
+        const row = await this.pictureRepository
+            .createQueryBuilder('p')
+            .select('COALESCE(SUM(p.sizeBytes), 0)', 'used')
+            .where('p.ownerId = :accountId', { accountId })
+            .andWhere('p.deletedAt IS NULL')
+            .getRawOne<{ used: string }>();
+        return Number(row?.used ?? 0);
+    }
+
     @Throttle({ default: { limit: 60, ttl: 60000 } })
     @Get('/me')
     @UseGuards(AuthGuard('access-token'))
@@ -120,12 +133,15 @@ export class AuthController {
         if (!account) {
             throw new HttpException({ code: 'ACCOUNT_NOT_FOUND' }, HttpStatus.NOT_FOUND);
         }
+        const storageUsedBytes = await this.usageForAccount(account.id);
         return {
             email: account.email,
             firstname: account.firstname,
             lastname: account.lastname,
             scope: user.scope,
             roles: user.roles,
+            storageQuotaBytes: Number(account.storageQuotaBytes),
+            storageUsedBytes,
         };
     }
 
