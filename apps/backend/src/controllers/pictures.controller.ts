@@ -21,6 +21,7 @@ import { Album } from '../models/album.model';
 import { ShareLink, ShareKind } from '../models/share-link.model';
 import type { AuthenticatedUser } from '../services/auth.service';
 import { StorageService } from '../services/storage.service';
+import { RedisService } from '../services/redis.service';
 
 const DEFAULT_LIMIT = 60;
 const MAX_LIMIT = 100;
@@ -30,6 +31,8 @@ const FILE_URL_TTL = 3600;
 
 const MAX_SIMILAR_SCAN = 6000;
 const REINDEX_BATCH = 25;
+const MAX_EVENT_DISTANCE_KM = 50;
+const GEOCODE_CACHE_TTL_SECONDS = 60 * 60 * 24 * 30;
 
 interface UploadedFileLike {
     originalname: string;
@@ -44,6 +47,8 @@ interface ImageAnalysis {
     width: number | null;
     height: number | null;
     takenAt: Date | null;
+    latitude: number | null;
+    longitude: number | null;
 }
 
 export class UpdatePictureDto {
@@ -90,6 +95,7 @@ export class PicturesController {
         @InjectRepository(ShareLink)
         private readonly shareRepository: Repository<ShareLink>,
         private readonly storage: StorageService,
+        private readonly redisService: RedisService,
     ) { }
 
     private ownerId(req: Request): string {
@@ -525,6 +531,8 @@ export class PicturesController {
                         width: a.width,
                         height: a.height,
                         takenAt: a.takenAt,
+                        latitude: a.latitude,
+                        longitude: a.longitude,
                     };
                 }
             } else if (kind === PictureKind.VIDEO) {
@@ -665,7 +673,12 @@ export class PicturesController {
         const inAlbum = new Set<string>();
         for (const a of albums) for (const p of a.pictures ?? []) inAlbum.add(p.id);
         const candidates = pics.filter(p => !inAlbum.has(p.id));
-        const items = candidates.map(p => ({ id: p.id, date: +new Date(p.takenAt ?? p.createdAt) }));
+        const items = candidates.map(p => ({
+            id: p.id,
+            date: +new Date(p.takenAt ?? p.createdAt),
+            lat: p.latitude ?? null,
+            lon: p.longitude ?? null,
+        }));
         const events = this.suggestEvents(items, gapMs, minCount);
         const byId = new Map(candidates.map(p => [p.id, p]));
         const suggestions = await Promise.all(
@@ -673,10 +686,15 @@ export class PicturesController {
                 .sort((a, b) => b.end - a.end)
                 .slice(0, 30)
                 .map(async ev => {
-                    const cover = byId.get(ev.ids[0])!;
+                    const cover = await this.pickCover(ev.ids, byId);
+                    const dateLabel = this.eventName(new Date(ev.start), new Date(ev.end));
+                    const place =
+                        cover.latitude != null && cover.longitude != null
+                            ? await this.reverseGeocode(cover.latitude, cover.longitude).catch(() => null)
+                            : null;
                     return {
                         id: `sug_${ev.ids[0]}`,
-                        name: this.eventName(new Date(ev.start), new Date(ev.end)),
+                        name: place ? `${place} · ${dateLabel}` : dateLabel,
                         count: ev.ids.length,
                         coverUrl: await this.coverUrlFor(cover),
                         pictureIds: ev.ids,
@@ -713,10 +731,7 @@ export class PicturesController {
     async reindex(@Req() req: Request) {
         const owner = this.ownerId(req);
         const batch = await this.pictureRepository.find({
-            where: [
-                { ownerId: owner, deletedAt: IsNull(), sha256: IsNull() },
-                { ownerId: owner, deletedAt: IsNull(), kind: PictureKind.VIDEO, thumbnailKey: IsNull() },
-            ],
+            where: { ownerId: owner, deletedAt: IsNull(), analyzedAt: IsNull() },
             order: { createdAt: 'DESC' },
             take: REINDEX_BATCH,
         });
@@ -732,6 +747,11 @@ export class PicturesController {
                         if (a.width) p.width = a.width;
                         if (a.height) p.height = a.height;
                         if (a.takenAt && !p.takenAt) p.takenAt = a.takenAt;
+                        if (a.latitude != null) p.latitude = a.latitude;
+                        if (a.longitude != null) p.longitude = a.longitude;
+                    }
+                    if (p.latitude != null && p.longitude != null && !p.locationName) {
+                        p.locationName = await this.reverseGeocode(p.latitude, p.longitude).catch(() => null);
                     }
                 } else if (p.kind === PictureKind.VIDEO && !p.thumbnailKey) {
                     const thumb = await this.extractVideoThumbnail(buf).catch(() => null);
@@ -746,6 +766,7 @@ export class PicturesController {
                         }
                     }
                 }
+                p.analyzedAt = new Date();
                 await this.pictureRepository.save(p);
                 processed++;
             } catch {
@@ -753,10 +774,7 @@ export class PicturesController {
             }
         }
         const remaining = await this.pictureRepository.count({
-            where: [
-                { ownerId: owner, deletedAt: IsNull(), sha256: IsNull() },
-                { ownerId: owner, deletedAt: IsNull(), kind: PictureKind.VIDEO, thumbnailKey: IsNull() },
-            ],
+            where: { ownerId: owner, deletedAt: IsNull(), analyzedAt: IsNull() },
         });
         return { processed, remaining };
     }
@@ -765,12 +783,23 @@ export class PicturesController {
         return createHash('sha256').update(buffer).digest('hex');
     }
 
+    private gpsToDecimal(dms: unknown, ref: unknown): number | null {
+        if (!Array.isArray(dms) || dms.length !== 3) return null;
+        const [deg, min, sec] = dms as number[];
+        if ([deg, min, sec].some(n => typeof n !== 'number' || Number.isNaN(n))) return null;
+        let value = deg + min / 60 + sec / 3600;
+        if (ref === 'S' || ref === 'W') value = -value;
+        return value;
+    }
+
     private async analyzeImage(buffer: Buffer): Promise<ImageAnalysis> {
         const sha256 = this.sha256(buffer);
         let width: number | null = null;
         let height: number | null = null;
         let takenAt: Date | null = null;
         let phash: string | null = null;
+        let latitude: number | null = null;
+        let longitude: number | null = null;
         try {
             const meta = await sharp(buffer).metadata();
             width = meta.width ?? null;
@@ -787,6 +816,11 @@ export class PicturesController {
                         ex?.Photo?.DateTimeDigitized;
                     if (raw instanceof Date && !Number.isNaN(raw.getTime())) takenAt = raw;
                     else if (typeof raw === 'string') takenAt = this.parseExifDate(raw);
+                    const gps = ex?.GPSInfo;
+                    if (gps) {
+                        latitude = this.gpsToDecimal(gps.GPSLatitude, gps.GPSLatitudeRef);
+                        longitude = this.gpsToDecimal(gps.GPSLongitude, gps.GPSLongitudeRef);
+                    }
                 } catch {
                     /* unreadable EXIF, ignore */
                 }
@@ -795,7 +829,8 @@ export class PicturesController {
         } catch {
             /* sharp could not decode; keep sha256 only */
         }
-        return { sha256, phash, width, height, takenAt };
+
+        return { sha256, phash, width, height, takenAt, latitude, longitude };
     }
 
     private async dHash(buffer: Buffer): Promise<string | null> {
@@ -874,6 +909,84 @@ export class PicturesController {
         });
     }
 
+    private async sharpnessScore(buffer: Buffer): Promise<number> {
+        try {
+            const { data, info } = await sharp(buffer)
+                .resize(200, 200, { fit: 'inside' })
+                .greyscale()
+                .convolve({ width: 3, height: 3, kernel: [0, 1, 0, 1, -4, 1, 0, 1, 0] })
+                .raw()
+                .toBuffer({ resolveWithObject: true });
+            const n = info.width * info.height;
+            if (n === 0) return 0;
+            let sum = 0;
+            let sumSq = 0;
+            for (let i = 0; i < data.length; i++) {
+                sum += data[i];
+                sumSq += data[i] * data[i];
+            }
+            const mean = sum / n;
+            return sumSq / n - mean * mean;
+        } catch {
+            return 0;
+        }
+    }
+
+    private async pickCover(ids: string[], byId: Map<string, Picture>): Promise<Picture> {
+        const candidates = ids
+            .slice(0, 5)
+            .map(id => byId.get(id))
+            .filter((p): p is Picture => !!p && p.kind === PictureKind.IMAGE);
+        if (candidates.length === 0) return byId.get(ids[0])!;
+        if (candidates.length === 1) return candidates[0];
+        const scored = await Promise.all(
+            candidates.map(async p => {
+                try {
+                    const buf = await this.streamToBuffer(await this.storage.download(p.storageKey));
+                    return { p, score: await this.sharpnessScore(buf) };
+                } catch {
+                    return { p, score: -1 };
+                }
+            }),
+        );
+        scored.sort((a, b) => b.score - a.score);
+        return scored[0].p;
+    }
+
+    private roundCoord(n: number): string {
+        return n.toFixed(2);
+    }
+
+    private async reverseGeocode(lat: number, lon: number): Promise<string | null> {
+        const cacheKey = `geocode:${this.roundCoord(lat)}:${this.roundCoord(lon)}`;
+        const cached = await this.redisService.get(cacheKey).catch(() => null);
+        if (cached !== null && cached !== undefined) return cached || null;
+        try {
+            const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=jsonv2&zoom=10&accept-language=en`;
+            const res = await fetch(url, {
+                headers: { 'User-Agent': 'dropicture/1.0 (self-hosted photo app)' },
+                signal: AbortSignal.timeout(3000),
+            });
+            const data = res.ok ? ((await res.json()) as { address?: Record<string, string> }) : null;
+            const a = data?.address ?? {};
+            const name = a.city ?? a.town ?? a.village ?? a.municipality ?? a.county ?? null;
+            await this.redisService.setex(cacheKey, GEOCODE_CACHE_TTL_SECONDS, name ?? '').catch(() => undefined);
+            return name;
+        } catch {
+            return null;
+        }
+    }
+
+    private haversineKm(a: { lat: number; lon: number }, b: { lat: number; lon: number }): number {
+        const R = 6371;
+        const dLat = ((b.lat - a.lat) * Math.PI) / 180;
+        const dLon = ((b.lon - a.lon) * Math.PI) / 180;
+        const lat1 = (a.lat * Math.PI) / 180;
+        const lat2 = (b.lat * Math.PI) / 180;
+        const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+        return 2 * R * Math.asin(Math.sqrt(h));
+    }
+
     private eventName(start: Date, end: Date): string {
         const full = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         if (start.toDateString() === end.toDateString()) return full(end);
@@ -948,23 +1061,29 @@ export class PicturesController {
     }
 
     private suggestEvents(
-        items: { id: string; date: number }[],
+        items: { id: string; date: number; lat: number | null; lon: number | null }[],
         gapMs: number,
         minCount: number,
     ): { ids: string[]; start: number; end: number }[] {
         const sorted = [...items].sort((a, b) => a.date - b.date);
-        const clusters: { id: string; date: number }[][] = [];
-        let cur: { id: string; date: number }[] = [];
+        const clusters: (typeof sorted)[] = [];
+        let cur: typeof sorted = [];
         for (let i = 0; i < sorted.length; i++) {
             if (cur.length === 0) {
                 cur = [sorted[i]];
                 continue;
             }
-            if (sorted[i].date - sorted[i - 1].date > gapMs) {
+            const prev = sorted[i - 1];
+            const item = sorted[i];
+            const timeBreak = item.date - prev.date > gapMs;
+            const distBreak =
+                prev.lat != null && prev.lon != null && item.lat != null && item.lon != null &&
+                this.haversineKm({ lat: prev.lat, lon: prev.lon }, { lat: item.lat, lon: item.lon }) > MAX_EVENT_DISTANCE_KM;
+            if (timeBreak || distBreak) {
                 clusters.push(cur);
-                cur = [sorted[i]];
+                cur = [item];
             } else {
-                cur.push(sorted[i]);
+                cur.push(item);
             }
         }
         if (cur.length) clusters.push(cur);

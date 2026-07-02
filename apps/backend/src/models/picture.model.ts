@@ -61,6 +61,18 @@ export class Picture {
     @Column({ type: 'boolean', default: false })
     archived: boolean;
 
+    @Column({ type: 'double precision', nullable: true })
+    latitude: number | null;
+
+    @Column({ type: 'double precision', nullable: true })
+    longitude: number | null;
+
+    @Column({ type: 'varchar', length: 120, nullable: true })
+    locationName: string | null;
+
+    @Column({ type: 'timestamptz', nullable: true })
+    analyzedAt: Date | null;
+
     @Column({ type: 'timestamptz', nullable: true })
     takenAt: Date | null;
 
