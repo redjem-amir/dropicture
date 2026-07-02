@@ -9,6 +9,8 @@ export enum AccountStatus {
     BANNED = 'banned',
 }
 
+export const DEFAULT_STORAGE_QUOTA_BYTES = 1 * 1024 * 1024 * 1024;
+
 @Entity({ name: 'accounts' })
 export class Account {
     @PrimaryGeneratedColumn('uuid')
@@ -36,6 +38,9 @@ export class Account {
 
     @Column({ type: 'enum', enum: AccountStatus, default: AccountStatus.ACTIVE })
     status: AccountStatus;
+
+    @Column({ type: 'bigint', default: DEFAULT_STORAGE_QUOTA_BYTES })
+    storageQuotaBytes: string;
 
     @Column({ default: 1 })
     tokenVersion: number;

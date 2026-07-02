@@ -76,15 +76,23 @@ services:
     command: ["/garage", "server", "--single-node", "--default-bucket"]
     environment:
       GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET}
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN}
       GARAGE_DEFAULT_ACCESS_KEY: ${S3_ACCESS_KEY_ID}
       GARAGE_DEFAULT_SECRET_KEY: ${S3_SECRET_ACCESS_KEY}
       GARAGE_DEFAULT_BUCKET: ${S3_BUCKET}
     ports:
       - "3900:3900"
+      - "3903:3903"
     volumes:
       - ./garage.toml:/etc/garage.toml:ro
       - garage_meta_dropicture:/var/lib/garage/meta
       - garage_data_dropicture:/var/lib/garage/data
+    healthcheck:
+      test: ["CMD", "/garage", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: always
 
 volumes:
