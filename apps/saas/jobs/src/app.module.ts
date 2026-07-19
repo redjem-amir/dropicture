@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Media } from './models/media.entity';
 import { CdnService } from './services/cdn.service';
+import { Account } from './models/account.entity';
 
 @Module({
   imports: [
@@ -28,8 +29,8 @@ import { CdnService } from './services/cdn.service';
         query_timeout: 60000,
       },
     }),
-    TypeOrmModule.forFeature([Media]),
+    TypeOrmModule.forFeature([Account, Media]),
   ],
   providers: [CdnService],
 })
-export class AppModule { }
+export class AppModule {}
