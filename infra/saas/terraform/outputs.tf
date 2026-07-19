@@ -74,3 +74,7 @@ output "db_backup_bucket" {
 output "db_backup_ssm_prefix" {
   value = local.backup_ssm_prefix
 }
+
+output "cdn_cors_origins" {
+  value = concat(var.cdn_upload_origins, var.cdn_dev_origins)
+}

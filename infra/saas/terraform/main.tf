@@ -300,9 +300,9 @@ resource "aws_s3_bucket_cors_configuration" "cdn" {
   bucket = aws_s3_bucket.cdn.id
   cors_rule {
     allowed_methods = ["PUT", "POST", "GET", "HEAD"]
-    allowed_origins = var.cdn_upload_origins
+    allowed_origins = concat(var.cdn_upload_origins, var.cdn_dev_origins)
     allowed_headers = ["*"]
-    expose_headers  = ["ETag"]
+    expose_headers  = ["ETag", "Content-Length", "Content-Range", "Accept-Ranges"]
     max_age_seconds = 3000
   }
 }
@@ -526,8 +526,36 @@ resource "aws_wafv2_web_acl" "cdn" {
   }
 }
 
-data "aws_cloudfront_cache_policy" "optimized" {
-  name = "Managed-CachingOptimized"
+resource "aws_cloudfront_cache_policy" "cdn" {
+  name        = "${var.project_name}-cdn-cors"
+  comment     = "CachingOptimized + Origin dans la cache key (CORS)"
+  min_ttl     = 1
+  default_ttl = 86400
+  max_ttl     = 31536000
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    enable_accept_encoding_gzip   = true
+    enable_accept_encoding_brotli = true
+
+    headers_config {
+      header_behavior = "whitelist"
+      headers {
+        items = [
+          "Origin",
+          "Access-Control-Request-Method",
+          "Access-Control-Request-Headers",
+        ]
+      }
+    }
+
+    cookies_config {
+      cookie_behavior = "none"
+    }
+
+    query_strings_config {
+      query_string_behavior = "none"
+    }
+  }
 }
 
 data "aws_cloudfront_origin_request_policy" "cors_s3" {
@@ -582,9 +610,11 @@ resource "aws_cloudfront_distribution" "cdn" {
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
     cached_methods         = ["GET", "HEAD", "OPTIONS"]
     compress               = true
-    cache_policy_id            = data.aws_cloudfront_cache_policy.optimized.id
+
+    cache_policy_id            = aws_cloudfront_cache_policy.cdn.id
     origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.cors_s3.id
     response_headers_policy_id = aws_cloudfront_response_headers_policy.cdn.id
+
     trusted_key_groups = [aws_cloudfront_key_group.cdn.id]
   }
   restrictions {

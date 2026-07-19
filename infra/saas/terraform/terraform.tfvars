@@ -8,6 +8,7 @@ aws_region         = "eu-west-3"
 cdn_price_class    = "PriceClass_100"
 cdn_waf_rate_limit = 5000
 cdn_upload_origins = ["https://app.dropicture.com"]
+cdn_dev_origins    = ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"]
 
 cloudfront_key_versions       = ["v1"]
 cloudfront_active_key_version = "v1"
