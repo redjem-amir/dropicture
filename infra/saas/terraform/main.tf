@@ -18,10 +18,6 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 6.0"
     }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "~> 4.0"
-    }
   }
   backend "s3" {
     bucket       = "dropicture-tfstate-prod"
@@ -96,6 +92,7 @@ locals {
   cdn_domain            = "cdn.${var.root_domain}"
   cdn_bucket_name       = "${var.project_name}-cdn-prod"
   cdn_origin_id         = "s3-cdn"
+  cdn_public_prefix     = "media"
   ssm_prefix            = "/${var.project_name}/cloudfront"
   db_backup_bucket_name = "${var.project_name}-db-backups-prod"
   backup_ssm_prefix     = "/${var.project_name}/backup"
@@ -339,64 +336,6 @@ resource "aws_acm_certificate_validation" "cdn" {
   validation_record_fqdns = [for r in cloudflare_dns_record.cdn_cert_validation : r.name]
 }
 
-resource "tls_private_key" "cloudfront" {
-  for_each  = toset(var.cloudfront_key_versions)
-  algorithm = "RSA"
-  rsa_bits  = 2048
-}
-
-resource "aws_cloudfront_public_key" "cdn" {
-  for_each    = tls_private_key.cloudfront
-  name        = "${var.project_name}-cdn-${each.key}"
-  encoded_key = each.value.public_key_pem
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_cloudfront_key_group" "cdn" {
-  name  = "${var.project_name}-cdn-signers"
-  items = [for k in aws_cloudfront_public_key.cdn : k.id]
-}
-
-resource "aws_kms_key" "cdn_secrets" {
-  deletion_window_in_days = 30
-  enable_key_rotation     = true
-}
-
-resource "aws_kms_alias" "cdn_secrets" {
-  name          = "alias/${var.project_name}-cdn-secrets"
-  target_key_id = aws_kms_key.cdn_secrets.key_id
-}
-
-resource "aws_ssm_parameter" "cloudfront_private_key" {
-  for_each = tls_private_key.cloudfront
-  name     = "${local.ssm_prefix}/private_key_${each.key}"
-  type     = "SecureString"
-  key_id   = aws_kms_key.cdn_secrets.key_id
-  value    = each.value.private_key_pem_pkcs8
-  tier     = "Standard"
-}
-
-resource "aws_ssm_parameter" "cloudfront_key_pair_id" {
-  for_each = aws_cloudfront_public_key.cdn
-  name     = "${local.ssm_prefix}/key_pair_id_${each.key}"
-  type     = "String"
-  value    = each.value.id
-}
-
-resource "aws_ssm_parameter" "cloudfront_active_key_version" {
-  name  = "${local.ssm_prefix}/active_key_version"
-  type  = "String"
-  value = var.cloudfront_active_key_version
-  lifecycle {
-    precondition {
-      condition     = contains(var.cloudfront_key_versions, var.cloudfront_active_key_version)
-      error_message = "cloudfront_active_key_version doit faire partie de cloudfront_key_versions."
-    }
-  }
-}
-
 resource "aws_ssm_parameter" "cdn_config" {
   for_each = {
     domain          = "https://${local.cdn_domain}"
@@ -425,7 +364,7 @@ data "aws_iam_policy_document" "cdn_bucket" {
       identifiers = ["cloudfront.amazonaws.com"]
     }
     actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.cdn.arn}/*"]
+    resources = ["${aws_s3_bucket.cdn.arn}/${local.cdn_public_prefix}/*"]
     condition {
       test     = "StringEquals"
       variable = "AWS:SourceArn"
@@ -599,11 +538,13 @@ resource "aws_cloudfront_distribution" "cdn" {
   aliases         = [local.cdn_domain]
   price_class     = var.cdn_price_class
   web_acl_id      = aws_wafv2_web_acl.cdn.arn
+
   origin {
     domain_name              = aws_s3_bucket.cdn.bucket_regional_domain_name
     origin_id                = local.cdn_origin_id
     origin_access_control_id = aws_cloudfront_origin_access_control.cdn.id
   }
+
   default_cache_behavior {
     target_origin_id       = local.cdn_origin_id
     viewer_protocol_policy = "redirect-to-https"
@@ -614,19 +555,20 @@ resource "aws_cloudfront_distribution" "cdn" {
     cache_policy_id            = aws_cloudfront_cache_policy.cdn.id
     origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.cors_s3.id
     response_headers_policy_id = aws_cloudfront_response_headers_policy.cdn.id
-
-    trusted_key_groups = [aws_cloudfront_key_group.cdn.id]
   }
+
   restrictions {
     geo_restriction {
       restriction_type = "none"
     }
   }
+
   viewer_certificate {
     acm_certificate_arn      = aws_acm_certificate_validation.cdn.certificate_arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
+
   tags = { role = "cdn" }
 }
 

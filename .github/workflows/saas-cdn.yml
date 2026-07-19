@@ -2,6 +2,11 @@ name: SaaS Cdn
 
 on:
   workflow_dispatch:
+    inputs:
+      drop_signing_keys:
+        description: "Migration unique : détruire les clés de signature CloudFront (tls/public_key/key_group/KMS). À cocher UNE seule fois, puis remettre à false."
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -97,10 +102,6 @@ jobs:
             aws_s3_bucket_policy.cdn
             aws_cloudfront_distribution.cdn
             cloudflare_dns_record.cdn
-            aws_kms_alias.cdn_secrets
-            aws_ssm_parameter.cloudfront_private_key
-            aws_ssm_parameter.cloudfront_key_pair_id
-            aws_ssm_parameter.cloudfront_active_key_version
             aws_ssm_parameter.cdn_config
             aws_s3_bucket_public_access_block.db_backups
             aws_s3_bucket_ownership_controls.db_backups
@@ -111,6 +112,24 @@ jobs:
             aws_s3_bucket_policy.db_backups
             aws_ssm_parameter.db_backup_config
           )
+
+          # Migration unique : ces adresses ne sont plus dans la configuration,
+          # mais sont encore dans le state. Les cibler explicitement force leur
+          # destruction dans ce run plutôt que de les laisser orphelines.
+          if [ "${{ inputs.drop_signing_keys }}" = "true" ]; then
+            echo "::notice::Destruction des clés de signature CloudFront demandée."
+            TARGETS+=(
+              tls_private_key.cloudfront
+              aws_cloudfront_public_key.cdn
+              aws_cloudfront_key_group.cdn
+              aws_kms_key.cdn_secrets
+              aws_kms_alias.cdn_secrets
+              aws_ssm_parameter.cloudfront_private_key
+              aws_ssm_parameter.cloudfront_key_pair_id
+              aws_ssm_parameter.cloudfront_active_key_version
+            )
+          fi
+
           printf -v FLAGS -- "-target=%s " "${TARGETS[@]}"
 
           set +e
@@ -134,6 +153,22 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Guard destructive plan
+        if: ${{ steps.plan.outputs.has_changes == 'true' }}
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          set -euo pipefail
+          FORBIDDEN=$(terraform show -json cdn.tfplan \
+            | jq -r '.resource_changes[]
+                     | select(.change.actions | index("delete"))
+                     | select(.type | test("^(hcloud_|aws_s3_bucket$|aws_cloudfront_distribution$)"))
+                     | .address')
+          if [ -n "$FORBIDDEN" ]; then
+            echo "::error::Le plan détruirait des ressources critiques :"
+            echo "$FORBIDDEN"
+            exit 1
+          fi
+
       - name: terraform apply
         if: ${{ steps.plan.outputs.has_changes == 'true' }}
         working-directory: ${{ env.TF_DIR }}
@@ -152,12 +187,12 @@ jobs:
             echo "| CDN | \`$(terraform output -raw cdn_url)\` |"
             echo "| Distribution | \`$(terraform output -raw cdn_distribution_id)\` |"
             echo "| Bucket | \`$(terraform output -raw cdn_bucket)\` |"
+            echo "| Préfixe servi | \`$(terraform output -raw cdn_public_prefix)/\` |"
             echo "| Préfixe SSM | \`$(terraform output -raw cdn_ssm_prefix)\` |"
-            echo "| CMK | \`$(terraform output -raw cdn_kms_key_arn)\` |"
             echo "| Sauvegardes | \`$(terraform output -raw db_backup_bucket)\` |"
             echo ""
             echo "Appliqué par @${{ github.actor }}."
             echo ""
-            echo "L'utilisateur IAM applicatif doit porter \`kms:Decrypt\` sur la CMK,"
-            echo "sinon les SecureString remontent vides sans erreur explicite."
+            echo "Seul \`media/\` est servi par CloudFront ; \`originals/\` n'est"
+            echo "accessible qu'via les credentials IAM du backend et des jobs."
           } >> "$GITHUB_STEP_SUMMARY"

@@ -80,24 +80,6 @@ variable "cdn_dev_origins" {
   }
 }
 
-variable "cloudfront_key_versions" {
-  type    = list(string)
-  default = ["v1"]
-  validation {
-    condition     = length(var.cloudfront_key_versions) >= 1 && length(var.cloudfront_key_versions) <= 5
-    error_message = "A CloudFront key group accepts between 1 and 5 public keys."
-  }
-  validation {
-    condition     = length(distinct(var.cloudfront_key_versions)) == length(var.cloudfront_key_versions)
-    error_message = "Key versions must be unique."
-  }
-}
-
-variable "cloudfront_active_key_version" {
-  type    = string
-  default = "v1"
-}
-
 variable "db_backup_force_destroy" {
   type    = bool
   default = false

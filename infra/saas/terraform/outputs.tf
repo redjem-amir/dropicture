@@ -47,6 +47,10 @@ output "cdn_bucket" {
   value = aws_s3_bucket.cdn.id
 }
 
+output "cdn_public_prefix" {
+  value = local.cdn_public_prefix
+}
+
 output "cdn_cloudfront_domain" {
   value = aws_cloudfront_distribution.cdn.domain_name
 }
@@ -55,16 +59,8 @@ output "cdn_distribution_id" {
   value = aws_cloudfront_distribution.cdn.id
 }
 
-output "cdn_key_pair_ids" {
-  value = { for k, v in aws_cloudfront_public_key.cdn : k => v.id }
-}
-
 output "cdn_ssm_prefix" {
   value = local.ssm_prefix
-}
-
-output "cdn_kms_key_arn" {
-  value = aws_kms_key.cdn_secrets.arn
 }
 
 output "db_backup_bucket" {
