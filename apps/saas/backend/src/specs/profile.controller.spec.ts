@@ -16,7 +16,6 @@ import { Media } from '../models/media.entity';
 const SITE = 'https://dropicture.com';
 const OWNER_ID = randomUUID();
 
-/** Dépôt Account en mémoire : surface minimale utilisée par ProfileController. */
 class FakeAccounts {
   readonly rows = new Map<string, Account>();
 
@@ -49,7 +48,6 @@ class FakeAccounts {
   }
 }
 
-/** Dépôt Media en mémoire avec un QueryBuilder chaînable configurable. */
 class FakeMedia {
   readonly rows = new Map<string, Media>();
   rawMany: Array<{ visibility: string; total: string }> = [];
@@ -72,19 +70,25 @@ class FakeMedia {
   }
 
   createQueryBuilder() {
-    const self = this;
     const qb: Record<string, unknown> = {};
-    for (const method of ['select', 'addSelect', 'where', 'andWhere', 'groupBy', 'orderBy', 'addOrderBy', 'take', 'skip']) {
+    for (const method of ['select', 'addSelect', 'where', 'andWhere', 'groupBy', 'orderBy', 'addOrderBy', 'limit', 'offset', 'take', 'skip']) {
       qb[method] = () => qb;
     }
-    qb.getRawMany = async () => self.rawMany;
-    qb.getMany = async () => self.many;
+    qb.getRawMany = async () => this.rawMany;
+    qb.getMany = async () => this.many;
     return qb;
   }
 }
 
 const cdn = {
-  urlsFor: (m: Media) => ({ base: `cdn/${m.id}`, srcSet: null, poster: null, hls: null, thumbhash: null }),
+  urlsFor: (m: Media) => ({
+    base: `cdn/${m.id}`,
+    avif: `cdn/${m.id}/image.avif`,
+    webp: `cdn/${m.id}/image.webp`,
+    poster: null,
+    video: null,
+    thumbhash: null,
+  }),
   limits: () => ({
     image: { maxBytes: 8388608 },
     video: { maxBytes: 1, minDurationMs: 1, maxDurationMs: 1 },
@@ -96,7 +100,6 @@ const cdn = {
   createUpload: jest.fn(async () => ({ strategy: 'post', mediaId: 'm', key: 'k', url: 'u', fields: {}, expiresAt: 'x' })),
   completeUpload: jest.fn(async (_ownerId: string, id: string) => ({ id, purpose: 'avatar', status: 'ready' })),
   destroyMedia: jest.fn(async () => undefined),
-  issueReadCookies: jest.fn(() => [{ name: 'CloudFront-Policy', value: 'v', maxAge: 3600000 }]),
 };
 
 describe('ProfileController — /api/profile', () => {
@@ -188,15 +191,16 @@ describe('ProfileController — /api/profile', () => {
     it('résout l’avatar via le dépôt Media quand avatarMediaId est présent', async () => {
       const avatarId = randomUUID();
       accounts.seed({ avatarMediaId: avatarId });
-      media.seed({ id: avatarId, status: 'ready' } as Media);
+      media.seed({ id: avatarId, status: 'ready' });
       const res = await http().get('/api/profile').set('x-user', OWNER_ID).expect(200);
       expect(res.body.avatar).toEqual({
         id: avatarId,
         status: 'ready',
         base: `cdn/${avatarId}`,
-        srcSet: null,
+        avif: `cdn/${avatarId}/image.avif`,
+        webp: `cdn/${avatarId}/image.webp`,
         poster: null,
-        hls: null,
+        video: null,
         thumbhash: null,
       });
     });
@@ -248,9 +252,10 @@ describe('ProfileController — /api/profile', () => {
         height: 200,
         durationMs: null,
         base: 'cdn/a',
-        srcSet: null,
+        avif: 'cdn/a/image.avif',
+        webp: 'cdn/a/image.webp',
         poster: null,
-        hls: null,
+        video: null,
         thumbhash: null,
       });
       expect(res.body.nextCursor).toBe('2');
@@ -261,6 +266,16 @@ describe('ProfileController — /api/profile', () => {
       const res = await http().get('/api/profile/media').query({ limit: '2' }).set('x-user', OWNER_ID).expect(200);
       expect(res.body.items).toHaveLength(1);
       expect(res.body.nextCursor).toBeNull();
+    });
+
+    it('reprend la pagination depuis le curseur reçu', async () => {
+      media.many = [
+        { id: 'c', kind: 'image', visibility: 'public', width: 1, height: 1, durationMs: null },
+        { id: 'd', kind: 'image', visibility: 'public', width: 1, height: 1, durationMs: null },
+        { id: 'e', kind: 'image', visibility: 'public', width: 1, height: 1, durationMs: null },
+      ] as unknown as Media[];
+      const res = await http().get('/api/profile/media').query({ limit: '2', cursor: '2' }).set('x-user', OWNER_ID).expect(200);
+      expect(res.body.nextCursor).toBe('4');
     });
   });
 
@@ -316,13 +331,9 @@ describe('ProfileController — /api/profile', () => {
     });
   });
 
-  describe('POST /cdn-session', () => {
-    it('émet les cookies de lecture CDN', async () => {
-      const res = await http().post('/api/profile/cdn-session').set('x-user', OWNER_ID).expect(200);
-      expect(cdn.issueReadCookies).toHaveBeenCalledWith(OWNER_ID);
-      expect(res.body).toEqual({ success: true, expires_in: 3600 });
-      const setCookie = (res.headers['set-cookie'] ?? []) as unknown as string[];
-      expect(setCookie.some((c) => c.startsWith('CloudFront-Policy='))).toBe(true);
+  describe('route supprimée', () => {
+    it('POST /cdn-session n’existe plus → 404', async () => {
+      await http().post('/api/profile/cdn-session').set('x-user', OWNER_ID).expect(404);
     });
   });
 });

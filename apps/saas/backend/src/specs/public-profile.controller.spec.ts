@@ -14,25 +14,26 @@ import { Gallery } from '../models/gallery.entity';
 import { GalleryMedia } from '../models/gallery-media.entity';
 import { Follow } from '../models/follow.entity';
 
-/**
- * CDN factice : urlsFor renvoie une forme prévisible, dérivée de l'id du média,
- * ce qui permet d'affirmer précisément le mapping des URLs dans les réponses.
- */
 const cdn = {
   urlsFor: (m: { id: string }) => ({
     base: `cdn/${m.id}`,
-    srcSet: null,
+    avif: `cdn/${m.id}/image.avif`,
+    webp: `cdn/${m.id}/image.webp`,
     poster: null,
-    hls: null,
+    video: null,
     thumbhash: null,
   }),
 };
 
-/**
- * Vrai/faux matching d'un `where` TypeORM sur une ligne en mémoire.
- * Gère IsNull()/In() via FindOperator ; le reste est une égalité stricte ;
- * tout autre opérateur est traité de façon permissive (match).
- */
+const urls = (id: string) => ({
+  base: `cdn/${id}`,
+  avif: `cdn/${id}/image.avif`,
+  webp: `cdn/${id}/image.webp`,
+  poster: null,
+  video: null,
+  thumbhash: null,
+});
+
 function matchWhere(row: Record<string, unknown>, clause: Record<string, unknown>): boolean {
   const entries = Object.entries(clause ?? {});
   if (!entries.length) return false;
@@ -46,8 +47,6 @@ function matchWhere(row: Record<string, unknown>, clause: Record<string, unknown
   });
 }
 
-/** Chaîne de query-builder factice : chaque étape se renvoie elle-même ; les
- * méthodes terminales lisent la config attachée au dépôt (`repo.qb`). */
 function makeQueryBuilder(config: Record<string, unknown>) {
   const stub: Record<string, unknown> = {};
   const chain = [
@@ -77,8 +76,6 @@ function makeQueryBuilder(config: Record<string, unknown>) {
   return stub;
 }
 
-/** Dépôt factice minimal : find/findOne/count sur `rows`, plus un query-builder
- * dont les résultats terminaux se configurent par test via `repo.qb`. */
 class FakeRepo<T extends Record<string, unknown>> {
   rows: T[] = [];
   qb: Record<string, unknown> = {};
@@ -102,8 +99,8 @@ class FakeRepo<T extends Record<string, unknown>> {
     if (options.order) {
       const [field, dir] = Object.entries(options.order)[0];
       out = [...out].sort((a, b) => {
-        const av = a[field] as unknown as number;
-        const bv = b[field] as unknown as number;
+        const av = a[field] as number;
+        const bv = b[field] as number;
         const cmp = av > bv ? 1 : av < bv ? -1 : 0;
         return dir === 'DESC' ? -cmp : cmp;
       });
@@ -228,7 +225,11 @@ describe('PublicProfileController — /api/u', () => {
       expect(res.body.username).toBe('ada_lovelace');
       expect(res.body.name).toBe('Ada Lovelace');
       expect(res.body.bio).toBe('Comtesse de Lovelace');
-      expect(res.body.avatar).toEqual({ base: 'cdn/m-avatar', srcSet: null });
+      expect(res.body.avatar).toEqual({
+        base: 'cdn/m-avatar',
+        avif: 'cdn/m-avatar/image.avif',
+        webp: 'cdn/m-avatar/image.webp',
+      });
       expect(res.body.counts).toEqual({ photos: 2, galleries: 1, followers: 3 });
       expect(res.body.galleries).toEqual([
         {
@@ -238,7 +239,7 @@ describe('PublicProfileController — /api/u', () => {
           tags: ['nature'],
           total: 3,
           publishedAt: '2026-05-01T00:00:00.000Z',
-          cover: { id: 'm-cover', kind: 'image', base: 'cdn/m-cover', srcSet: null, poster: null, hls: null, thumbhash: null },
+          cover: { id: 'm-cover', kind: 'image', ...urls('m-cover') },
         },
       ]);
     });
@@ -269,11 +270,7 @@ describe('PublicProfileController — /api/u', () => {
         width: 800,
         height: 600,
         durationMs: null,
-        base: 'cdn/m1',
-        srcSet: null,
-        poster: null,
-        hls: null,
-        thumbhash: null,
+        ...urls('m1'),
       });
       expect(res.body.items[1].id).toBe('m2');
       expect(typeof res.body.nextCursor).toBe('string');
@@ -336,11 +333,7 @@ describe('PublicProfileController — /api/u', () => {
         width: 800,
         height: 600,
         durationMs: null,
-        base: 'cdn/m1',
-        srcSet: null,
-        poster: null,
-        hls: null,
-        thumbhash: null,
+        ...urls('m1'),
       });
     });
   });

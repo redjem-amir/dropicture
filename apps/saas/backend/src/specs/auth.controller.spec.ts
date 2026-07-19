@@ -16,7 +16,6 @@ import { ARGON2_OPTIONS, AUTH_COOKIES, AuthService } from '../services/auth.serv
 import { RedisService } from '../services/redis.service';
 import { randomUUID } from 'crypto';
 
-/** Dépôt Account en mémoire : reproduit la surface de Repository<Account> utilisée ici. */
 class FakeAccounts {
   readonly rows = new Map<string, Account>();
 

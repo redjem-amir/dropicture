@@ -16,10 +16,9 @@ const OWNER_ID = 'owner-1';
 const MEDIA_A = '11111111-1111-4111-8111-111111111111';
 const MEDIA_B = '22222222-2222-4222-8222-222222222222';
 
-/** Constructeur de query-builder chaînable : chaque étape renvoie le même stub, terminaux configurables. */
 function makeQb(terminals: { getRawMany?: unknown; getRawOne?: unknown; getMany?: unknown }) {
   const qb: Record<string, jest.Mock> = {};
-  const chain = ['select', 'addSelect', 'where', 'andWhere', 'groupBy', 'addGroupBy', 'orderBy', 'addOrderBy', 'take'];
+  const chain = ['select', 'addSelect', 'where', 'andWhere', 'groupBy', 'addGroupBy', 'orderBy', 'addOrderBy', 'limit', 'offset', 'take', 'skip'];
   for (const m of chain) qb[m] = jest.fn(() => qb);
   qb.getRawMany = jest.fn(async () => terminals.getRawMany ?? []);
   qb.getRawOne = jest.fn(async () => terminals.getRawOne ?? { first: null });
@@ -29,18 +28,14 @@ function makeQb(terminals: { getRawMany?: unknown; getRawOne?: unknown; getMany?
 
 describe('LibraryController — /api/library', () => {
   let app: INestApplication;
-
-  /** Résultats configurables du dépôt Media (par test). */
   const repoState: { findResult: Partial<Media>[]; qb: { getRawMany?: unknown; getRawOne?: unknown; getMany?: unknown } } = {
     findResult: [],
     qb: {},
   };
-
   const media = {
     find: jest.fn(async () => repoState.findResult),
     createQueryBuilder: jest.fn(() => makeQb(repoState.qb)),
   };
-
   const cdn = {
     limits: jest.fn(() => ({
       image: { maxBytes: 8388608 },
@@ -48,8 +43,15 @@ describe('LibraryController — /api/library', () => {
       avatar: { maxBytes: 1 },
       accepted: ['image/jpeg', 'video/mp4'],
     })),
-    urlsFor: jest.fn((m: { id: string }) => ({ base: `cdn/${m.id}`, srcSet: null, poster: null, hls: null, thumbhash: null })),
-    originalUrl: jest.fn(() => 'https://signed'),
+    urlsFor: jest.fn((m: { id: string }) => ({
+      base: `cdn/${m.id}`,
+      avif: `cdn/${m.id}/image.avif`,
+      webp: `cdn/${m.id}/image.webp`,
+      poster: null,
+      video: null,
+      thumbhash: null,
+    })),
+    originalUrl: jest.fn(async () => 'https://signed'),
     createUpload: jest.fn(async () => ({ strategy: 'post', mediaId: MEDIA_A, key: 'originals/o/m.jpg', url: 'u', fields: {}, expiresAt: 'x' })),
     completeUpload: jest.fn(async (_o: string, id: string) => ({
       id,
@@ -67,11 +69,10 @@ describe('LibraryController — /api/library', () => {
     })),
     completeMultipart: jest.fn(async () => ({ size: 123 })),
     abortMultipart: jest.fn(async () => undefined),
-    publishMedia: jest.fn(async (_o: string, id: string) => ({ id, visibility: 'public' })),
-    unpublishMedia: jest.fn(async (_o: string, id: string) => ({ id, visibility: 'private' })),
+    publishMany: jest.fn(async (_o: string, ids: string[]) => ids),
+    unpublishMany: jest.fn(async (_o: string, ids: string[]) => ids),
     trashMedia: jest.fn(async () => undefined),
     destroyMedia: jest.fn(async () => undefined),
-    issueReadCookies: jest.fn(() => [{ name: 'CloudFront-Policy', value: 'v', maxAge: 3600000 }]),
   };
 
   const http = () => request(app.getHttpServer());
@@ -164,7 +165,14 @@ describe('LibraryController — /api/library', () => {
         .send({ ids: [MEDIA_A] })
         .expect(200);
       expect(res.body.items).toHaveLength(1);
-      expect(res.body.items[0].id).toBe(MEDIA_A);
+      expect(res.body.items[0]).toMatchObject({
+        id: MEDIA_A,
+        base: `cdn/${MEDIA_A}`,
+        avif: `cdn/${MEDIA_A}/image.avif`,
+        webp: `cdn/${MEDIA_A}/image.webp`,
+        poster: null,
+        video: null,
+      });
       expect(cdn.urlsFor).toHaveBeenCalled();
     });
   });
@@ -187,16 +195,58 @@ describe('LibraryController — /api/library', () => {
     });
   });
 
-  describe('actions groupées', () => {
-    const cases: [string, 'patch' | 'post', string, keyof typeof cdn][] = [
-      ['publish', 'patch', '/api/library/publish', 'publishMedia'],
-      ['unpublish', 'patch', '/api/library/unpublish', 'unpublishMedia'],
-      ['trash', 'post', '/api/library/trash', 'trashMedia'],
-      ['destroy', 'post', '/api/library/destroy', 'destroyMedia'],
+  describe('actions groupées — publish / unpublish (un seul UPDATE)', () => {
+    const bulkCases: [string, string, 'publishMany' | 'unpublishMany'][] = [
+      ['publish', '/api/library/publish', 'publishMany'],
+      ['unpublish', '/api/library/unpublish', 'unpublishMany'],
     ];
 
-    it.each(cases)('%s : tous réussissent → done rempli, failed vide', async (_name, method, path, cdnMethod) => {
-      const res = await auth(http()[method](path))
+    it.each(bulkCases)('%s : tous réussissent → done rempli, failed vide', async (_name, path, cdnMethod) => {
+      const res = await auth(http().patch(path))
+        .send({ ids: [MEDIA_A, MEDIA_B] })
+        .expect(200);
+      expect(res.body).toEqual({ done: [MEDIA_A, MEDIA_B], failed: [] });
+      expect(cdn[cdnMethod]).toHaveBeenCalledTimes(1);
+      expect(cdn[cdnMethod]).toHaveBeenCalledWith(OWNER_ID, [MEDIA_A, MEDIA_B]);
+    });
+
+    it('publish : un média non prêt atterrit dans failed avec MEDIA_NOT_READY', async () => {
+      cdn.publishMany.mockResolvedValueOnce([MEDIA_B]);
+      repoState.findResult = [{ id: MEDIA_A, status: 'queued', purpose: 'content', deletedAt: null } as unknown as Media];
+      const res = await auth(http().patch('/api/library/publish'))
+        .send({ ids: [MEDIA_A, MEDIA_B] })
+        .expect(200);
+      expect(res.body.done).toEqual([MEDIA_B]);
+      expect(res.body.failed).toEqual([{ id: MEDIA_A, code: 'MEDIA_NOT_READY' }]);
+    });
+
+    it('publish : un média absent atterrit dans failed avec MEDIA_NOT_FOUND', async () => {
+      cdn.publishMany.mockResolvedValueOnce([]);
+      repoState.findResult = [];
+      const res = await auth(http().patch('/api/library/publish'))
+        .send({ ids: [MEDIA_A] })
+        .expect(200);
+      expect(res.body.failed).toEqual([{ id: MEDIA_A, code: 'MEDIA_NOT_FOUND' }]);
+    });
+
+    it('unpublish : un avatar atterrit dans failed avec AVATAR_ALWAYS_PUBLIC', async () => {
+      cdn.unpublishMany.mockResolvedValueOnce([]);
+      repoState.findResult = [{ id: MEDIA_A, status: 'ready', purpose: 'avatar', deletedAt: null } as unknown as Media];
+      const res = await auth(http().patch('/api/library/unpublish'))
+        .send({ ids: [MEDIA_A] })
+        .expect(200);
+      expect(res.body.failed).toEqual([{ id: MEDIA_A, code: 'AVATAR_ALWAYS_PUBLIC' }]);
+    });
+  });
+
+  describe('actions groupées — trash / destroy (séquentiel)', () => {
+    const loopCases: [string, string, 'trashMedia' | 'destroyMedia'][] = [
+      ['trash', '/api/library/trash', 'trashMedia'],
+      ['destroy', '/api/library/destroy', 'destroyMedia'],
+    ];
+
+    it.each(loopCases)('%s : tous réussissent → done rempli, failed vide', async (_name, path, cdnMethod) => {
+      const res = await auth(http().post(path))
         .send({ ids: [MEDIA_A, MEDIA_B] })
         .expect(200);
       expect(res.body).toEqual({ done: [MEDIA_A, MEDIA_B], failed: [] });
@@ -205,9 +255,9 @@ describe('LibraryController — /api/library', () => {
       expect(cdn[cdnMethod]).toHaveBeenCalledWith(OWNER_ID, MEDIA_B);
     });
 
-    it.each(cases)('%s : un identifiant en échec atterrit dans failed avec son code', async (_name, method, path, cdnMethod) => {
+    it.each(loopCases)('%s : un identifiant en échec atterrit dans failed avec son code', async (_name, path, cdnMethod) => {
       (cdn[cdnMethod] as jest.Mock).mockRejectedValueOnce(new BadRequestException({ code: 'MEDIA_NOT_READY' }));
-      const res = await auth(http()[method](path))
+      const res = await auth(http().post(path))
         .send({ ids: [MEDIA_A, MEDIA_B] })
         .expect(200);
       expect(res.body.done).toEqual([MEDIA_B]);
@@ -224,12 +274,13 @@ describe('LibraryController — /api/library', () => {
       expect(res.body).toEqual({ code: 'MEDIA_NOT_FOUND' });
     });
 
-    it('média trouvé → items { id, filename, url } via cdn.originalUrl', async () => {
-      repoState.findResult = [{ id: MEDIA_A, ext: 'jpg' } as unknown as Media];
+    it('média trouvé → items { id, filename, url } via cdn.originalUrl (await)', async () => {
+      repoState.findResult = [{ id: MEDIA_A, ext: 'jpg' }];
       const res = await auth(http().post('/api/library/download'))
         .send({ ids: [MEDIA_A] })
         .expect(200);
       expect(res.body.items).toEqual([{ id: MEDIA_A, filename: `${MEDIA_A}.jpg`, url: 'https://signed' }]);
+      expect(typeof res.body.items[0].url).toBe('string');
       expect(cdn.originalUrl).toHaveBeenCalled();
     });
   });
@@ -301,13 +352,9 @@ describe('LibraryController — /api/library', () => {
     });
   });
 
-  describe('POST /cdn-session', () => {
-    it('émet les cookies de lecture et renvoie expires_in', async () => {
-      const res = await auth(http().post('/api/library/cdn-session')).expect(200);
-      expect(res.body).toEqual({ success: true, expires_in: 3600 });
-      expect(typeof res.body.expires_in).toBe('number');
-      expect(res.headers['set-cookie']).toBeDefined();
-      expect(cdn.issueReadCookies).toHaveBeenCalledWith(OWNER_ID);
+  describe('route supprimée', () => {
+    it('POST /cdn-session n’existe plus → 404', async () => {
+      await auth(http().post('/api/library/cdn-session')).expect(404);
     });
   });
 });

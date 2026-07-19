@@ -17,14 +17,21 @@ import { Follow } from '../models/follow.entity';
 
 const VIEWER_ID = '11111111-1111-1111-1111-111111111111';
 
-/** Terminaux configurables d'un QueryBuilder factice ; les méthodes de chaîne renvoient le stub. */
+type Lazy<T> = T | (() => T);
+
+const unwrap = <T>(v: Lazy<T>): T => (typeof v === 'function' ? (v as () => T)() : v);
+
+const queue = <T>(values: T[], fallback: T) => {
+  const pending = [...values];
+  return () => (pending.length ? (pending.shift() as T) : fallback);
+};
+
 type QbTerminals = {
-  getRawMany?: unknown;
-  getRawOne?: unknown;
-  getCount?: number;
-  getMany?: unknown;
-  getRawAndEntities?: unknown;
-  execute?: unknown;
+  getRawMany?: Lazy<unknown>;
+  getRawOne?: Lazy<unknown>;
+  getCount?: Lazy<number>;
+  getMany?: Lazy<unknown>;
+  execute?: Lazy<unknown>;
 };
 
 const makeQb = (terminals: QbTerminals) => {
@@ -41,6 +48,7 @@ const makeQb = (terminals: QbTerminals) => {
     'orderBy',
     'addOrderBy',
     'limit',
+    'offset',
     'take',
     'skip',
     'from',
@@ -48,6 +56,9 @@ const makeQb = (terminals: QbTerminals) => {
     'values',
     'orIgnore',
     'insert',
+    'update',
+    'set',
+    'returning',
   ];
   for (const m of chain) qb[m] = jest.fn(() => qb);
   const defaults: Required<QbTerminals> = {
@@ -55,22 +66,20 @@ const makeQb = (terminals: QbTerminals) => {
     getRawOne: null,
     getCount: 0,
     getMany: [],
-    getRawAndEntities: { entities: [], raw: [] },
     execute: { raw: [], affected: 0 },
   };
   const merged = { ...defaults, ...terminals };
   for (const key of Object.keys(defaults) as (keyof QbTerminals)[]) {
-    qb[key] = jest.fn(async () => merged[key]);
+    qb[key] = jest.fn(async () => unwrap(merged[key]));
   }
   return qb;
 };
 
-/** Dépôt factice : find/findOne/count en mémoire (ou canné par test) + createQueryBuilder chaînable. */
 const makeRepo = () => {
   const repo = {
     _qb: {} as QbTerminals,
     find: jest.fn(async () => [] as unknown[]),
-    findOne: jest.fn(async () => null as unknown),
+    findOne: jest.fn(async () => null),
     count: jest.fn(async () => 0),
     delete: jest.fn(async () => ({ affected: 1 })),
     createQueryBuilder: jest.fn(() => makeQb(repo._qb)),
@@ -80,7 +89,14 @@ const makeRepo = () => {
 };
 
 const cdn = {
-  urlsFor: (m: { id: string }) => ({ base: `cdn/${m.id}`, srcSet: null, poster: null, hls: null, thumbhash: null }),
+  urlsFor: (m: { id: string }) => ({
+    base: `cdn/${m.id}`,
+    avif: `cdn/${m.id}/image.avif`,
+    webp: `cdn/${m.id}/image.webp`,
+    poster: null,
+    video: null,
+    thumbhash: null,
+  }),
 };
 
 describe('DiscoverController — /api/discover', () => {
@@ -235,7 +251,7 @@ describe('DiscoverController — /api/discover', () => {
           items: 5,
           followers: 10,
           following: false,
-          avatar: { base: 'cdn/av-1', srcSet: null },
+          avatar: { base: 'cdn/av-1', avif: 'cdn/av-1/image.avif', webp: 'cdn/av-1/image.webp' },
         },
       ]);
     });
@@ -250,8 +266,17 @@ describe('DiscoverController — /api/discover', () => {
 
     it('mappe les items et calcule nextCursor', async () => {
       const mediaEntity = { id: 'm1', kind: 'image', width: 800, height: 600, durationMs: null };
-      const rawMeta = { g_id: 'g1', g_title: 'Trip', g_slug: 'trip', g_tags: ['Nature'], g_owner: 'author-1', g_published: new Date('2026-01-01T00:00:00.000Z') };
-      media._qb = { getRawAndEntities: { entities: [mediaEntity], raw: [rawMeta] }, getRawMany: [{ id: 'author-1', total: '3' }] };
+      const rawRow = {
+        m_id: 'm1',
+        g_id: 'g1',
+        g_title: 'Trip',
+        g_slug: 'trip',
+        g_tags: ['Nature'],
+        g_owner: 'author-1',
+        g_published: new Date('2026-01-01T00:00:00.000Z'),
+      };
+      media._qb = { getRawMany: queue<unknown>([[rawRow], [{ id: 'author-1', total: '3' }]], []) };
+      media.find.mockResolvedValueOnce([mediaEntity]);
       accounts.find.mockResolvedValue([{ id: 'author-1', username: 'bob', firstname: 'Bob', lastname: 'Martin', bio: null, avatarMediaId: null }]);
       follows.find.mockResolvedValue([]);
       follows._qb = { getRawMany: [] };
@@ -277,12 +302,35 @@ describe('DiscoverController — /api/discover', () => {
             avatar: null,
           },
           base: 'cdn/m1',
-          srcSet: null,
+          avif: 'cdn/m1/image.avif',
+          webp: 'cdn/m1/image.webp',
           poster: null,
-          hls: null,
+          video: null,
           thumbhash: null,
         },
       ]);
+    });
+
+    it('hydrate par identifiant : un média présent deux fois sort deux fois', async () => {
+      const mediaEntity = { id: 'm1', kind: 'image', width: 800, height: 600, durationMs: null };
+      const row = (galleryId: string) => ({
+        m_id: 'm1',
+        g_id: galleryId,
+        g_title: galleryId,
+        g_slug: galleryId,
+        g_tags: [],
+        g_owner: 'author-1',
+        g_published: new Date('2026-01-01T00:00:00.000Z'),
+      });
+      media._qb = { getRawMany: queue<unknown>([[row('g1'), row('g2')], []], []) };
+      media.find.mockResolvedValueOnce([mediaEntity]);
+      accounts.find.mockResolvedValue([{ id: 'author-1', username: 'bob', firstname: 'Bob', lastname: 'Martin', bio: null, avatarMediaId: null }]);
+      follows.find.mockResolvedValue([]);
+      follows._qb = { getRawMany: [] };
+      const res = await asViewer(http().get('/api/discover/feed')).expect(200);
+      expect(res.body.items.map((i: { key: string }) => i.key)).toEqual(['g1:m1', 'g2:m1']);
+      // Une seule requête d'hydratation malgré deux lignes.
+      expect(media.find).toHaveBeenCalledTimes(1);
     });
   });
 });
