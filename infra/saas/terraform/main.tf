@@ -555,6 +555,8 @@ resource "aws_cloudfront_distribution" "cdn" {
     cache_policy_id            = aws_cloudfront_cache_policy.cdn.id
     origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.cors_s3.id
     response_headers_policy_id = aws_cloudfront_response_headers_policy.cdn.id
+
+    trusted_key_groups = []
   }
 
   restrictions {
