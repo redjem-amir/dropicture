@@ -71,6 +71,8 @@ type Album = {
   total: number;
 };
 
+type Loaded = { filter: Filter; error: string | null };
+
 const DENSITY = {
   large: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5',
   medium: 'grid-cols-3 sm:grid-cols-4 lg:grid-cols-7',
@@ -143,7 +145,6 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-/** XHR plutôt que fetch : c'est le seul moyen d'avoir la progression d'envoi. */
 function send(
   method: 'POST' | 'PUT',
   url: string,
@@ -163,8 +164,6 @@ function send(
   });
 }
 
-/** Durée d'une vidéo lue côté navigateur : le backend refuse tôt plutôt que
- *  d'accepter 100 Mo puis de rejeter au transcodage. */
 function probeDuration(file: File): Promise<number | undefined> {
   if (!file.type.startsWith('video/')) return Promise.resolve(undefined);
   return new Promise((resolve) => {
@@ -187,9 +186,8 @@ export default function Page() {
   const [items, setItems] = useState<Item[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -202,6 +200,9 @@ export default function Page() {
   const fileInput = useRef<HTMLInputElement>(null);
   const sentinel = useRef<HTMLDivElement>(null);
   const requestId = useRef(0);
+
+  const loading = loaded?.filter !== filter;
+  const error = loaded && loaded.filter === filter ? loaded.error : null;
 
   const accept = summary?.limits.accepted.join(',') ?? 'image/*,video/*';
 
@@ -238,16 +239,19 @@ export default function Page() {
 
   useEffect(() => {
     const id = ++requestId.current;
-    setLoading(true);
-    setError(null);
     api<{ items: Item[]; nextCursor: string | null }>(`/?filter=${filter}&limit=${PAGE_SIZE}`)
       .then((page) => {
         if (id !== requestId.current) return;
         setItems(page.items);
         setCursor(page.nextCursor);
+        setLoaded({ filter, error: null });
       })
-      .catch((err: Error) => id === requestId.current && setError(say(err.message)))
-      .finally(() => id === requestId.current && setLoading(false));
+      .catch((err: Error) => {
+        if (id !== requestId.current) return;
+        setItems([]);
+        setCursor(null);
+        setLoaded({ filter, error: say(err.message) });
+      });
   }, [filter]);
 
   const loadMore = useCallback(() => {
@@ -265,7 +269,7 @@ export default function Page() {
         });
         setCursor(page.nextCursor);
       })
-      .catch((err: Error) => setError(say(err.message)))
+      .catch((err: Error) => setLoaded({ filter, error: say(err.message) }))
       .finally(() => setLoadingMore(false));
   }, [cursor, filter, loadingMore]);
 
@@ -392,7 +396,11 @@ export default function Page() {
     for (const item of items) {
       const key = item.takenAt.slice(0, 7);
       const bucket = map.get(key);
-      bucket ? bucket.push(item) : map.set(key, [item]);
+      if (bucket) {
+        bucket.push(item);
+      } else {
+        map.set(key, [item]);
+      }
     }
     const totals = new Map(summary?.months.map((m) => [m.month, m.total]) ?? []);
     return Array.from(map, ([month, list]) => ({
@@ -405,7 +413,11 @@ export default function Page() {
   const toggle = (id: string) =>
     setSelected((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
 
@@ -512,8 +524,6 @@ export default function Page() {
     }
   };
 
-  /** Un album porte le nom que son auteur lui donne : aucune liste imposée,
-   *  et le même élément peut vivre dans plusieurs albums. */
   const addToAlbum = async (album: Album) => {
     setBusy(true);
     try {

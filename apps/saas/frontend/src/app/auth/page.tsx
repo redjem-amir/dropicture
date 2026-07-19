@@ -9,6 +9,7 @@ const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const SITE = 'https://dropicture.com';
 const API = process.env.NEXT_PUBLIC_API_URL ?? '';
 const PAGE_SIZE = 40;
+const FEED_ERROR = 'Le fil n’a pas pu être chargé.';
 
 type Scope = 'all' | 'following';
 
@@ -45,6 +46,8 @@ type Me = {
   following: number;
   followers: number;
 };
+
+type Loaded = { key: string; error: string | null };
 
 const clip = (ms: number | null) => {
   if (!ms) return null;
@@ -98,9 +101,8 @@ export default function Page() {
   const [pins, setPins] = useState<Pin[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [me, setMe] = useState<Me | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const sentinel = useRef<HTMLDivElement>(null);
   const requestId = useRef(0);
@@ -121,19 +123,27 @@ export default function Page() {
     [scope, tag],
   );
 
+  const feedKey = query();
+
+  const loading = loaded?.key !== feedKey;
+  const error = loaded && loaded.key === feedKey ? loaded.error : null;
+
   useEffect(() => {
     const id = ++requestId.current;
-    setLoading(true);
-    setError(null);
-    api<{ items: Pin[]; nextCursor: string | null }>(query())
+    api<{ items: Pin[]; nextCursor: string | null }>(feedKey)
       .then((page) => {
         if (id !== requestId.current) return;
         setPins(page.items);
         setCursor(page.nextCursor);
+        setLoaded({ key: feedKey, error: null });
       })
-      .catch(() => id === requestId.current && setError('Le fil n’a pas pu être chargé.'))
-      .finally(() => id === requestId.current && setLoading(false));
-  }, [query]);
+      .catch(() => {
+        if (id !== requestId.current) return;
+        setPins([]);
+        setCursor(null);
+        setLoaded({ key: feedKey, error: FEED_ERROR });
+      });
+  }, [feedKey]);
 
   const loadMore = useCallback(() => {
     if (!cursor || loadingMore) return;
@@ -160,8 +170,6 @@ export default function Page() {
     return () => io.disconnect();
   }, [cursor, loadMore]);
 
-  /** Optimiste : l'état bascule avant la réponse et revient en arrière si le
-   *  serveur refuse. Suivre doit répondre à la vitesse du clic. */
   const toggleFollow = async (author: Author) => {
     const next = !author.following;
     const apply = (following: boolean) => {
