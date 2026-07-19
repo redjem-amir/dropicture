@@ -1,0 +1,745 @@
+---
+# dropicture/infra/saas/ansible/playbook.yml
+- name: Discover the Swarm nodes from Terraform state
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Pin the controller connection to local (the CLI inventory 'localhost' defaults to ssh for delegate_to)
+      ansible.builtin.set_fact:
+        ansible_connection: local
+
+    - name: Ensure required environment variables are set
+      ansible.builtin.assert:
+        that:
+          - "lookup('env', 'AWS_ACCESS_KEY_ID') | length > 0"
+          - "lookup('env', 'AWS_SECRET_ACCESS_KEY') | length > 0"
+          - "lookup('env', 'SSH_PRIVATE_KEY_B64') | length > 0"
+        fail_msg: >-
+          Missing env vars. Export AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+          and SSH_PRIVATE_KEY_B64 before running this playbook.
+        quiet: true
+
+    - name: Create a temporary file for the state
+      ansible.builtin.tempfile:
+        state: file
+        suffix: tfstate
+      register: tf_state_file
+      changed_when: false
+
+    - name: Download the Terraform state from S3
+      amazon.aws.s3_object:
+        bucket: dropicture-tfstate-prod
+        object: terraform.tfstate
+        region: eu-west-3
+        mode: get
+        dest: "{{ tf_state_file.path }}"
+        overwrite: always
+      changed_when: false
+
+    - name: Parse the state
+      ansible.builtin.set_fact:
+        _tfstate: "{{ lookup('file', tf_state_file.path) | from_json }}"
+
+    - name: Remove the local state copy (it can contain sensitive outputs)
+      ansible.builtin.file:
+        path: "{{ tf_state_file.path }}"
+        state: absent
+      changed_when: false
+
+    - name: Extract the node maps from the outputs
+      ansible.builtin.set_fact:
+        _public_ipv4: "{{ _tfstate.outputs.nodes_public_ipv4.value }}"
+        _private_ip: "{{ _tfstate.outputs.nodes_private_ip.value }}"
+
+    - name: Sanity check on the outputs
+      ansible.builtin.assert:
+        that:
+          - "(_public_ipv4.keys() | select('match', '^proxy-') | list | length) == 1"
+          - "(_public_ipv4.keys() | select('match', '^db-') | list | length) == 1"
+          - "(_public_ipv4.keys() | select('match', '^backend-') | list | length) >= 1"
+          - "(_public_ipv4.keys() | select('match', '^frontend-') | list | length) >= 1"
+          - "(_public_ipv4.keys() | select('match', '^jobs-') | list | length) >= 1"
+          - "(_public_ipv4 | length) == (_private_ip | length)"
+        fail_msg: >-
+          Terraform outputs must contain exactly one proxy node, exactly one db
+          node, and at least one backend, frontend and jobs node — and the
+          public/private maps must agree. Every role the compose file constrains
+          on must exist, otherwise its services stay Pending silently.
+        quiet: true
+
+    - name: Materialise the SSH private key
+      ansible.builtin.tempfile:
+        state: file
+        suffix: ssh_key
+      register: ssh_key
+      changed_when: false
+
+    - name: Write the SSH private key (0600)
+      ansible.builtin.copy:
+        dest: "{{ ssh_key.path }}"
+        content: "{{ lookup('env', 'SSH_PRIVATE_KEY_B64') | b64decode }}"
+        mode: "0600"
+      changed_when: false
+      no_log: true
+
+    - name: Register every Swarm node (role and manager/worker derived from the output key)
+      ansible.builtin.add_host:
+        name: "{{ item.value }}"
+        groups: "{{ ['swarm', 'swarm_managers'] if (item.key | regex_replace('-[0-9]+$', '')) == 'proxy' else ['swarm', 'swarm_workers'] }}"
+        ansible_host: "{{ item.value }}"
+        ansible_user: root
+        ansible_ssh_private_key_file: "{{ ssh_key.path }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=accept-new"
+        swarm_role: "{{ item.key | regex_replace('-[0-9]+$', '') }}"
+        node_name: "{{ item.key }}"
+        node_private_ip: "{{ _private_ip[item.key] }}"
+      loop: "{{ _public_ipv4 | dict2items }}"
+      loop_control:
+        label: "{{ item.key }} ({{ item.value }})"
+      changed_when: false
+
+- name: Check SSH connectivity to every node before changing anything
+  hosts: swarm
+  gather_facts: false
+  any_errors_fatal: true
+  tasks:
+    - name: Wait for SSH to come up (a freshly created node can take a while to boot)
+      ansible.builtin.wait_for_connection:
+        timeout: 300
+        sleep: 5
+
+- name: Configure the private network interface on every node
+  hosts: swarm
+  gather_facts: false
+  any_errors_fatal: true
+  tasks:
+    - name: Drop a netplan config for the private NIC (matches by name, survives late hot-attach)
+      ansible.builtin.copy:
+        dest: /etc/netplan/60-dropicture-private.yaml
+        owner: root
+        group: root
+        mode: "0600"
+        content: |
+          network:
+            version: 2
+            ethernets:
+              dropicture-private:
+                match:
+                  name: "enp*"
+                dhcp4: true
+      register: _private_netplan
+
+    - name: Apply netplan when the private NIC config changed
+      ansible.builtin.command: netplan apply
+      when: _private_netplan is changed
+      changed_when: true
+
+    - name: Wait until the Terraform-assigned private IP is actually configured
+      ansible.builtin.command: ip -4 -o addr show
+      register: _addrs
+      until: (node_private_ip ~ '/') in _addrs.stdout
+      retries: 30
+      delay: 5
+      changed_when: false
+
+- name: Provision Docker Engine on every node
+  hosts: swarm
+  gather_facts: true
+  handlers:
+    - name: Restart docker
+      ansible.builtin.service:
+        name: docker
+        state: restarted
+      throttle: 1
+
+    - name: Restart ssh
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+      throttle: 1
+  tasks:
+    - name: Harden SSH (port 22 is world-open, so enforce key-only auth)
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/10-dropicture-hardening.conf
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          PasswordAuthentication no
+          KbdInteractiveAuthentication no
+          PermitRootLogin prohibit-password
+          MaxAuthTries 3
+      notify: Restart ssh
+
+    - name: Install prerequisites
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - python3-debian
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Ensure the apt keyrings directory exists
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Add the Docker GPG key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: "0644"
+
+    - name: Remove the legacy docker.list (was managed by the deprecated apt_repository)
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/docker.list
+        state: absent
+
+    - name: Add the Docker apt repository
+      ansible.builtin.deb822_repository:
+        name: docker
+        types: deb
+        uris: https://download.docker.com/linux/ubuntu
+        suites: "{{ ansible_facts['distribution_release'] }}"
+        components: stable
+        signed_by: /etc/apt/keyrings/docker.asc
+        state: present
+
+    - name: Install Docker Engine (CE) and the Python SDK for the Ansible modules
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+          - python3-docker
+          - python3-jsondiff
+          - python3-yaml
+          - python3-cryptography
+        state: present
+        update_cache: true
+
+    - name: Deploy the Docker daemon configuration (log rotation)
+      ansible.builtin.copy:
+        dest: /etc/docker/daemon.json
+        owner: root
+        group: root
+        mode: "0644"
+        validate: "dockerd --validate --config-file %s"
+        content: |
+          {
+            "log-driver": "json-file",
+            "log-opts": {
+              "max-size": "10m",
+              "max-file": "3"
+            }
+          }
+      notify: Restart docker
+
+    - name: Enable and start Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Load the bridge kernel modules now and at boot
+      community.general.modprobe:
+        name: "{{ item }}"
+        state: present
+        persistent: present
+      loop:
+        - bridge
+        - br_netfilter
+
+    - name: Configure sysctls for bridged container traffic
+      ansible.posix.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        sysctl_file: /etc/sysctl.d/99-docker.conf
+        sysctl_set: true
+        reload: true
+      loop:
+        - name: net.bridge.bridge-nf-call-iptables
+          value: "1"
+        - name: net.bridge.bridge-nf-call-ip6tables
+          value: "1"
+        - name: net.ipv4.ip_forward
+          value: "1"
+
+    - name: Check whether the data path is still the old volume symlink
+      ansible.builtin.stat:
+        path: /opt/dropicture/data
+      register: _data_stat
+
+    - name: Refuse to continue if the old Hetzner volume symlink is in place
+      ansible.builtin.assert:
+        that:
+          - not (_data_stat.stat.islnk | default(false))
+        fail_msg: >-
+          /opt/dropicture/data is still a symlink to the old Hetzner volume.
+          Migrate the data to the local disk and remove the link before
+          re-running this playbook.
+        quiet: true
+
+    - name: Create the base data directory on the local disk (all nodes)
+      ansible.builtin.file:
+        path: /opt/dropicture/data
+        state: directory
+        owner: root
+        group: root
+        mode: "0700"
+
+    - name: Create the Alloy data directory (all nodes — Alloy is a global service)
+      ansible.builtin.file:
+        path: /opt/dropicture/data/alloy
+        state: directory
+        owner: root
+        group: root
+        mode: "0700"
+
+    - name: Create the Postgres data directory on the db node
+      ansible.builtin.file:
+        path: /opt/dropicture/data/postgres
+        state: directory
+        owner: "999"
+        group: "999"
+        mode: "0700"
+      when: swarm_role == 'db'
+
+    - name: Create the Redis cache data directory on the proxy node
+      ansible.builtin.file:
+        path: /opt/dropicture/data/redis
+        state: directory
+        owner: "999"
+        group: "1000"
+        mode: "0700"
+      when: swarm_role == 'proxy'
+
+    - name: Create the Redis queue data directory on the proxy node
+      ansible.builtin.file:
+        path: /opt/dropicture/data/redis-queue
+        state: directory
+        owner: "999"
+        group: "1000"
+        mode: "0700"
+      when: swarm_role == 'proxy'
+
+    - name: Create the Prometheus data directory on the proxy node
+      ansible.builtin.file:
+        path: /opt/dropicture/data/prometheus
+        state: directory
+        owner: "65534"
+        group: "65534"
+        mode: "0755"
+      when: swarm_role == 'proxy'
+
+    - name: Create the Loki data directory on the proxy node
+      ansible.builtin.file:
+        path: /opt/dropicture/data/loki
+        state: directory
+        owner: "10001"
+        group: "10001"
+        mode: "0755"
+      when: swarm_role == 'proxy'
+
+    - name: Create the Grafana data directory on the proxy node
+      ansible.builtin.file:
+        path: /opt/dropicture/data/grafana
+        state: directory
+        owner: "472"
+        group: "0"
+        mode: "0755"
+      when: swarm_role == 'proxy'
+
+    - name: Create the origin PKI directory on the proxy (manager) node
+      ansible.builtin.file:
+        path: /opt/dropicture/pki
+        state: directory
+        owner: root
+        group: root
+        mode: "0700"
+      when: swarm_role == 'proxy'
+
+    - name: Apply any pending Docker restart before touching the Swarm
+      ansible.builtin.meta: flush_handlers
+
+- name: Initialise the Swarm on the manager (private network)
+  hosts: swarm_managers
+  gather_facts: false
+  tasks:
+    - name: Init the Swarm advertising on the private network
+      community.docker.docker_swarm:
+        state: present
+        advertise_addr: "{{ node_private_ip }}"
+        listen_addr: "{{ node_private_ip }}:2377"
+        default_addr_pool: ["10.100.0.0/16"]
+        subnet_size: 24
+
+    - name: Read the address the Swarm actually advertises
+      ansible.builtin.command: >-
+        docker info --format '{% raw %}{{ .Swarm.NodeAddr }}{% endraw %}'
+      register: _manager_node_addr
+      changed_when: false
+
+    - name: Fail loudly when the Swarm advertises a stale private address
+      ansible.builtin.assert:
+        that:
+          - "(_manager_node_addr.stdout | trim) == node_private_ip"
+        fail_msg: >-
+          The Swarm advertises {{ _manager_node_addr.stdout | trim }} but Terraform
+          says the manager's private IP is {{ node_private_ip }}. The private IP
+          changed under a live Swarm — dockerd still listens on the old address, so
+          no worker can reach 2377. Recover on the manager with
+          'docker swarm init --force-new-cluster --advertise-addr {{ node_private_ip }}'
+          (this preserves services, configs and secrets), then 'docker node rm' the
+          workers and 'docker swarm leave --force' on each of them before re-running.
+        quiet: true
+
+    - name: Read the worker join token
+      ansible.builtin.command: docker swarm join-token -q worker
+      register: _worker_join_token
+      changed_when: false
+
+    - name: List the node IDs the Swarm currently knows (stale-membership detection)
+      ansible.builtin.command: docker node ls --format '{% raw %}{{ .ID }}{% endraw %}'
+      register: _manager_node_ids
+      changed_when: false
+
+- name: Join the worker nodes to the Swarm (private network)
+  hosts: swarm_workers
+  gather_facts: false
+  vars:
+    _manager_host: "{{ groups['swarm_managers'][0] }}"
+    _known_node_ids: "{{ hostvars[_manager_host]._manager_node_ids.stdout_lines }}"
+  tasks:
+    - name: Refuse to evaluate stale membership if the manager reported no node
+      ansible.builtin.assert:
+        that:
+          - "(_known_node_ids | length) > 0"
+        fail_msg: >-
+          The manager reported an empty node list — it has probably re-initialised a
+          brand new Swarm. Refusing to continue: the stale-membership check below
+          would make every healthy worker leave the cluster.
+        quiet: true
+      run_once: true
+
+    - name: Read this worker's local Swarm state
+      ansible.builtin.command: >-
+        docker info --format '{% raw %}{{ .Swarm.LocalNodeState }}{% endraw %}'
+      register: _worker_swarm_state
+      changed_when: false
+
+    - name: Read this worker's Swarm node ID (empty when the node is not in a swarm)
+      ansible.builtin.command: >-
+        docker info --format '{% raw %}{{ .Swarm.NodeID }}{% endraw %}'
+      register: _worker_node_id
+      changed_when: false
+
+    - name: Leave a stale or half-joined swarm before (re)joining
+      ansible.builtin.command: docker swarm leave --force
+      when: >-
+        _worker_swarm_state.stdout in ['pending', 'error']
+        or (
+          _worker_swarm_state.stdout == 'active'
+          and _worker_node_id.stdout not in _known_node_ids
+        )
+      changed_when: true
+
+    - name: Ensure the manager is reachable on 2377 over the private network
+      ansible.builtin.wait_for:
+        host: "{{ hostvars[_manager_host].node_private_ip }}"
+        port: 2377
+        timeout: 60
+
+    - name: Join this node as a worker (tolerate the API timeout, the join continues in the background)
+      community.docker.docker_swarm:
+        state: join
+        advertise_addr: "{{ node_private_ip }}"
+        listen_addr: "{{ node_private_ip }}:2377"
+        join_token: "{{ hostvars[_manager_host]._worker_join_token.stdout }}"
+        remote_addrs:
+          - "{{ hostvars[_manager_host].node_private_ip }}:2377"
+      register: _swarm_join
+      throttle: 1
+      failed_when:
+        - _swarm_join is failed
+        - "'Timeout was reached before node joined' not in (_swarm_join.msg | default(''))"
+
+    - name: Surface a tolerated join timeout
+      ansible.builtin.debug:
+        msg: >-
+          WARNING: 'docker swarm join' hit the client timeout on this node; the
+          join continues in the background — waiting for LocalNodeState == active.
+      when: "'Timeout was reached before node joined' in (_swarm_join.msg | default(''))"
+
+    - name: Wait until this node actually reports LocalNodeState == active
+      ansible.builtin.command: >-
+        docker info --format '{% raw %}{{ .Swarm.LocalNodeState }}{% endraw %}'
+      register: _join_state
+      until: _join_state.stdout == 'active'
+      retries: 30
+      delay: 5
+      changed_when: false
+
+- name: Collect the Swarm node IDs
+  hosts: swarm
+  gather_facts: false
+  tasks:
+    - name: Read this node's Swarm node ID
+      ansible.builtin.command: >-
+        docker info --format '{% raw %}{{ .Swarm.NodeID }}{% endraw %}'
+      register: _node_id
+      changed_when: false
+
+- name: Reconcile Swarm membership (drop nodes Terraform no longer manages)
+  hosts: swarm_managers
+  gather_facts: false
+  tasks:
+    - name: Collect the Swarm node ID reported by every managed node
+      ansible.builtin.set_fact:
+        _reported_node_ids: >-
+          {{ groups['swarm']
+             | map('extract', hostvars)
+             | selectattr('_node_id', 'defined')
+             | map(attribute='_node_id.stdout')
+             | map('trim')
+             | select('truthy')
+             | list }}
+
+    - name: Refuse to reconcile unless every managed node reported a node ID (fail-safe before any removal)
+      ansible.builtin.assert:
+        that:
+          - "(_reported_node_ids | length) == (groups['swarm'] | length)"
+        fail_msg: >-
+          Not every Terraform-managed node reported a Swarm node ID (a node may be
+          unreachable, or not in the Swarm). Refusing to reconcile Swarm membership,
+          since excluding it from the desired set would force-remove a node that is
+          only temporarily unreachable.
+        quiet: true
+
+    - name: List every node ID currently known to the Swarm
+      ansible.builtin.command: docker node ls --format '{% raw %}{{ .ID }}{% endraw %}'
+      register: _swarm_node_ids
+      changed_when: false
+
+    - name: Compute the orphaned node IDs (present in the Swarm, gone from Terraform)
+      ansible.builtin.set_fact:
+        _orphan_node_ids: "{{ _swarm_node_ids.stdout_lines | difference(_reported_node_ids) }}"
+
+    - name: Inspect the role label of each orphaned node before removing it
+      ansible.builtin.command: >-
+        docker node inspect
+        --format '{% raw %}{{ if .Spec.Labels }}{{ index .Spec.Labels "dropicture.role" }}{{ end }}{% endraw %}'
+        {{ item }}
+      loop: "{{ _orphan_node_ids }}"
+      loop_control:
+        label: "{{ item }}"
+      register: _orphan_roles
+      changed_when: false
+      failed_when: false
+
+    - name: Warn when a stateful node (db/proxy) is removed without a prior drain
+      ansible.builtin.debug:
+        msg: >-
+          WARNING: orphaned node {{ item.item }} had role '{{ item.stdout | trim }}'.
+          Stateful roles should be drained BEFORE 'terraform destroy'; force-removing anyway.
+      loop: "{{ _orphan_roles.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+      when: (item.stdout | trim) in ['db', 'proxy']
+
+    - name: Force-remove orphaned Swarm nodes (the VM was already destroyed by Terraform)
+      ansible.builtin.command: "docker node rm --force {{ item }}"
+      loop: "{{ _orphan_node_ids }}"
+      loop_control:
+        label: "{{ item }}"
+      changed_when: true
+
+- name: Label the Swarm nodes with their dropicture.role
+  hosts: swarm_managers
+  gather_facts: false
+  tasks:
+    - name: Apply the role label to each node (idempotent, by node ID)
+      community.docker.docker_node:
+        hostname: "{{ hostvars[item]._node_id.stdout }}"
+        labels:
+          dropicture.role: "{{ hostvars[item].swarm_role }}"
+        labels_state: merge
+      loop: "{{ groups['swarm'] }}"
+      loop_control:
+        label: "{{ item }} -> {{ hostvars[item].swarm_role }}"
+
+- name: Configure the Swarm (origin certificate, configs and secrets)
+  hosts: swarm_managers
+  gather_facts: false
+  vars:
+    cloudflare_zone_name: "{{ lookup('env', 'CLOUDFLARE_ZONE_NAME') | default('dropicture.com', true) }}"
+    origin_org_name: dropicture
+    origin_pki_dir: /opt/dropicture/pki
+    origin_key_path: "{{ origin_pki_dir }}/origin.key"
+    origin_csr_path: "{{ origin_pki_dir }}/origin.csr"
+    origin_cert_path: "{{ origin_pki_dir }}/origin.crt"
+  tasks:
+    - name: Generate the Origin CA private key (persisted on the manager, never leaves it)
+      community.crypto.openssl_privatekey:
+        path: "{{ origin_key_path }}"
+        type: RSA
+        size: 2048
+        owner: root
+        group: root
+        mode: "0600"
+      register: _origin_key_file
+
+    - name: Generate the CSR for the Origin CA certificate
+      community.crypto.openssl_csr:
+        path: "{{ origin_csr_path }}"
+        privatekey_path: "{{ origin_key_path }}"
+        common_name: "{{ cloudflare_zone_name }}"
+        organization_name: "{{ origin_org_name }}"
+        subject_alt_name:
+          - "DNS:{{ cloudflare_zone_name }}"
+          - "DNS:*.{{ cloudflare_zone_name }}"
+        owner: root
+        group: root
+        mode: "0644"
+      register: _origin_csr_file
+
+    - name: Drop a certificate that no longer matches the key or the CSR
+      ansible.builtin.file:
+        path: "{{ origin_cert_path }}"
+        state: absent
+      when: _origin_key_file is changed or _origin_csr_file is changed
+
+    - name: Check whether the Origin CA certificate already exists
+      ansible.builtin.stat:
+        path: "{{ origin_cert_path }}"
+      register: _origin_cert_stat
+
+    - name: Ensure the Cloudflare API token is available to issue the certificate
+      ansible.builtin.assert:
+        that:
+          - "lookup('env', 'CLOUDFLARE_API_TOKEN') | length > 0"
+        fail_msg: >-
+          CLOUDFLARE_API_TOKEN is not set but a new Origin CA certificate must be
+          issued. Export a token with Zone : SSL and Certificates : Edit and re-run.
+        quiet: true
+      when: not _origin_cert_stat.stat.exists
+
+    - name: Read the CSR to send to Cloudflare
+      ansible.builtin.slurp:
+        src: "{{ origin_csr_path }}"
+      register: _origin_csr
+      when: not _origin_cert_stat.stat.exists
+
+    - name: Request an Origin CA certificate from Cloudflare (token stays on the controller)
+      ansible.builtin.uri:
+        url: https://api.cloudflare.com/client/v4/certificates
+        method: POST
+        headers:
+          Authorization: "Bearer {{ lookup('env', 'CLOUDFLARE_API_TOKEN') }}"
+        body_format: json
+        body:
+          hostnames:
+            - "{{ cloudflare_zone_name }}"
+            - "*.{{ cloudflare_zone_name }}"
+          request_type: origin-rsa
+          requested_validity: 5475
+          csr: "{{ _origin_csr.content | b64decode }}"
+        status_code: 200
+        return_content: true
+      register: _origin_ca_response
+      delegate_to: localhost
+      no_log: true
+      when: not _origin_cert_stat.stat.exists
+
+    - name: Persist the issued certificate on the manager
+      ansible.builtin.copy:
+        dest: "{{ origin_cert_path }}"
+        content: "{{ _origin_ca_response.json.result.certificate }}"
+        owner: root
+        group: root
+        mode: "0644"
+      when: not _origin_cert_stat.stat.exists
+
+    - name: Read the Origin CA private key (for the Swarm secret)
+      ansible.builtin.slurp:
+        src: "{{ origin_key_path }}"
+      register: _origin_key_slurp
+      no_log: true
+
+    - name: Read the Origin CA certificate (for the Swarm config)
+      ansible.builtin.slurp:
+        src: "{{ origin_cert_path }}"
+      register: _origin_cert_slurp
+
+    - name: Read the origin certificate currently stored in the Swarm
+      ansible.builtin.shell: >-
+        set -o pipefail;
+        docker config inspect dropicture_origin_cert
+        --format '{% raw %}{{ .Spec.Data }}{% endraw %}' 2>/dev/null || true
+      args:
+        executable: /bin/bash
+      register: _stored_cert
+      changed_when: false
+
+    - name: Refuse to rotate an in-use Swarm config or secret
+      ansible.builtin.assert:
+        that:
+          - "(_stored_cert.stdout | trim | length) == 0
+             or (_stored_cert.stdout | trim) == (_origin_cert_slurp.content | trim)"
+        fail_msg: >-
+          The origin certificate on disk differs from the one stored in the Swarm
+          config dropicture_origin_cert. Swarm configs are immutable and this one is
+          mounted by Traefik, so it cannot be replaced in place. Rotate it
+          explicitly: bump the config names (dropicture_origin_cert -> _v2, same for
+          dropicture_origin_key and the compose file), then re-run — or remove the
+          stack, drop the objects, and redeploy.
+        quiet: true
+
+    - name: Store the Origin CA certificate as a Swarm config
+      community.docker.docker_config:
+        name: dropicture_origin_cert
+        data: "{{ _origin_cert_slurp.content }}"
+        data_is_b64: true
+        state: present
+
+    - name: Store the Origin CA private key as a Swarm secret
+      community.docker.docker_secret:
+        name: dropicture_origin_key
+        data: "{{ _origin_key_slurp.content }}"
+        data_is_b64: true
+        state: present
+      no_log: true
+
+    - name: Store the Traefik dynamic TLS configuration as a Swarm config
+      community.docker.docker_config:
+        name: dropicture_traefik_dynamic_v1
+        data: |
+          tls:
+            stores:
+              default:
+                defaultCertificate:
+                  certFile: /etc/traefik/certs/origin.crt
+                  keyFile: /run/secrets/origin.key
+            certificates:
+              - certFile: /etc/traefik/certs/origin.crt
+                keyFile: /run/secrets/origin.key
+        state: present
+
+- name: Clean up
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove the temporary SSH key
+      ansible.builtin.file:
+        path: "{{ hostvars['localhost'].ssh_key.path }}"
+        state: absent
+      when: hostvars['localhost'].ssh_key is defined
+      changed_when: false

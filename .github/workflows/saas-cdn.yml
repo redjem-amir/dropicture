@@ -1,0 +1,226 @@
+name: CDN Apply
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Action à exécuter"
+        required: true
+        type: choice
+        default: plan
+        options:
+          - plan
+          - apply
+  pull_request:
+    branches: [main]
+    paths:
+      - "infra/saas/terraform/**"
+      - ".github/workflows/cdn-apply.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: saas-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-west-3
+  TF_DIR: infra/saas/terraform
+  STATE_BUCKET: dropicture-tfstate-prod
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+
+jobs:
+  approval:
+    name: Waiting for manual approval
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: manual-approval
+    timeout-minutes: 5
+    steps:
+      - name: Approved
+        run: |
+          echo "Run approved by ${{ github.actor }} — action: ${{ inputs.action }}"
+          {
+            echo "### Run approuvé"
+            echo ""
+            echo "- Action: \`${{ inputs.action }}\`"
+            echo "- Ref: \`${{ github.ref_name }}\`"
+            echo "- Commit: \`${{ github.sha }}\`"
+            echo "- Approuvé par: @${{ github.actor }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  validate:
+    name: Terraform validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "<1.12.0"
+          terraform_wrapper: false
+      - name: terraform init (no backend)
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init -backend=false
+      - name: terraform fmt
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform fmt -check -recursive
+      - name: terraform validate
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform validate
+
+  bootstrap:
+    name: Bootstrap state bucket
+    needs: [approval, validate]
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Create state bucket if missing
+        run: |
+          set -euo pipefail
+          if aws s3api head-bucket --bucket "$STATE_BUCKET" 2>/dev/null; then
+            echo "State bucket $STATE_BUCKET already exists — nothing to do."
+            exit 0
+          fi
+          echo "Creating state bucket $STATE_BUCKET in $AWS_REGION ..."
+          if [ "$AWS_REGION" = "us-east-1" ]; then
+            aws s3api create-bucket --bucket "$STATE_BUCKET" --region "$AWS_REGION"
+          else
+            aws s3api create-bucket --bucket "$STATE_BUCKET" --region "$AWS_REGION" \
+              --create-bucket-configuration LocationConstraint="$AWS_REGION"
+          fi
+          aws s3api wait bucket-exists --bucket "$STATE_BUCKET"
+          aws s3api put-bucket-versioning --bucket "$STATE_BUCKET" \
+            --versioning-configuration Status=Enabled
+          aws s3api put-bucket-encryption --bucket "$STATE_BUCKET" \
+            --server-side-encryption-configuration \
+            '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
+          aws s3api put-public-access-block --bucket "$STATE_BUCKET" \
+            --public-access-block-configuration \
+            "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+          echo "State bucket ready."
+
+  terraform:
+    name: ${{ inputs.action == 'apply' && 'Apply' || 'Plan' }} CDN
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 45
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TF_VAR_hcloud_token: ${{ secrets.TF_VAR_HCLOUD_TOKEN }}
+      TF_VAR_ssh_public_key_b64: ${{ secrets.TF_VAR_SSH_PUBLIC_KEY_B64 }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Guard branch
+        if: ${{ inputs.action == 'apply' }}
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Apply must run from main (the state key is fixed)."
+            exit 1
+          fi
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "<1.12.0"
+          terraform_wrapper: false
+
+      - name: Build target list
+        id: targets
+        run: |
+          set -euo pipefail
+          TARGETS=(
+            aws_s3_bucket_public_access_block.cdn
+            aws_s3_bucket_ownership_controls.cdn
+            aws_s3_bucket_server_side_encryption_configuration.cdn
+            aws_s3_bucket_versioning.cdn
+            aws_s3_bucket_lifecycle_configuration.cdn
+            aws_s3_bucket_cors_configuration.cdn
+            aws_s3_bucket_policy.cdn
+            aws_cloudfront_distribution.cdn
+            cloudflare_dns_record.cdn
+            aws_kms_alias.cdn_secrets
+            aws_ssm_parameter.cloudfront_private_key
+            aws_ssm_parameter.cloudfront_key_pair_id
+            aws_ssm_parameter.cloudfront_active_key_version
+            aws_ssm_parameter.cdn_config
+            aws_s3_bucket_public_access_block.db_backups
+            aws_s3_bucket_ownership_controls.db_backups
+            aws_s3_bucket_server_side_encryption_configuration.db_backups
+            aws_s3_bucket_versioning.db_backups
+            aws_s3_bucket_object_lock_configuration.db_backups
+            aws_s3_bucket_lifecycle_configuration.db_backups
+            aws_s3_bucket_policy.db_backups
+            aws_ssm_parameter.db_backup_config
+          )
+          printf -v FLAGS -- "-target=%s " "${TARGETS[@]}"
+          echo "flags=$FLAGS" >> "$GITHUB_OUTPUT"
+          echo "count=${#TARGETS[@]}" >> "$GITHUB_OUTPUT"
+
+      - name: terraform init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init
+
+      - name: terraform plan
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          set -euo pipefail
+          terraform plan -lock-timeout=5m -out=cdn.tfplan ${{ steps.targets.outputs.flags }}
+
+      - name: Summarise plan
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## Plan CDN — ${{ steps.targets.outputs.count }} cibles"
+            echo ""
+            echo "> La partie Hetzner est hors périmètre : les nœuds, le réseau"
+            echo "> et le firewall ne sont ni lus ni modifiés."
+            echo ""
+            echo '```'
+            terraform show -no-color cdn.tfplan | grep -E '^  # |^Plan:|^No changes' || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: terraform apply
+        if: ${{ inputs.action == 'apply' }}
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform apply -lock-timeout=5m cdn.tfplan
+
+      - name: Report outputs
+        if: ${{ inputs.action == 'apply' }}
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          set -euo pipefail
+          {
+            echo ""
+            echo "### Déployé"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| CDN | \`$(terraform output -raw cdn_url)\` |"
+            echo "| Distribution | \`$(terraform output -raw cdn_distribution_id)\` |"
+            echo "| Bucket | \`$(terraform output -raw cdn_bucket)\` |"
+            echo "| Préfixe SSM | \`$(terraform output -raw cdn_ssm_prefix)\` |"
+            echo "| CMK | \`$(terraform output -raw cdn_kms_key_arn)\` |"
+            echo "| Sauvegardes | \`$(terraform output -raw db_backup_bucket)\` |"
+            echo ""
+            echo "L'utilisateur IAM applicatif doit porter \`kms:Decrypt\` sur la CMK,"
+            echo "sinon les SecureString remontent vides sans erreur explicite."
+          } >> "$GITHUB_STEP_SUMMARY"

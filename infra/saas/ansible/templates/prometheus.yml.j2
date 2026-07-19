@@ -1,0 +1,33 @@
+# dropicture/infra/saas/ansible/templates/prometheus.yml.j2
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: dropicture
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["127.0.0.1:9090"]
+
+  - job_name: traefik
+    static_configs:
+      - targets: ["proxy:8082"]
+
+  - job_name: node
+    static_configs:
+{% for key, ip in nodes_private_ip | dictsort %}
+      - targets: ["{{ ip }}:9100"]
+        labels:
+          node: "dropicture-{{ key }}"
+          role: "{{ key | regex_replace('-[0-9]+$', '') }}"
+{% endfor %}
+
+  - job_name: cadvisor
+    static_configs:
+{% for key, ip in nodes_private_ip | dictsort %}
+      - targets: ["{{ ip }}:8080"]
+        labels:
+          node: "dropicture-{{ key }}"
+          role: "{{ key | regex_replace('-[0-9]+$', '') }}"
+{% endfor %}

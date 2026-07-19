@@ -1,0 +1,6 @@
+# dropicture/apps/saas/frontend/.dockerignore
+node_modules
+dist
+.next
+.env
+*.log

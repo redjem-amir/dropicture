@@ -1,0 +1,407 @@
+name: SaaS Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/saas/**"
+      - "infra/saas/**"
+      - ".github/workflows/saas-deploy.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/saas/**"
+      - "infra/saas/**"
+      - ".github/workflows/saas-deploy.yml"
+  workflow_dispatch:
+    inputs:
+      force_provision:
+        description: "Run the full provisioning playbook even without infra changes"
+        type: boolean
+        default: false
+      force_build:
+        description: "Rebuild every image even if it already exists in GHCR"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: saas-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-west-3
+  TF_DIR: infra/saas/terraform
+  STATE_BUCKET: dropicture-tfstate-prod
+  ANSIBLE_DIR: infra/saas/ansible
+  IMAGE_NAMESPACE: ghcr.io/redjem-amir/dropicture/saas
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+
+jobs:
+  validate:
+    name: Terraform validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "<1.12.0"
+          terraform_wrapper: false
+      - name: terraform init (no backend)
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init -backend=false
+      - name: terraform fmt
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform fmt -check -recursive
+      - name: terraform validate
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform validate
+
+  test-backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/saas/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Cache bun install
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('apps/saas/backend/bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Run Jest
+        run: bun run test --ci
+
+  versions:
+    name: Resolve image tags
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      tags: ${{ steps.tags.outputs.tags }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Derive one tag per service from its last commit
+        id: tags
+        run: |
+          set -euo pipefail
+          declare -A sha
+          for svc in frontend backend jobs; do
+            s=$(git log -1 --format=%H -- "apps/saas/$svc")
+            if [ -z "$s" ]; then
+              echo "::error::no commit found touching apps/saas/$svc"
+              exit 1
+            fi
+            sha[$svc]=$s
+            echo "$svc -> $s"
+          done
+          tags=$(jq -nc \
+            --arg frontend "${sha[frontend]}" \
+            --arg backend  "${sha[backend]}" \
+            --arg jobs     "${sha[jobs]}" \
+            '{frontend: $frontend, backend: $backend, jobs: $jobs}')
+          echo "tags=$tags" >> "$GITHUB_OUTPUT"
+          {
+            echo "| Service | Tag |"
+            echo "|---|---|"
+            for svc in frontend backend jobs; do
+              echo "| $svc | \`${sha[$svc]:0:12}\` |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  approval:
+    name: Waiting for manual approval
+    if: github.event_name != 'pull_request'
+    needs: [validate, test-backend, versions]
+    runs-on: ubuntu-latest
+    environment: manual-approval
+    timeout-minutes: 5
+    steps:
+      - name: Approved
+        run: |
+          echo "Deployment approved by ${{ github.actor }} — the pipeline continues."
+          {
+            echo "### Deployment approved"
+            echo ""
+            echo "- Ref: \`${{ github.ref_name }}\`"
+            echo "- Commit: \`${{ github.sha }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  bootstrap:
+    name: Bootstrap state bucket
+    needs: approval
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Create state bucket if missing
+        run: |
+          set -euo pipefail
+          if aws s3api head-bucket --bucket "$STATE_BUCKET" 2>/dev/null; then
+            echo "State bucket $STATE_BUCKET already exists — nothing to do."
+            exit 0
+          fi
+          echo "Creating state bucket $STATE_BUCKET in $AWS_REGION ..."
+          if [ "$AWS_REGION" = "us-east-1" ]; then
+            aws s3api create-bucket --bucket "$STATE_BUCKET" --region "$AWS_REGION"
+          else
+            aws s3api create-bucket --bucket "$STATE_BUCKET" --region "$AWS_REGION" \
+              --create-bucket-configuration LocationConstraint="$AWS_REGION"
+          fi
+          aws s3api wait bucket-exists --bucket "$STATE_BUCKET"
+          aws s3api put-bucket-versioning --bucket "$STATE_BUCKET" \
+            --versioning-configuration Status=Enabled
+          aws s3api put-bucket-encryption --bucket "$STATE_BUCKET" \
+            --server-side-encryption-configuration \
+            '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
+          aws s3api put-public-access-block --bucket "$STATE_BUCKET" \
+            --public-access-block-configuration \
+            "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+          echo "State bucket ready."
+
+  plan:
+    name: Terraform plan
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 20
+    outputs:
+      has_changes: ${{ steps.plan.outputs.has_changes }}
+    env:
+      TF_VAR_hcloud_token: ${{ secrets.TF_VAR_HCLOUD_TOKEN }}
+      TF_VAR_ssh_public_key_b64: ${{ secrets.TF_VAR_SSH_PUBLIC_KEY_B64 }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "<1.12.0"
+          terraform_wrapper: false
+      - name: terraform init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init
+      - name: terraform plan
+        id: plan
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          set -euo pipefail
+          # -detailed-exitcode : 0 = aucun changement, 1 = erreur, 2 = changements
+          exitcode=0
+          terraform plan -detailed-exitcode -lock-timeout=5m -out=tfplan || exitcode=$?
+          case "$exitcode" in
+            0)
+              echo "No changes — apply will be skipped."
+              echo "has_changes=false" >> "$GITHUB_OUTPUT"
+              ;;
+            2)
+              echo "Changes detected — apply will run."
+              echo "has_changes=true" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::terraform plan failed (exit code $exitcode)."
+              exit 1
+              ;;
+          esac
+      - name: Upload plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-${{ github.sha }}
+          path: ${{ env.TF_DIR }}/tfplan
+          retention-days: 1
+          if-no-files-found: error
+
+  apply:
+    name: Terraform apply
+    if: needs.plan.outputs.has_changes == 'true'
+    needs: plan
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 60
+    env:
+      TF_VAR_hcloud_token: ${{ secrets.TF_VAR_HCLOUD_TOKEN }}
+      TF_VAR_ssh_public_key_b64: ${{ secrets.TF_VAR_SSH_PUBLIC_KEY_B64 }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "<1.12.0"
+          terraform_wrapper: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: tfplan-${{ github.sha }}
+          path: ${{ env.TF_DIR }}
+      - name: terraform init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init
+      - name: terraform apply
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform apply -lock-timeout=5m tfplan
+
+  build:
+    name: Build & push images
+    needs: [approval, versions]
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: true
+      matrix:
+        service: [frontend, backend, jobs]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve the image reference for this service
+        id: img
+        run: |
+          set -euo pipefail
+          echo "ref=${IMAGE_NAMESPACE}/${{ matrix.service }}:${{ fromJSON(needs.versions.outputs.tags)[matrix.service] }}" >> "$GITHUB_OUTPUT"
+
+      - name: Skip the build when the image already exists in GHCR
+        id: probe
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.force_build }}" = "true" ]; then
+            echo "force_build requested — rebuilding."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          elif docker manifest inspect "${{ steps.img.outputs.ref }}" >/dev/null 2>&1; then
+            echo "${{ steps.img.outputs.ref }} already exists — skipping the build."
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "${{ steps.img.outputs.ref }} is missing — building."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: docker/setup-buildx-action@v3
+        if: steps.probe.outputs.found == 'false'
+
+      - name: Build and push ${{ matrix.service }}
+        if: steps.probe.outputs.found == 'false'
+        uses: docker/build-push-action@v6
+        with:
+          context: apps/saas/${{ matrix.service }}
+          file: apps/saas/${{ matrix.service }}/Dockerfile
+          push: true
+          provenance: false
+          tags: |
+            ${{ steps.img.outputs.ref }}
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.service }}:latest
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+
+  provision:
+    name: Provision ansible
+    if: >-
+      !cancelled()
+      && needs.plan.result == 'success'
+      && (needs.apply.result == 'success'
+          || (needs.apply.result == 'skipped' && inputs.force_provision == true))
+    needs: [plan, apply]
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 60
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SSH_PRIVATE_KEY_B64: ${{ secrets.SSH_PRIVATE_KEY_B64 }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      ANSIBLE_HOST_KEY_CHECKING: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Ansible and boto3
+        run: pip install --no-cache-dir "ansible-core>=2.16" boto3
+      - name: Install Ansible collections
+        working-directory: ${{ env.ANSIBLE_DIR }}
+        run: ansible-galaxy collection install -r requirements.yml
+      - name: Provision the nodes and configure the Swarm
+        working-directory: ${{ env.ANSIBLE_DIR }}
+        run: ansible-playbook -i localhost, playbook.yml
+
+  deploy:
+    name: Deploy ansible
+    if: >-
+      !cancelled()
+      && needs.versions.result == 'success'
+      && needs.plan.result == 'success'
+      && needs.build.result == 'success'
+      && (needs.apply.result == 'success' || needs.apply.result == 'skipped')
+      && (needs.provision.result == 'success' || needs.provision.result == 'skipped')
+    needs: [versions, plan, apply, build, provision]
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 60
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SSH_PRIVATE_KEY_B64: ${{ secrets.SSH_PRIVATE_KEY_B64 }}
+      FRONTEND_IMAGE_TAG: ${{ fromJSON(needs.versions.outputs.tags).frontend }}
+      BACKEND_IMAGE_TAG: ${{ fromJSON(needs.versions.outputs.tags).backend }}
+      JOBS_IMAGE_TAG: ${{ fromJSON(needs.versions.outputs.tags).jobs }}
+      POSTGRES_DB_DROPICTURE_SAAS: ${{ secrets.POSTGRES_DB_DROPICTURE_SAAS }}
+      POSTGRES_USER_DROPICTURE_SAAS: ${{ secrets.POSTGRES_USER_DROPICTURE_SAAS }}
+      POSTGRES_PASSWORD_DROPICTURE_SAAS: ${{ secrets.POSTGRES_PASSWORD_DROPICTURE_SAAS }}
+      OPENWEATHER_API_KEY_DROPICTURE_SAAS: ${{ secrets.OPENWEATHER_API_KEY_DROPICTURE_SAAS }}
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+      GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+      GHCR_USERNAME: ${{ github.actor }}
+      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+      ANSIBLE_HOST_KEY_CHECKING: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Ansible and boto3
+        run: pip install --no-cache-dir "ansible-core>=2.16" boto3
+      - name: Install Ansible collections
+        working-directory: ${{ env.ANSIBLE_DIR }}
+        run: ansible-galaxy collection install -r requirements.yml
+      - name: Deploy the stack and run the migrations
+        working-directory: ${{ env.ANSIBLE_DIR }}
+        run: ansible-playbook -i localhost, deploy.yml

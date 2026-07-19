@@ -1,0 +1,12 @@
+# dropicture/infra/saas/ansible/files/grafana-dashboards.yml
+apiVersion: 1
+providers:
+  - name: dropicture
+    orgId: 1
+    folder: dropicture
+    type: file
+    disableDeletion: true
+    allowUiUpdates: false
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/dashboards

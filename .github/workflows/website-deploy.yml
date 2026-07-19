@@ -1,0 +1,276 @@
+# dropicture/.github/workflows/website-deploy.yml
+name: Website — Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/website/**"
+      - "infra/website/**"
+      - ".github/workflows/website-deploy.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/website/**"
+      - "infra/website/**"
+      - ".github/workflows/website-deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-west-3
+  TF_DIR: infra/website/terraform
+  STATE_BUCKET: dropicture-website-tfstate-prod
+  TF_STATE_KEY: terraform.tfstate
+  WEBSITE_DIR: apps/website
+  BUILD_OUTPUT: out
+  WEBSITE_BUCKET: dropicture-website-prod
+  SITE_DOMAIN: dropicture.com
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+
+jobs:
+  validate:
+    name: Terraform validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "<1.12.0"
+          terraform_wrapper: false
+      - name: terraform init (no backend)
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init -backend=false
+      - name: terraform fmt
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform fmt -check -recursive
+      - name: terraform validate
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform validate
+
+  build:
+    name: Build website
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            apps/website/node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock', 'apps/website/bun.lock') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ env.WEBSITE_DIR }}
+        run: bun install --frozen-lockfile
+      - name: Build
+        working-directory: ${{ env.WEBSITE_DIR }}
+        run: bun run build
+      - name: Verify export output
+        working-directory: ${{ env.WEBSITE_DIR }}
+        run: |
+          set -euo pipefail
+          test -d "$BUILD_OUTPUT" || { echo "ERROR: export folder missing — check output: 'export' in next.config.ts"; exit 1; }
+          test -f "$BUILD_OUTPUT/index.html" || { echo "ERROR: index.html missing from export folder"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          name: website-dist
+          path: ${{ env.WEBSITE_DIR }}/${{ env.BUILD_OUTPUT }}/
+          retention-days: 1
+
+  bootstrap:
+    name: Bootstrap state bucket
+    if: github.event_name != 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Create state bucket if missing
+        run: |
+          set -euo pipefail
+          if aws s3api head-bucket --bucket "$STATE_BUCKET" 2>/dev/null; then
+            echo "State bucket $STATE_BUCKET already exists — nothing to do."
+            exit 0
+          fi
+          echo "Creating state bucket $STATE_BUCKET in $AWS_REGION ..."
+          if [ "$AWS_REGION" = "us-east-1" ]; then
+            aws s3api create-bucket --bucket "$STATE_BUCKET" --region "$AWS_REGION"
+          else
+            aws s3api create-bucket --bucket "$STATE_BUCKET" --region "$AWS_REGION" \
+              --create-bucket-configuration LocationConstraint="$AWS_REGION"
+          fi
+          aws s3api put-bucket-versioning --bucket "$STATE_BUCKET" \
+            --versioning-configuration Status=Enabled
+          aws s3api put-bucket-encryption --bucket "$STATE_BUCKET" \
+            --server-side-encryption-configuration \
+            '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
+          aws s3api put-public-access-block --bucket "$STATE_BUCKET" \
+            --public-access-block-configuration \
+            "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+          echo "State bucket ready."
+
+  plan:
+    name: Terraform plan
+    if: github.event_name != 'pull_request'
+    needs: bootstrap
+    runs-on: ubuntu-latest
+    environment: production
+    outputs:
+      has_changes: ${{ steps.plan.outputs.has_changes }}
+    env:
+      TF_VAR_cloudflare_zone_id: ${{ secrets.TF_VAR_CLOUDFLARE_ZONE_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "<1.12.0"
+          terraform_wrapper: false
+      - name: terraform init
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          terraform init \
+            -backend-config="bucket=${STATE_BUCKET}" \
+            -backend-config="key=${TF_STATE_KEY}" \
+            -backend-config="region=${AWS_REGION}" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+      - name: terraform plan
+        id: plan
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          # -detailed-exitcode -> 0 = no changes, 1 = error, 2 = changes present
+          exitcode=0
+          terraform plan -detailed-exitcode -out=tfplan || exitcode=$?
+          if [ "$exitcode" -eq 1 ]; then
+            echo "terraform plan errored."
+            exit 1
+          elif [ "$exitcode" -eq 2 ]; then
+            echo "Changes detected — apply will run."
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No changes — apply will be skipped."
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: ${{ env.TF_DIR }}/tfplan
+          retention-days: 1
+
+  apply:
+    name: Terraform apply
+    if: github.event_name != 'pull_request' && needs.plan.outputs.has_changes == 'true'
+    needs: plan
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      TF_VAR_cloudflare_zone_id: ${{ secrets.TF_VAR_CLOUDFLARE_ZONE_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "<1.12.0"
+          terraform_wrapper: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: ${{ env.TF_DIR }}
+      - name: terraform init
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          terraform init \
+            -backend-config="bucket=${STATE_BUCKET}" \
+            -backend-config="key=${TF_STATE_KEY}" \
+            -backend-config="region=${AWS_REGION}" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+      - name: terraform apply
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform apply tfplan
+
+  deploy:
+    name: Deploy to S3 and CloudFront
+    needs: [build, plan, apply]
+    if: >-
+      !cancelled()
+      && github.event_name != 'pull_request'
+      && needs.build.result == 'success'
+      && needs.plan.result == 'success'
+      && (needs.apply.result == 'success' || needs.apply.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: website-dist
+          path: dist
+
+      - name: Resolve CloudFront distribution
+        id: cf
+        run: |
+          set -euo pipefail
+          DIST_ID=$(aws cloudfront list-distributions \
+            --region us-east-1 \
+            --query "DistributionList.Items[?Aliases.Items && contains(Aliases.Items, '${SITE_DOMAIN}')].Id | [0]" \
+            --output text)
+          test -n "$DIST_ID" && test "$DIST_ID" != "None" || { echo "ERROR: no CloudFront distribution found for alias $SITE_DOMAIN"; exit 1; }
+          echo "Resolved CloudFront distribution: $DIST_ID"
+          echo "dist_id=$DIST_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Sync to S3
+        working-directory: dist
+        run: |
+          set -euo pipefail
+          aws s3 sync . "s3://${WEBSITE_BUCKET}" --no-progress \
+            --exclude "*" --include "_next/static/*" \
+            --cache-control "public, max-age=31536000, immutable"
+          aws s3 sync . "s3://${WEBSITE_BUCKET}" --no-progress \
+            --exclude "_next/static/*" --exclude "*.html" \
+            --cache-control "public, max-age=3600, must-revalidate"
+          aws s3 sync . "s3://${WEBSITE_BUCKET}" --no-progress \
+            --exclude "*" --include "*.html" \
+            --cache-control "public, max-age=0, must-revalidate" \
+            --content-type "text/html; charset=utf-8"
+          aws s3 sync . "s3://${WEBSITE_BUCKET}" --no-progress --delete --size-only
+
+      - name: Invalidate CloudFront
+        env:
+          DIST_ID: ${{ steps.cf.outputs.dist_id }}
+        run: |
+          set -euo pipefail
+          aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"

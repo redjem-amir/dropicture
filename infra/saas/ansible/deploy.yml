@@ -1,0 +1,287 @@
+---
+# dropicture/infra/saas/ansible/deploy.yml
+- name: Locate the manager and derive replica counts from Terraform state
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Pin the controller connection to local
+      ansible.builtin.set_fact:
+        ansible_connection: local
+
+    - name: Ensure required environment variables are set
+      ansible.builtin.assert:
+        that:
+          - "lookup('env', 'AWS_ACCESS_KEY_ID') | length > 0"
+          - "lookup('env', 'AWS_SECRET_ACCESS_KEY') | length > 0"
+          - "lookup('env', 'SSH_PRIVATE_KEY_B64') | length > 0"
+        fail_msg: "Export AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and SSH_PRIVATE_KEY_B64 first."
+        quiet: true
+
+    - name: Create a temporary file for the state
+      ansible.builtin.tempfile:
+        state: file
+        suffix: tfstate
+      register: tf_state_file
+      changed_when: false
+
+    - name: Download the Terraform state from S3
+      amazon.aws.s3_object:
+        bucket: dropicture-tfstate-prod
+        object: terraform.tfstate
+        region: eu-west-3
+        mode: get
+        dest: "{{ tf_state_file.path }}"
+        overwrite: always
+      changed_when: false
+
+    - name: Parse the state
+      ansible.builtin.set_fact:
+        _tfstate: "{{ lookup('file', tf_state_file.path) | from_json }}"
+
+    - name: Remove the local state copy (it can contain sensitive outputs)
+      ansible.builtin.file:
+        path: "{{ tf_state_file.path }}"
+        state: absent
+      changed_when: false
+
+    - name: Extract the node maps from the outputs
+      ansible.builtin.set_fact:
+        _public_ipv4: "{{ _tfstate.outputs.nodes_public_ipv4.value }}"
+        _private_ip: "{{ _tfstate.outputs.nodes_private_ip.value }}"
+        _cloudflare_cidrs: "{{ _tfstate.outputs.cloudflare_cidrs.value }}"
+
+    - name: Derive the app replica counts from the node inventory
+      ansible.builtin.set_fact:
+        _frontend_replicas: "{{ _public_ipv4.keys() | select('match', '^frontend-') | list | length }}"
+        _backend_replicas: "{{ _public_ipv4.keys() | select('match', '^backend-') | list | length }}"
+
+    - name: Sanity check (exactly one proxy, at least one app node of each kind)
+      ansible.builtin.assert:
+        that:
+          - "(_public_ipv4.keys() | select('match', '^proxy-') | list | length) == 1"
+          - "_frontend_replicas | int >= 1"
+          - "_backend_replicas | int >= 1"
+          - "(_public_ipv4 | length) == (_private_ip | length)"
+        fail_msg: >-
+          Terraform outputs look incomplete (missing the proxy or an app node).
+          If you just added/removed a node, run the provision stage first
+          (workflow_dispatch with force_provision=true, or an infra change on main).
+        quiet: true
+
+    - name: Materialise the SSH private key
+      ansible.builtin.tempfile:
+        state: file
+        suffix: ssh_key
+      register: ssh_key
+      changed_when: false
+
+    - name: Write the SSH private key (0600)
+      ansible.builtin.copy:
+        dest: "{{ ssh_key.path }}"
+        content: "{{ lookup('env', 'SSH_PRIVATE_KEY_B64') | b64decode }}"
+        mode: "0600"
+      changed_when: false
+      no_log: true
+
+    - name: Register the manager (proxy node) as the only deploy target
+      ansible.builtin.add_host:
+        name: "{{ item.value }}"
+        groups: ["swarm_managers"]
+        ansible_host: "{{ item.value }}"
+        ansible_user: root
+        ansible_ssh_private_key_file: "{{ ssh_key.path }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=accept-new"
+      loop: "{{ _public_ipv4 | dict2items | selectattr('key', 'match', '^proxy-') | list }}"
+      loop_control:
+        label: "{{ item.key }} ({{ item.value }})"
+      changed_when: false
+
+- name: Deploy (or update) the dropicture stack
+  hosts: swarm_managers
+  gather_facts: false
+  vars:
+    nodes_private_ip: "{{ hostvars['localhost']._private_ip }}"
+  tasks:
+    - name: Ensure the deployment secrets are present in the environment
+      ansible.builtin.assert:
+        that:
+          - "lookup('env', 'POSTGRES_DB_DROPICTURE_SAAS') | length > 0"
+          - "lookup('env', 'POSTGRES_USER_DROPICTURE_SAAS') | length > 0"
+          - "lookup('env', 'POSTGRES_PASSWORD_DROPICTURE_SAAS') | length > 0"
+          - "lookup('env', 'NEXT_PUBLIC_API_URL') | length > 0"
+          - "lookup('env', 'GRAFANA_ADMIN_PASSWORD') | length > 0"
+          - "lookup('env', 'OPENWEATHER_API_KEY_DROPICTURE_SAAS') | length > 0"
+        fail_msg: >-
+          One or more deployment secrets are missing from the environment. In CI
+          these come from GitHub Secrets; locally, export them before running.
+        quiet: true
+
+    - name: Check that the Swarm was provisioned by playbook.yml (configs and secret present)
+      ansible.builtin.shell: >-
+        docker config inspect dropicture_traefik_dynamic_v1 dropicture_origin_cert >/dev/null
+        && docker secret inspect dropicture_origin_key >/dev/null
+      register: _provisioned
+      changed_when: false
+      failed_when: false
+
+    - name: Refuse to deploy on an unprovisioned Swarm
+      ansible.builtin.assert:
+        that:
+          - "(_provisioned.rc | default(1)) == 0"
+        fail_msg: >-
+          The Swarm objects created by playbook.yml are missing on the manager
+          (dropicture_traefik_dynamic_v1, dropicture_origin_cert, dropicture_origin_key)
+          — or the node is not part of a Swarm at all. Run the provision stage
+          first: workflow_dispatch with force_provision=true, or push an infra
+          change.
+        quiet: true
+
+    - name: Log in to GHCR on the manager (so with_registry_auth can distribute pull creds)
+      community.docker.docker_login:
+        registry_url: ghcr.io
+        username: "{{ lookup('env', 'GHCR_USERNAME') }}"
+        password: "{{ lookup('env', 'GHCR_TOKEN') }}"
+      when: lookup('env', 'GHCR_TOKEN') | length > 0
+      no_log: true
+
+    - name: Expose the app replica counts to the compose template
+      ansible.builtin.set_fact:
+        frontend_replicas: "{{ hostvars['localhost']._frontend_replicas }}"
+        backend_replicas: "{{ hostvars['localhost']._backend_replicas }}"
+        cloudflare_trusted_ips: "{{ hostvars['localhost']._cloudflare_cidrs }}"
+
+    - name: Ensure the stack directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0750"
+      loop:
+        - /opt/dropicture/stacks
+        - /opt/dropicture/stacks/dashboards
+
+    - name: Render the Prometheus scrape config (targets derived from Terraform)
+      ansible.builtin.template:
+        src: prometheus.yml.j2
+        dest: /opt/dropicture/stacks/prometheus.yml
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Ship the static observability configs
+      ansible.builtin.copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: "0644"
+      loop:
+        - { src: loki.yml, dest: /opt/dropicture/stacks/loki.yml }
+        - { src: alloy.alloy, dest: /opt/dropicture/stacks/alloy.alloy }
+        - {
+            src: grafana-datasources.yml,
+            dest: /opt/dropicture/stacks/grafana-datasources.yml,
+          }
+        - {
+            src: grafana-dashboards.yml,
+            dest: /opt/dropicture/stacks/grafana-dashboards.yml,
+          }
+        - {
+            src: dashboards/dropicture-overview.json,
+            dest: /opt/dropicture/stacks/dashboards/dropicture-overview.json,
+          }
+        - {
+            src: dashboards/dropicture-logs.json,
+            dest: /opt/dropicture/stacks/dashboards/dropicture-logs.json,
+          }
+      loop_control:
+        label: "{{ item.src }}"
+
+    - name: Compute a content hash for every monitoring config
+      ansible.builtin.set_fact:
+        cfg_hash:
+          prometheus: "{{ (lookup('template', 'prometheus.yml.j2') | hash('sha1'))[:10] }}"
+          loki: "{{ (lookup('file', 'files/loki.yml') | hash('sha1'))[:10] }}"
+          alloy: "{{ (lookup('file', 'files/alloy.alloy') | hash('sha1'))[:10] }}"
+          grafana_ds: "{{ (lookup('file', 'files/grafana-datasources.yml') | hash('sha1'))[:10] }}"
+          grafana_dash_provider: "{{ (lookup('file', 'files/grafana-dashboards.yml') | hash('sha1'))[:10] }}"
+          dash_overview: "{{ (lookup('file', 'files/dashboards/dropicture-overview.json') | hash('sha1'))[:10] }}"
+          dash_logs: "{{ (lookup('file', 'files/dashboards/dropicture-logs.json') | hash('sha1'))[:10] }}"
+
+    - name: Render the compose file from the template
+      ansible.builtin.template:
+        src: docker-compose.yml.j2
+        dest: /opt/dropicture/stacks/docker-compose.yml
+        owner: root
+        group: root
+        mode: "0600"
+
+    - name: Deploy (or update) the dropicture stack
+      community.docker.docker_stack:
+        name: dropicture
+        compose:
+          - /opt/dropicture/stacks/docker-compose.yml
+        with_registry_auth: true
+        resolve_image: always
+        prune: false
+
+    - name: Reset the ssh connection (the first rollout can briefly saturate the manager)
+      ansible.builtin.meta: reset_connection
+
+    - name: Wait for the manager to come back after the rollout
+      ansible.builtin.wait_for_connection:
+        timeout: 300
+        sleep: 5
+
+    - name: Wait until Postgres is reachable through the backend overlay
+      ansible.builtin.shell: |
+        set -eu
+        attempts=30
+        delay=10
+        i=0
+        until docker run --rm --network dropicture_backend postgres:18-alpine \
+              pg_isready -h dropicture-saas-postgres -p 5432 -t 3 >/dev/null 2>&1; do
+          i=$((i + 1))
+          if [ "$i" -ge "$attempts" ]; then
+            echo "Postgres still unreachable after $attempts probes — check 'docker service ps dropicture_dropicture-saas-postgres'" >&2
+            exit 1
+          fi
+          echo "postgres not ready yet (probe $i/$attempts) — retrying in ${delay}s" >&2
+          sleep "$delay"
+        done
+      changed_when: false
+
+    - name: Run TypeORM migrations
+      environment:
+        POSTGRES_DB_DROPICTURE_SAAS: "{{ lookup('env', 'POSTGRES_DB_DROPICTURE_SAAS') }}"
+        POSTGRES_USER_DROPICTURE_SAAS: "{{ lookup('env', 'POSTGRES_USER_DROPICTURE_SAAS') }}"
+        POSTGRES_PASSWORD_DROPICTURE_SAAS: "{{ lookup('env', 'POSTGRES_PASSWORD_DROPICTURE_SAAS') }}"
+        MIGRATE_IMAGE: "ghcr.io/redjem-amir/dropicture/saas/backend:{{ lookup('env', 'BACKEND_IMAGE_TAG') | default('latest', true) }}"
+      ansible.builtin.shell: |
+        set -eu
+        docker pull "$MIGRATE_IMAGE" >/dev/null
+        docker run --rm --network dropicture_backend \
+          -e POSTGRES_HOST_DROPICTURE_SAAS=dropicture-saas-postgres \
+          -e POSTGRES_PORT_DROPICTURE_SAAS=5432 \
+          -e POSTGRES_DB_DROPICTURE_SAAS="$POSTGRES_DB_DROPICTURE_SAAS" \
+          -e POSTGRES_USER_DROPICTURE_SAAS="$POSTGRES_USER_DROPICTURE_SAAS" \
+          -e POSTGRES_PASSWORD_DROPICTURE_SAAS="$POSTGRES_PASSWORD_DROPICTURE_SAAS" \
+          --entrypoint bunx --workdir /app \
+          "$MIGRATE_IMAGE" typeorm -d dist/db/data-source.js migration:run
+      register: _typeorm_migrate
+      changed_when: >-
+        'No migrations are pending' not in (_typeorm_migrate.stdout | default(''))
+
+- name: Clean up
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove the temporary SSH key
+      ansible.builtin.file:
+        path: "{{ hostvars['localhost'].ssh_key.path }}"
+        state: absent
+      when: hostvars['localhost'].ssh_key is defined
+      changed_when: false

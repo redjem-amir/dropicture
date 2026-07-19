@@ -1,0 +1,324 @@
+name: SaaS Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "Portée de la destruction"
+        required: true
+        type: choice
+        default: hetzner-only
+        options:
+          - hetzner-only
+          - everything
+      confirm:
+        description: 'Tape "destroy-hetzner" ou "destroy-everything" selon la portée'
+        required: true
+        type: string
+        default: ""
+      revoke_origin_cert:
+        description: "Révoquer les certificats Origin CA Cloudflare"
+        required: false
+        type: boolean
+        default: true
+      empty_cdn_bucket:
+        description: "Vider le bucket CDN avant destroy (scope everything, IRRÉVERSIBLE)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: saas-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-west-3
+  TF_DIR: infra/saas/terraform
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+
+jobs:
+  guard:
+    name: Confirm intent
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      expected: ${{ steps.check.outputs.expected }}
+    steps:
+      - name: Check branch and confirmation
+        id: check
+        env:
+          SCOPE: ${{ inputs.scope }}
+          CONFIRM: ${{ inputs.confirm }}
+          REVOKE_CERT: ${{ inputs.revoke_origin_cert }}
+          EMPTY_CDN: ${{ inputs.empty_cdn_bucket }}
+        run: |
+          set -euo pipefail
+
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Destroy must be run from the main branch (state key is fixed)."
+            exit 1
+          fi
+
+          case "$SCOPE" in
+            hetzner-only) expected="destroy-hetzner" ;;
+            everything)   expected="destroy-everything" ;;
+            *) echo "::error::Unknown scope '$SCOPE'."; exit 1 ;;
+          esac
+
+          if [ "$CONFIRM" != "$expected" ]; then
+            echo "::error::Confirmation failed: type '$expected' exactly for scope '$SCOPE'."
+            exit 1
+          fi
+
+          if [ "$SCOPE" = "hetzner-only" ] && [ "$EMPTY_CDN" = "true" ]; then
+            echo "::error::empty_cdn_bucket n'a de sens qu'avec le scope 'everything'."
+            exit 1
+          fi
+
+          echo "expected=$expected" >> "$GITHUB_OUTPUT"
+          echo "Confirmed by $GITHUB_ACTOR."
+
+          {
+            echo "## Destroy confirmé"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Demandé par | @$GITHUB_ACTOR |"
+            echo "| Portée | \`$SCOPE\` |"
+            echo "| Révocation Origin CA | \`$REVOKE_CERT\` |"
+            echo "| Vidage bucket CDN | \`$EMPTY_CDN\` |"
+            echo ""
+            if [ "$SCOPE" = "hetzner-only" ]; then
+              echo "> Les VMs Hetzner et le DNS \`app\`/\`grafana\` partent."
+              echo "> S3, CloudFront, WAF, ACM, KMS et SSM restent en place."
+            else
+              echo "> **Tout part**, y compris le CDN et les clés de signature."
+            fi
+            echo ""
+            echo "Le bucket de state \`dropicture-tfstate-prod\` n'est jamais supprimé par ce workflow."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  destroy-hetzner:
+    name: Destroy Hetzner nodes
+    if: ${{ inputs.scope == 'hetzner-only' }}
+    needs: guard
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 45
+    env:
+      TF_VAR_hcloud_token: ${{ secrets.TF_VAR_HCLOUD_TOKEN }}
+      TF_VAR_ssh_public_key_b64: ${{ secrets.TF_VAR_SSH_PUBLIC_KEY_B64 }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "<1.12.0"
+          terraform_wrapper: false
+
+      - name: terraform init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init
+
+      - name: terraform plan -destroy (Hetzner only)
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          set -euo pipefail
+          terraform plan -destroy -lock-timeout=5m -out=hetzner.tfplan \
+            -target='hcloud_server.node' \
+            -target='hcloud_server_network.node' \
+            -target='hcloud_network_subnet.swarm' \
+            -target='hcloud_network.swarm' \
+            -target='hcloud_firewall.app' \
+            -target='hcloud_ssh_key.deploy'
+
+      - name: Show what will be destroyed
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## Ressources détruites"
+            echo ""
+            echo '```'
+            terraform show -no-color hetzner.tfplan | grep -E '^  # ' || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: terraform apply
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform apply -auto-approve -lock-timeout=5m hetzner.tfplan
+
+      - name: Confirm the CDN survived
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          set -euo pipefail
+          cdn=$(terraform output -raw cdn_url 2>/dev/null || echo "")
+          bucket=$(terraform output -raw cdn_bucket 2>/dev/null || echo "")
+          {
+            echo ""
+            echo "### Conservé"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| CDN | \`${cdn:-absent}\` |"
+            echo "| Bucket | \`${bucket:-absent}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  destroy-everything:
+    name: Destroy all infrastructure
+    if: ${{ inputs.scope == 'everything' }}
+    needs: guard
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 90
+    env:
+      TF_VAR_hcloud_token: ${{ secrets.TF_VAR_HCLOUD_TOKEN }}
+      TF_VAR_ssh_public_key_b64: ${{ secrets.TF_VAR_SSH_PUBLIC_KEY_B64 }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "<1.12.0"
+          terraform_wrapper: false
+
+      - name: terraform init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init
+
+      - name: Resolve the CDN bucket name
+        id: cdn
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          set -euo pipefail
+          name=$(terraform output -raw cdn_bucket 2>/dev/null || echo "")
+          echo "bucket=$name" >> "$GITHUB_OUTPUT"
+          echo "CDN bucket: ${name:-<none>}"
+
+      - uses: actions/setup-python@v5
+        if: ${{ inputs.empty_cdn_bucket && steps.cdn.outputs.bucket != '' }}
+        with:
+          python-version: "3.12"
+
+      - name: Install boto3
+        if: ${{ inputs.empty_cdn_bucket && steps.cdn.outputs.bucket != '' }}
+        run: pip install --no-cache-dir boto3
+
+      - name: Empty the CDN bucket
+        if: ${{ inputs.empty_cdn_bucket && steps.cdn.outputs.bucket != '' }}
+        env:
+          CDN_BUCKET: ${{ steps.cdn.outputs.bucket }}
+        run: |
+          python - <<'PY'
+          import os
+          import boto3
+          from botocore.exceptions import ClientError
+
+          name = os.environ["CDN_BUCKET"]
+          region = os.environ["AWS_REGION"]
+          s3 = boto3.resource("s3", region_name=region)
+
+          try:
+              s3.meta.client.head_bucket(Bucket=name)
+          except ClientError as exc:
+              if exc.response["Error"]["Code"] in ("404", "NoSuchBucket"):
+                  print(f"Bucket {name} does not exist — nothing to do.")
+                  raise SystemExit(0)
+              raise
+
+          bucket = s3.Bucket(name)
+          print(f"Emptying all versions and delete markers in {name} ...")
+          bucket.object_versions.delete()
+          print("CDN bucket emptied.")
+          PY
+
+      - name: terraform plan -destroy
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform plan -destroy -lock-timeout=5m -out=all.tfplan
+
+      - name: Show what will be destroyed
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## Ressources détruites"
+            echo ""
+            echo '```'
+            terraform show -no-color all.tfplan | grep -E '^  # ' || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: terraform apply
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform apply -auto-approve -lock-timeout=5m all.tfplan
+
+      - name: Note on retained resources
+        run: |
+          {
+            echo ""
+            echo "### Non supprimé"
+            echo ""
+            echo "- Bucket de state \`dropicture-tfstate-prod\` (volontaire)"
+            echo "- Clé KMS : suppression planifiée à 30 jours, annulable"
+            echo "- Utilisateur IAM applicatif (géré hors Terraform)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  cf-revoke:
+    name: Revoke Origin CA certificate
+    if: ${{ always() && inputs.revoke_origin_cert && contains(needs.*.result, 'success') && !contains(needs.*.result, 'failure') }}
+    needs: [destroy-hetzner, destroy-everything]
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ZONE_NAME: dropicture.com
+    steps:
+      - name: Revoke the zone's Origin CA certificates
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4"
+          auth="Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"
+
+          echo "Resolving zone id for ${CLOUDFLARE_ZONE_NAME} ..."
+          zone_id=$(curl -fsS -H "$auth" "$api/zones?name=${CLOUDFLARE_ZONE_NAME}" \
+            | jq -r '.result[0].id // empty')
+          if [ -z "$zone_id" ]; then
+            echo "Zone ${CLOUDFLARE_ZONE_NAME} not visible to the token — nothing to revoke."
+            exit 0
+          fi
+          echo "Zone id: $zone_id"
+
+          ids=$(curl -fsS -H "$auth" "$api/certificates?zone_id=${zone_id}&per_page=50" \
+            | jq -r --arg z "$CLOUDFLARE_ZONE_NAME" \
+                '(.result // [])[] | select((.hostnames | index($z)) or (.hostnames | index("*." + $z))) | .id')
+          if [ -z "$ids" ]; then
+            echo "No Origin CA certificate for ${CLOUDFLARE_ZONE_NAME} — nothing to revoke."
+            exit 0
+          fi
+
+          for id in $ids; do
+            echo "Revoking origin certificate $id ..."
+            curl -fsS -X DELETE -H "$auth" "$api/certificates/${id}" \
+              | jq -e '.success == true' >/dev/null
+            echo "  revoked $id"
+          done
+          echo "All Origin CA certificates for ${CLOUDFLARE_ZONE_NAME} revoked."
