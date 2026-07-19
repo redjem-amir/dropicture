@@ -47,6 +47,10 @@ variable "cdn_force_destroy" {
 variable "cdn_upload_origins" {
   type    = list(string)
   default = ["https://app.dropicture.com"]
+  validation {
+    condition     = alltrue([for o in var.cdn_upload_origins : can(regex("^https?://[^/]+$", o))])
+    error_message = "A CORS origin must be of the form scheme://host[:port], with no trailing slash."
+  }
 }
 
 variable "cdn_price_class" {
@@ -54,7 +58,7 @@ variable "cdn_price_class" {
   default = "PriceClass_100"
   validation {
     condition     = contains(["PriceClass_100", "PriceClass_200", "PriceClass_All"], var.cdn_price_class)
-    error_message = "PriceClass_100, PriceClass_200 ou PriceClass_All."
+    error_message = "Must be PriceClass_100, PriceClass_200 or PriceClass_All."
   }
 }
 
@@ -63,7 +67,16 @@ variable "cdn_waf_rate_limit" {
   default = 5000
   validation {
     condition     = var.cdn_waf_rate_limit >= 100
-    error_message = "Le minimum accepte par WAFv2 pour une rate-based rule est 100."
+    error_message = "The minimum accepted by WAFv2 for a rate-based rule is 100."
+  }
+}
+
+variable "cdn_dev_origins" {
+  type    = list(string)
+  default = []
+  validation {
+    condition     = alltrue([for o in var.cdn_dev_origins : can(regex("^https?://[^/]+$", o))])
+    error_message = "A CORS origin must be of the form scheme://host[:port], with no trailing slash."
   }
 }
 
@@ -72,11 +85,11 @@ variable "cloudfront_key_versions" {
   default = ["v1"]
   validation {
     condition     = length(var.cloudfront_key_versions) >= 1 && length(var.cloudfront_key_versions) <= 5
-    error_message = "Un key group CloudFront accepte entre 1 et 5 cles publiques."
+    error_message = "A CloudFront key group accepts between 1 and 5 public keys."
   }
   validation {
     condition     = length(distinct(var.cloudfront_key_versions)) == length(var.cloudfront_key_versions)
-    error_message = "Les versions de cles doivent etre uniques."
+    error_message = "Key versions must be unique."
   }
 }
 
@@ -100,7 +113,7 @@ variable "db_backup_lock_days" {
   default = 7
   validation {
     condition     = var.db_backup_lock_days >= 1
-    error_message = "La retention Object Lock doit etre d'au moins 1 jour."
+    error_message = "Object Lock retention must be at least 1 day."
   }
 }
 
@@ -109,7 +122,7 @@ variable "db_backup_daily_retention_days" {
   default = 35
   validation {
     condition     = var.db_backup_daily_retention_days > 30
-    error_message = "L'expiration doit depasser la transition vers STANDARD_IA (30 jours)."
+    error_message = "Expiration must exceed the transition to STANDARD_IA (30 days)."
   }
 }
 
@@ -118,7 +131,7 @@ variable "db_backup_monthly_retention_days" {
   default = 365
   validation {
     condition     = var.db_backup_monthly_retention_days > 30
-    error_message = "L'expiration doit depasser la transition vers GLACIER_IR (30 jours)."
+    error_message = "Expiration must exceed the transition to GLACIER_IR (30 days)."
   }
 }
 
