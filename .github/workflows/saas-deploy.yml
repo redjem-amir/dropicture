@@ -113,23 +113,6 @@ jobs:
             done
           } >> "$GITHUB_STEP_SUMMARY"
 
-  approval:
-    name: Waiting for manual approval
-    needs: [validate, test-backend, versions]
-    runs-on: ubuntu-latest
-    environment: manual-approval
-    timeout-minutes: 5
-    steps:
-      - name: Approved
-        run: |
-          echo "Deployment approved by ${{ github.actor }} — the pipeline continues."
-          {
-            echo "### Deployment approved"
-            echo ""
-            echo "- Ref: \`${{ github.ref_name }}\`"
-            echo "- Commit: \`${{ github.sha }}\`"
-          } >> "$GITHUB_STEP_SUMMARY"
-
   bootstrap:
     name: Bootstrap state bucket
     needs: approval
