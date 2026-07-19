@@ -91,12 +91,12 @@ locals {
       }
     }
   ]...)
-  proxy_key = one([for k, s in local.servers : k if s.role == "proxy"])
-  proxy_subdomains = ["app", "grafana"]
-  cdn_domain      = "cdn.${var.root_domain}"
-  cdn_bucket_name = "${var.project_name}-cdn-prod"
-  cdn_origin_id   = "s3-cdn"
-  ssm_prefix      = "/${var.project_name}/cloudfront"
+  proxy_key             = one([for k, s in local.servers : k if s.role == "proxy"])
+  proxy_subdomains      = ["app", "grafana"]
+  cdn_domain            = "cdn.${var.root_domain}"
+  cdn_bucket_name       = "${var.project_name}-cdn-prod"
+  cdn_origin_id         = "s3-cdn"
+  ssm_prefix            = "/${var.project_name}/cloudfront"
   db_backup_bucket_name = "${var.project_name}-db-backups-prod"
   backup_ssm_prefix     = "/${var.project_name}/backup"
 }
@@ -148,11 +148,11 @@ resource "hcloud_firewall" "app" {
 }
 
 resource "hcloud_server" "node" {
-  for_each = local.servers
-  name        = "${var.project_name}-${each.key}"
-  image       = var.os_image
-  server_type = each.value.server_type
-  location    = var.location
+  for_each     = local.servers
+  name         = "${var.project_name}-${each.key}"
+  image        = var.os_image
+  server_type  = each.value.server_type
+  location     = var.location
   ssh_keys     = [hcloud_ssh_key.deploy.id]
   firewall_ids = [hcloud_firewall.app.id]
   labels = {
@@ -163,7 +163,7 @@ resource "hcloud_server" "node" {
     ipv4_enabled = true
     ipv6_enabled = true
   }
-  user_data = <<-EOT
+  user_data  = <<-EOT
     #cloud-config
     write_files:
       - path: /etc/netplan/60-dropicture-private.yaml
@@ -186,7 +186,7 @@ resource "hcloud_server" "node" {
 }
 
 resource "hcloud_server_network" "node" {
-  for_each = local.servers
+  for_each   = local.servers
   server_id  = hcloud_server.node[each.key].id
   network_id = hcloud_network.swarm.id
   ip         = each.value.private_ip
@@ -199,12 +199,12 @@ data "cloudflare_zone" "dropicture" {
 
 resource "cloudflare_dns_record" "proxy" {
   for_each = toset(local.proxy_subdomains)
-  zone_id = data.cloudflare_zone.dropicture.zone_id
-  name    = each.value
-  content = hcloud_server.node[local.proxy_key].ipv4_address
-  type    = "A"
-  ttl     = 1
-  proxied = true
+  zone_id  = data.cloudflare_zone.dropicture.zone_id
+  name     = each.value
+  content  = hcloud_server.node[local.proxy_key].ipv4_address
+  type     = "A"
+  ttl      = 1
+  proxied  = true
 }
 
 resource "cloudflare_zone_setting" "ssl" {
@@ -308,7 +308,7 @@ resource "aws_s3_bucket_cors_configuration" "cdn" {
 }
 
 resource "aws_acm_certificate" "cdn" {
-  provider = aws.us_east_1
+  provider          = aws.us_east_1
   domain_name       = local.cdn_domain
   validation_method = "DNS"
   lifecycle {
@@ -334,19 +334,19 @@ resource "cloudflare_dns_record" "cdn_cert_validation" {
 }
 
 resource "aws_acm_certificate_validation" "cdn" {
-  provider = aws.us_east_1
+  provider                = aws.us_east_1
   certificate_arn         = aws_acm_certificate.cdn.arn
   validation_record_fqdns = [for r in cloudflare_dns_record.cdn_cert_validation : r.name]
 }
 
 resource "tls_private_key" "cloudfront" {
-  for_each = toset(var.cloudfront_key_versions)
+  for_each  = toset(var.cloudfront_key_versions)
   algorithm = "RSA"
   rsa_bits  = 2048
 }
 
 resource "aws_cloudfront_public_key" "cdn" {
-  for_each = tls_private_key.cloudfront
+  for_each    = tls_private_key.cloudfront
   name        = "${var.project_name}-cdn-${each.key}"
   encoded_key = each.value.public_key_pem
   lifecycle {
@@ -371,18 +371,18 @@ resource "aws_kms_alias" "cdn_secrets" {
 
 resource "aws_ssm_parameter" "cloudfront_private_key" {
   for_each = tls_private_key.cloudfront
-  name   = "${local.ssm_prefix}/private_key_${each.key}"
-  type   = "SecureString"
-  key_id = aws_kms_key.cdn_secrets.key_id
-  value  = each.value.private_key_pem_pkcs8
-  tier   = "Standard"
+  name     = "${local.ssm_prefix}/private_key_${each.key}"
+  type     = "SecureString"
+  key_id   = aws_kms_key.cdn_secrets.key_id
+  value    = each.value.private_key_pem_pkcs8
+  tier     = "Standard"
 }
 
 resource "aws_ssm_parameter" "cloudfront_key_pair_id" {
   for_each = aws_cloudfront_public_key.cdn
-  name  = "${local.ssm_prefix}/key_pair_id_${each.key}"
-  type  = "String"
-  value = each.value.id
+  name     = "${local.ssm_prefix}/key_pair_id_${each.key}"
+  type     = "String"
+  value    = each.value.id
 }
 
 resource "aws_ssm_parameter" "cloudfront_active_key_version" {
@@ -453,15 +453,15 @@ data "aws_iam_policy_document" "cdn_bucket" {
 }
 
 resource "aws_s3_bucket_policy" "cdn" {
-  bucket = aws_s3_bucket.cdn.id
-  policy = data.aws_iam_policy_document.cdn_bucket.json
+  bucket     = aws_s3_bucket.cdn.id
+  policy     = data.aws_iam_policy_document.cdn_bucket.json
   depends_on = [aws_s3_bucket_public_access_block.cdn]
 }
 
 resource "aws_wafv2_web_acl" "cdn" {
   provider = aws.us_east_1
-  name  = "${var.project_name}-cdn"
-  scope = "CLOUDFRONT"
+  name     = "${var.project_name}-cdn"
+  scope    = "CLOUDFRONT"
   default_action {
     allow {}
   }
