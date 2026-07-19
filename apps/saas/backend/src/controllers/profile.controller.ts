@@ -1,33 +1,24 @@
 // dropicture/apps/saas/backend/src/controllers/profile.controller.ts
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, IsNull, Not, Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { IsIn, IsInt, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
-import type { CookieOptions, Request, Response } from 'express';
+import type { Request } from 'express';
 import { CdnService, MEDIA_LIMITS } from '../services/cdn.service';
 import type { AuthenticatedUser } from '../services/auth.service';
 import { Account } from '../models/account.entity';
 import { Media } from '../models/media.entity';
 
-const isProd = process.env.NODE_ENV === 'production';
 const SITE = 'https://dropicture.com';
-
-const CDN_COOKIE_OPTIONS: CookieOptions = {
-  domain: process.env.COOKIE_DOMAIN ?? '.dropicture.com',
-  path: '/',
-  httpOnly: true,
-  secure: isProd,
-  sameSite: 'lax',
-};
 
 class UpdateBioDto {
   @IsOptional()
   @IsString()
   @MaxLength(160, { message: 'BIO_TOO_LONG' })
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Transform(({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value))
   bio?: string;
 }
 
@@ -101,6 +92,7 @@ export class ProfileController {
   async listMedia(@Req() req: Request, @Query('filter') filter?: string, @Query('cursor') cursor?: string, @Query('limit') limit?: string) {
     const { sub } = req.user as AuthenticatedUser;
     const take = Math.min(120, Math.max(1, Number(limit) || 48));
+    const offset = Math.max(0, Number(cursor) || 0);
     const qb = this.mediaRepository
       .createQueryBuilder('m')
       .where('m.ownerId = :sub', { sub })
@@ -110,10 +102,10 @@ export class ProfileController {
       .orderBy("CASE WHEN m.visibility = 'public' THEN 0 ELSE 1 END", 'ASC')
       .addOrderBy('COALESCE(m.capturedAt, m.createdAt)', 'DESC')
       .addOrderBy('m.id', 'DESC')
-      .take(take + 1);
+      .limit(take + 1)
+      .offset(offset);
     if (filter === 'published') qb.andWhere('m.visibility = :v', { v: 'public' });
     if (filter === 'private') qb.andWhere('m.visibility = :v', { v: 'private' });
-    if (cursor) qb.skip(Math.max(0, Number(cursor) || 0));
     const rows = await qb.getMany();
     const hasMore = rows.length > take;
     const items = hasMore ? rows.slice(0, take) : rows;
@@ -127,7 +119,7 @@ export class ProfileController {
         durationMs: m.durationMs,
         ...this.cdn.urlsFor(m),
       })),
-      nextCursor: hasMore ? String((Number(cursor) || 0) + take) : null,
+      nextCursor: hasMore ? String(offset + take) : null,
     };
   }
 
@@ -185,17 +177,5 @@ export class ProfileController {
       await this.cdn.destroyMedia(sub, old.id).catch(() => undefined);
     }
     return { id: media.id, status: media.status };
-  }
-
-  @Throttle({ default: { limit: 30, ttl: 60000 } })
-  @Post('/cdn-session')
-  @HttpCode(HttpStatus.OK)
-  openCdnSession(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const { sub } = req.user as AuthenticatedUser;
-    const cookies = this.cdn.issueReadCookies(sub);
-    for (const c of cookies) {
-      res.cookie(c.name, c.value, { ...CDN_COOKIE_OPTIONS, maxAge: c.maxAge });
-    }
-    return { success: true, expires_in: Math.floor((cookies[0]?.maxAge ?? 0) / 1000) };
   }
 }

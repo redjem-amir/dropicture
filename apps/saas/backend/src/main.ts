@@ -10,6 +10,8 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import type { Request, Response, NextFunction } from 'express';
 import { accessLog, frTimestamp } from './middleware/access-log.middleware';
 
+const isProd = process.env.NODE_ENV === 'production';
+
 function healthCheck(req: Request, res: Response, next: NextFunction) {
   if (req.method === 'GET' && req.path === '/health') {
     res.status(200).json({ status: 'ok' });
@@ -30,13 +32,13 @@ async function App() {
     logger: new FrenchConsoleLogger(),
   });
   app.enableShutdownHooks();
-  app.set('trust proxy', 2);
+  app.set('trust proxy', isProd ? 2 : false);
   app.use(healthCheck);
   app.use(accessLog);
   app.use(
     helmet({
       contentSecurityPolicy: false,
-      crossOriginResourcePolicy: { policy: 'same-site' },
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
       hsts: { maxAge: 63072000, includeSubDomains: true, preload: true },
     }),
   );
@@ -50,8 +52,7 @@ async function App() {
       transform: true,
     }),
   );
-  const allowedOrigins =
-    process.env.NODE_ENV === 'production' ? ['https://app.dropicture.com', 'https://dropicture.com', 'https://www.dropicture.com'] : ['http://localhost:3001', 'http://localhost:3000'];
+  const allowedOrigins = isProd ? ['https://app.dropicture.com', 'https://dropicture.com', 'https://www.dropicture.com'] : ['http://localhost:3001', 'http://localhost:3000'];
   app.enableCors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {

@@ -1,25 +1,15 @@
 // dropicture/apps/saas/backend/src/controllers/library.controller.ts
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, IsNull, Repository } from 'typeorm';
 import { ArrayMaxSize, ArrayNotEmpty, IsArray, IsIn, IsInt, IsOptional, IsString, IsUUID, Matches, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import type { CookieOptions, Request, Response } from 'express';
-import { CdnService, MEDIA_LIMITS, MIME, ORIGINAL_KEY_RE } from '../services/cdn.service';
+import type { Request } from 'express';
+import { CdnService, MIME, ORIGINAL_KEY_RE } from '../services/cdn.service';
 import type { AuthenticatedUser } from '../services/auth.service';
 import { Media } from '../models/media.entity';
-
-const isProd = process.env.NODE_ENV === 'production';
-
-const CDN_COOKIE_OPTIONS: CookieOptions = {
-  domain: process.env.COOKIE_DOMAIN ?? '.dropicture.com',
-  path: '/',
-  httpOnly: true,
-  secure: isProd,
-  sameSite: 'lax',
-};
 
 const VISIBLE_STATUSES = ['pending', 'queued', 'processing', 'ready', 'failed', 'rejected'];
 
@@ -38,7 +28,7 @@ function decodeCursor(raw: string): { ts: Date; id: string } {
 
 function errorCode(err: unknown): string {
   const body = (err as { response?: unknown })?.response;
-  if (body && typeof body === 'object' && 'code' in body) return String((body as { code: unknown }).code);
+  if (body && typeof body === 'object' && 'code' in body) return String(body.code);
   return 'OPERATION_FAILED';
 }
 
@@ -107,11 +97,26 @@ export class LibraryController {
     private readonly mediaRepository: Repository<Media>,
   ) {}
 
+  private async explainFailures(ownerId: string, ids: string[], fallback: string): Promise<{ id: string; code: string }[]> {
+    if (!ids.length) return [];
+    const rows = await this.mediaRepository.find({
+      where: { id: In(ids), ownerId },
+      select: { id: true, status: true, purpose: true, deletedAt: true },
+    });
+    const byId = new Map(rows.map((r) => [r.id, r]));
+    return ids.map((id) => {
+      const m = byId.get(id);
+      if (!m || m.deletedAt) return { id, code: 'MEDIA_NOT_FOUND' };
+      if (m.purpose === 'avatar') return { id, code: 'AVATAR_ALWAYS_PUBLIC' };
+      if (m.status !== 'ready') return { id, code: 'MEDIA_NOT_READY' };
+      return { id, code: fallback };
+    });
+  }
+
   @Throttle({ default: { limit: 120, ttl: 60000 } })
   @Get('/summary')
   async summary(@Req() req: Request) {
     const { sub } = req.user as AuthenticatedUser;
-
     const totals = await this.mediaRepository
       .createQueryBuilder('m')
       .select('m.visibility', 'visibility')
@@ -124,7 +129,6 @@ export class LibraryController {
       .groupBy('m.visibility')
       .addGroupBy('m.status')
       .getRawMany<{ visibility: string; status: string; total: string; bytes: string }>();
-
     let published = 0;
     let privateCount = 0;
     let pending = 0;
@@ -142,7 +146,6 @@ export class LibraryController {
         pending += n;
       }
     }
-
     const months = await this.mediaRepository
       .createQueryBuilder('m')
       .select("TO_CHAR(DATE_TRUNC('month', COALESCE(m.capturedAt, m.createdAt)), 'YYYY-MM')", 'month')
@@ -155,7 +158,6 @@ export class LibraryController {
       .groupBy('month')
       .orderBy('month', 'DESC')
       .getRawMany<{ month: string; total: string; bytes: string }>();
-
     const oldest = await this.mediaRepository
       .createQueryBuilder('m')
       .select('MIN(COALESCE(m.capturedAt, m.createdAt))', 'first')
@@ -163,7 +165,6 @@ export class LibraryController {
       .andWhere('m.purpose = :p', { p: 'content' })
       .andWhere('m.deletedAt IS NULL')
       .getRawOne<{ first: Date | null }>();
-
     return {
       counts: {
         total: published + privateCount,
@@ -188,7 +189,6 @@ export class LibraryController {
   async list(@Req() req: Request, @Query('filter') filter?: string, @Query('cursor') cursor?: string, @Query('limit') limit?: string) {
     const { sub } = req.user as AuthenticatedUser;
     const take = Math.min(120, Math.max(1, Number(limit) || 60));
-
     const qb = this.mediaRepository
       .createQueryBuilder('m')
       .where('m.ownerId = :sub', { sub })
@@ -197,14 +197,12 @@ export class LibraryController {
       .andWhere('m.deletedAt IS NULL')
       .orderBy('COALESCE(m.capturedAt, m.createdAt)', 'DESC')
       .addOrderBy('m.id', 'DESC')
-      .take(take + 1);
-
+      .limit(take + 1);
     if (filter === 'published') qb.andWhere('m.visibility = :v', { v: 'public' });
     if (filter === 'private') {
       qb.andWhere('m.visibility = :v', { v: 'private' }).andWhere('m.status = :ready', { ready: 'ready' });
     }
     if (filter === 'processing') qb.andWhere('m.status <> :ready', { ready: 'ready' });
-
     if (cursor) {
       const { ts, id } = decodeCursor(cursor);
       qb.andWhere(
@@ -217,12 +215,10 @@ export class LibraryController {
         }),
       );
     }
-
     const rows = await qb.getMany();
     const hasMore = rows.length > take;
     const items = hasMore ? rows.slice(0, take) : rows;
     const last = items[items.length - 1];
-
     return {
       items: items.map((m) => ({
         id: m.id,
@@ -276,11 +272,13 @@ export class LibraryController {
     });
     if (!rows.length) throw new NotFoundException({ code: 'MEDIA_NOT_FOUND' });
     return {
-      items: rows.map((m) => ({
-        id: m.id,
-        filename: `${m.id}.${m.ext}`,
-        url: this.cdn.originalUrl(m, 300),
-      })),
+      items: await Promise.all(
+        rows.map(async (m) => ({
+          id: m.id,
+          filename: `${m.id}.${m.ext}`,
+          url: await this.cdn.originalUrl(m, 300),
+        })),
+      ),
     };
   }
 
@@ -289,16 +287,13 @@ export class LibraryController {
   @HttpCode(HttpStatus.OK)
   async publish(@Req() req: Request, @Body() dto: BulkIdsDto) {
     const { sub } = req.user as AuthenticatedUser;
-    const done: string[] = [];
-    const failed: { id: string; code: string }[] = [];
-    for (const id of dto.ids) {
-      try {
-        await this.cdn.publishMedia(sub, id);
-        done.push(id);
-      } catch (err) {
-        failed.push({ id, code: errorCode(err) });
-      }
-    }
+    const done = await this.cdn.publishMany(sub, dto.ids);
+    const doneSet = new Set(done);
+    const failed = await this.explainFailures(
+      sub,
+      dto.ids.filter((id) => !doneSet.has(id)),
+      'PUBLISH_FAILED',
+    );
     return { done, failed };
   }
 
@@ -307,16 +302,13 @@ export class LibraryController {
   @HttpCode(HttpStatus.OK)
   async unpublish(@Req() req: Request, @Body() dto: BulkIdsDto) {
     const { sub } = req.user as AuthenticatedUser;
-    const done: string[] = [];
-    const failed: { id: string; code: string }[] = [];
-    for (const id of dto.ids) {
-      try {
-        await this.cdn.unpublishMedia(sub, id);
-        done.push(id);
-      } catch (err) {
-        failed.push({ id, code: errorCode(err) });
-      }
-    }
+    const done = await this.cdn.unpublishMany(sub, dto.ids);
+    const doneSet = new Set(done);
+    const failed = await this.explainFailures(
+      sub,
+      dto.ids.filter((id) => !doneSet.has(id)),
+      'UNPUBLISH_FAILED',
+    );
     return { done, failed };
   }
 
@@ -420,17 +412,5 @@ export class LibraryController {
       takenAt: (media.capturedAt ?? media.createdAt).toISOString(),
       ...this.cdn.urlsFor(media),
     };
-  }
-
-  @Throttle({ default: { limit: 30, ttl: 60000 } })
-  @Post('/cdn-session')
-  @HttpCode(HttpStatus.OK)
-  openCdnSession(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const { sub } = req.user as AuthenticatedUser;
-    const cookies = this.cdn.issueReadCookies(sub);
-    for (const c of cookies) {
-      res.cookie(c.name, c.value, { ...CDN_COOKIE_OPTIONS, maxAge: c.maxAge });
-    }
-    return { success: true, expires_in: Math.floor((cookies[0]?.maxAge ?? 0) / 1000) };
   }
 }

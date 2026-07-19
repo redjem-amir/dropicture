@@ -25,11 +25,6 @@ function decodeCursor(raw: string): { ts: Date; id: string } {
   return { ts, id };
 }
 
-/**
- * Vitrine publique d'un profil. Aucune authentification : ces routes ne
- * renvoient QUE des médias `content` publics, prêts et non supprimés, et des
- * galeries publiées. Rien de privé ne doit jamais transiter par ici.
- */
 @Controller('/api/u')
 export class PublicProfileController {
   constructor(
@@ -145,7 +140,7 @@ export class PublicProfileController {
       username: account.username,
       name: `${account.firstname} ${account.lastname}`.trim(),
       bio: account.bio,
-      avatar: avatarUrls ? { base: avatarUrls.base, srcSet: avatarUrls.srcSet } : null,
+      avatar: avatarUrls ? { base: avatarUrls.base, avif: avatarUrls.avif, webp: avatarUrls.webp } : null,
       counts: { photos, galleries: galleryCount, followers },
       galleries: galleries.map((g) => ({
         id: g.id,
@@ -176,7 +171,7 @@ export class PublicProfileController {
       .andWhere('m.deletedAt IS NULL')
       .orderBy('COALESCE(m.capturedAt, m.createdAt)', 'DESC')
       .addOrderBy('m.id', 'DESC')
-      .take(take + 1);
+      .limit(take + 1);
 
     if (cursor) {
       const { ts, id } = decodeCursor(cursor);

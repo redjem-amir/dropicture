@@ -109,6 +109,39 @@ export class GalleryController {
     private readonly mediaRepository: Repository<Media>,
   ) {}
 
+  private async stillPublicElsewhere(mediaIds: string[], exceptGalleryId: string): Promise<Set<string>> {
+    if (!mediaIds.length) return new Set();
+    const rows = await this.galleryMediaRepository
+      .createQueryBuilder('gm')
+      .innerJoin(Gallery, 'g', 'g.id = gm.galleryId')
+      .select('gm.mediaId', 'mediaId')
+      .where('gm.mediaId IN (:...ids)', { ids: mediaIds })
+      .andWhere('gm.galleryId <> :except', { except: exceptGalleryId })
+      .andWhere("g.visibility = 'public'")
+      .andWhere('g.deletedAt IS NULL')
+      .groupBy('gm.mediaId')
+      .getRawMany<{ mediaId: string }>();
+    return new Set(rows.map((r) => r.mediaId));
+  }
+
+  private async nextPosition(galleryId: string): Promise<number> {
+    const last = await this.galleryMediaRepository.createQueryBuilder('gm').select('COALESCE(MAX(gm.position), -1)', 'max').where('gm.galleryId = :id', { id: galleryId }).getRawOne<{ max: string }>();
+    return Number(last?.max ?? -1) + 1;
+  }
+
+  private async uniqueSlug(ownerId: string, title: string, selfId?: string): Promise<string> {
+    const base = slugify(title);
+    for (let i = 0; i < 50; i++) {
+      const candidate = i ? `${base}-${i + 1}` : base;
+      const clash = await this.galleryRepository.findOne({
+        where: { ownerId, slug: candidate, deletedAt: IsNull() },
+        select: { id: true },
+      });
+      if (!clash || clash.id === selfId) return candidate;
+    }
+    return `${base}-${Date.now().toString(36)}`;
+  }
+
   @Throttle({ default: { limit: 120, ttl: 60000 } })
   @Get('/')
   async list(@Req() req: Request) {
@@ -216,20 +249,7 @@ export class GalleryController {
   async create(@Req() req: Request, @Body() dto: CreateGalleryDto) {
     const { sub } = req.user as AuthenticatedUser;
     const { tags, tagLabels } = cleanTags(dto.tags ?? []);
-    const base = slugify(dto.title);
-    let slug: string | undefined;
-    for (let i = 0; i < 50; i++) {
-      const candidate = i ? `${base}-${i + 1}` : base;
-      const clash = await this.galleryRepository.findOne({
-        where: { ownerId: sub, slug: candidate },
-        select: { id: true },
-      });
-      if (!clash || clash.id === undefined) {
-        slug = candidate;
-        break;
-      }
-    }
-    if (slug === undefined) slug = `${base}-${Date.now().toString(36)}`;
+    const slug = await this.uniqueSlug(sub, dto.title);
     const gallery = await this.galleryRepository.save(
       this.galleryRepository.create({
         ownerId: sub,
@@ -248,14 +268,7 @@ export class GalleryController {
         select: { id: true },
       });
       if (!media.length) throw new BadRequestException({ code: 'NO_READY_MEDIA' });
-
-      const last = await this.galleryMediaRepository
-        .createQueryBuilder('gm')
-        .select('COALESCE(MAX(gm.position), -1)', 'max')
-        .where('gm.galleryId = :id', { id: gallery.id })
-        .getRawOne<{ max: string }>();
-      let position = Number(last?.max ?? -1) + 1;
-
+      let position = await this.nextPosition(gallery.id);
       await this.galleryMediaRepository
         .createQueryBuilder()
         .insert()
@@ -263,10 +276,6 @@ export class GalleryController {
         .values(media.map((m) => ({ galleryId: gallery.id, mediaId: m.id, position: position++ })))
         .orIgnore()
         .execute();
-
-      if (gallery.visibility === 'public') {
-        for (const m of media) await this.cdn.publishMedia(sub, m.id).catch(() => undefined);
-      }
       added = media.length;
     }
     return {
@@ -291,21 +300,7 @@ export class GalleryController {
     if (dto.title && dto.title !== gallery.title) {
       gallery.title = dto.title;
       if (gallery.visibility !== 'public') {
-        const base = slugify(dto.title);
-        let slug: string | undefined;
-        for (let i = 0; i < 50; i++) {
-          const candidate = i ? `${base}-${i + 1}` : base;
-          const clash = await this.galleryRepository.findOne({
-            where: { ownerId: sub, slug: candidate },
-            select: { id: true },
-          });
-          if (!clash || clash.id === gallery.id) {
-            slug = candidate;
-            break;
-          }
-        }
-        if (slug === undefined) slug = `${base}-${Date.now().toString(36)}`;
-        gallery.slug = slug;
+        gallery.slug = await this.uniqueSlug(sub, dto.title, gallery.id);
       }
     }
     if (dto.tags) {
@@ -339,13 +334,7 @@ export class GalleryController {
     });
     if (!media.length) throw new BadRequestException({ code: 'NO_READY_MEDIA' });
 
-    const last = await this.galleryMediaRepository
-      .createQueryBuilder('gm')
-      .select('COALESCE(MAX(gm.position), -1)', 'max')
-      .where('gm.galleryId = :id', { id: gallery.id })
-      .getRawOne<{ max: string }>();
-    let position = Number(last?.max ?? -1) + 1;
-
+    let position = await this.nextPosition(gallery.id);
     await this.galleryMediaRepository
       .createQueryBuilder()
       .insert()
@@ -355,7 +344,10 @@ export class GalleryController {
       .execute();
 
     if (gallery.visibility === 'public') {
-      for (const m of media) await this.cdn.publishMedia(sub, m.id).catch(() => undefined);
+      await this.cdn.publishMany(
+        sub,
+        media.map((m) => m.id),
+      );
     }
     return { added: media.length, visibility: gallery.visibility };
   }
@@ -370,26 +362,13 @@ export class GalleryController {
     });
     if (!gallery) throw new NotFoundException({ code: 'GALLERY_NOT_FOUND' });
     await this.galleryMediaRepository.delete({ galleryId, mediaId: In(dto.ids) });
-    if (gallery.visibility === 'public') {
-      const mediaIds = dto.ids;
-      if (mediaIds.length) {
-        const stillPublic = await this.galleryMediaRepository
-          .createQueryBuilder('gm')
-          .innerJoin(Gallery, 'g', 'g.id = gm.galleryId')
-          .select('gm.mediaId', 'mediaId')
-          .where('gm.mediaId IN (:...ids)', { ids: mediaIds })
-          .andWhere('gm.galleryId <> :except', { except: galleryId })
-          .andWhere("g.visibility = 'public'")
-          .andWhere('g.deletedAt IS NULL')
-          .groupBy('gm.mediaId')
-          .getRawMany<{ mediaId: string }>();
 
-        const keep = new Set(stillPublic.map((r) => r.mediaId));
-        for (const id of mediaIds) {
-          if (keep.has(id)) continue;
-          await this.cdn.unpublishMedia(sub, id).catch(() => undefined);
-        }
-      }
+    if (gallery.visibility === 'public') {
+      const keep = await this.stillPublicElsewhere(dto.ids, galleryId);
+      await this.cdn.unpublishMany(
+        sub,
+        dto.ids.filter((id) => !keep.has(id)),
+      );
     }
     if (gallery.coverMediaId && dto.ids.includes(gallery.coverMediaId)) {
       gallery.coverMediaId = null;
@@ -429,25 +408,18 @@ export class GalleryController {
       order: { position: 'ASC' },
     });
     if (!links.length) throw new BadRequestException({ code: 'GALLERY_EMPTY' });
+    const ordered = links.map((l) => l.mediaId);
+    const published = await this.cdn.publishMany(sub, ordered);
+    if (!published.length) throw new BadRequestException({ code: 'NOTHING_PUBLISHABLE' });
 
-    const done: string[] = [];
-    const failed: { id: string; code: string }[] = [];
-    for (const link of links) {
-      try {
-        await this.cdn.publishMedia(sub, link.mediaId);
-        done.push(link.mediaId);
-      } catch (err) {
-        const body = (err as { response?: { code?: string } })?.response;
-        failed.push({ id: link.mediaId, code: body?.code ?? 'PUBLISH_FAILED' });
-      }
-    }
-    if (!done.length) throw new BadRequestException({ code: 'NOTHING_PUBLISHABLE', failed });
+    const publishedSet = new Set(published);
+    const skipped = ordered.filter((id) => !publishedSet.has(id));
 
     gallery.visibility = 'public';
     gallery.publishedAt = gallery.publishedAt ?? new Date();
-    gallery.coverMediaId = gallery.coverMediaId ?? done[0];
+    gallery.coverMediaId = gallery.coverMediaId ?? ordered.find((id) => publishedSet.has(id)) ?? null;
     await this.galleryRepository.save(gallery);
-    return { id: gallery.id, visibility: 'public', published: done.length, failed };
+    return { id: gallery.id, visibility: 'public', published: published.length, skipped };
   }
 
   @Throttle({ default: { limit: 20, ttl: 60000 } })
@@ -461,24 +433,12 @@ export class GalleryController {
     if (!gallery) throw new NotFoundException({ code: 'GALLERY_NOT_FOUND' });
     const links = await this.galleryMediaRepository.find({ where: { galleryId } });
     const mediaIds = links.map((l) => l.mediaId);
-    if (mediaIds.length) {
-      const stillPublic = await this.galleryMediaRepository
-        .createQueryBuilder('gm')
-        .innerJoin(Gallery, 'g', 'g.id = gm.galleryId')
-        .select('gm.mediaId', 'mediaId')
-        .where('gm.mediaId IN (:...ids)', { ids: mediaIds })
-        .andWhere('gm.galleryId <> :except', { except: galleryId })
-        .andWhere("g.visibility = 'public'")
-        .andWhere('g.deletedAt IS NULL')
-        .groupBy('gm.mediaId')
-        .getRawMany<{ mediaId: string }>();
+    const keep = await this.stillPublicElsewhere(mediaIds, galleryId);
+    await this.cdn.unpublishMany(
+      sub,
+      mediaIds.filter((id) => !keep.has(id)),
+    );
 
-      const keep = new Set(stillPublic.map((r) => r.mediaId));
-      for (const id of mediaIds) {
-        if (keep.has(id)) continue;
-        await this.cdn.unpublishMedia(sub, id).catch(() => undefined);
-      }
-    }
     gallery.visibility = 'private';
     await this.galleryRepository.save(gallery);
     return { id: gallery.id, visibility: 'private' };
@@ -496,24 +456,11 @@ export class GalleryController {
     const links = await this.galleryMediaRepository.find({ where: { galleryId } });
     if (gallery.visibility === 'public') {
       const mediaIds = links.map((l) => l.mediaId);
-      if (mediaIds.length) {
-        const stillPublic = await this.galleryMediaRepository
-          .createQueryBuilder('gm')
-          .innerJoin(Gallery, 'g', 'g.id = gm.galleryId')
-          .select('gm.mediaId', 'mediaId')
-          .where('gm.mediaId IN (:...ids)', { ids: mediaIds })
-          .andWhere('gm.galleryId <> :except', { except: galleryId })
-          .andWhere("g.visibility = 'public'")
-          .andWhere('g.deletedAt IS NULL')
-          .groupBy('gm.mediaId')
-          .getRawMany<{ mediaId: string }>();
-
-        const keep = new Set(stillPublic.map((r) => r.mediaId));
-        for (const id of mediaIds) {
-          if (keep.has(id)) continue;
-          await this.cdn.unpublishMedia(sub, id).catch(() => undefined);
-        }
-      }
+      const keep = await this.stillPublicElsewhere(mediaIds, galleryId);
+      await this.cdn.unpublishMany(
+        sub,
+        mediaIds.filter((id) => !keep.has(id)),
+      );
     }
     await this.galleryMediaRepository.delete({ galleryId });
     gallery.visibility = 'private';
