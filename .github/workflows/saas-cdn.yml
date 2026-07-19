@@ -2,11 +2,6 @@ name: SaaS Cdn
 
 on:
   workflow_dispatch:
-    inputs:
-      drop_signing_keys:
-        description: "Migration unique : détruire les clés de signature CloudFront (tls/public_key/key_group/KMS). À cocher UNE seule fois, puis remettre à false."
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -112,24 +107,6 @@ jobs:
             aws_s3_bucket_policy.db_backups
             aws_ssm_parameter.db_backup_config
           )
-
-          # Migration unique : ces adresses ne sont plus dans la configuration,
-          # mais sont encore dans le state. Les cibler explicitement force leur
-          # destruction dans ce run plutôt que de les laisser orphelines.
-          if [ "${{ inputs.drop_signing_keys }}" = "true" ]; then
-            echo "::notice::Destruction des clés de signature CloudFront demandée."
-            TARGETS+=(
-              tls_private_key.cloudfront
-              aws_cloudfront_public_key.cdn
-              aws_cloudfront_key_group.cdn
-              aws_kms_key.cdn_secrets
-              aws_kms_alias.cdn_secrets
-              aws_ssm_parameter.cloudfront_private_key
-              aws_ssm_parameter.cloudfront_key_pair_id
-              aws_ssm_parameter.cloudfront_active_key_version
-            )
-          fi
-
           printf -v FLAGS -- "-target=%s " "${TARGETS[@]}"
 
           set +e
@@ -153,19 +130,34 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Guard destructive plan
+      - name: Guard plan scope
         if: ${{ steps.plan.outputs.has_changes == 'true' }}
         working-directory: ${{ env.TF_DIR }}
         run: |
           set -euo pipefail
-          FORBIDDEN=$(terraform show -json cdn.tfplan \
-            | jq -r '.resource_changes[]
-                     | select(.change.actions | index("delete"))
-                     | select(.type | test("^(hcloud_|aws_s3_bucket$|aws_cloudfront_distribution$)"))
-                     | .address')
-          if [ -n "$FORBIDDEN" ]; then
+          PLAN=$(terraform show -json cdn.tfplan)
+
+          # Aucune ressource Hetzner ne doit apparaître, quelle que soit l'action.
+          HETZNER=$(echo "$PLAN" | jq -r '
+            .resource_changes[]
+            | select(.change.actions | any(. != "no-op"))
+            | select(.type | startswith("hcloud_"))
+            | .address')
+          if [ -n "$HETZNER" ]; then
+            echo "::error::Le plan touche des ressources Hetzner (hors périmètre) :"
+            echo "$HETZNER"
+            exit 1
+          fi
+
+          # Aucun bucket ni distribution ne doit être détruit ou recréé.
+          DESTRUCTIVE=$(echo "$PLAN" | jq -r '
+            .resource_changes[]
+            | select(.change.actions | index("delete"))
+            | select(.type | test("^(aws_s3_bucket|aws_cloudfront_distribution)$"))
+            | .address')
+          if [ -n "$DESTRUCTIVE" ]; then
             echo "::error::Le plan détruirait des ressources critiques :"
-            echo "$FORBIDDEN"
+            echo "$DESTRUCTIVE"
             exit 1
           fi
 
@@ -179,20 +171,23 @@ jobs:
         working-directory: ${{ env.TF_DIR }}
         run: |
           set -euo pipefail
+          # Un apply ciblé ne recalcule pas les outputs : certains peuvent être
+          # absents ou périmés dans l'état. On dégrade au lieu d'échouer.
+          out() { terraform output -raw "$1" 2>/dev/null || echo "n/a"; }
           {
             echo "### Déployé"
             echo ""
             echo "| | |"
             echo "|---|---|"
-            echo "| CDN | \`$(terraform output -raw cdn_url)\` |"
-            echo "| Distribution | \`$(terraform output -raw cdn_distribution_id)\` |"
-            echo "| Bucket | \`$(terraform output -raw cdn_bucket)\` |"
-            echo "| Préfixe servi | \`$(terraform output -raw cdn_public_prefix)/\` |"
-            echo "| Préfixe SSM | \`$(terraform output -raw cdn_ssm_prefix)\` |"
-            echo "| Sauvegardes | \`$(terraform output -raw db_backup_bucket)\` |"
+            echo "| CDN | \`$(out cdn_url)\` |"
+            echo "| Distribution | \`$(out cdn_distribution_id)\` |"
+            echo "| Bucket | \`$(out cdn_bucket)\` |"
+            echo "| Préfixe servi | \`$(out cdn_public_prefix)/\` |"
+            echo "| Préfixe SSM | \`$(out cdn_ssm_prefix)\` |"
+            echo "| Sauvegardes | \`$(out db_backup_bucket)\` |"
             echo ""
             echo "Appliqué par @${{ github.actor }}."
             echo ""
             echo "Seul \`media/\` est servi par CloudFront ; \`originals/\` n'est"
-            echo "accessible qu'via les credentials IAM du backend et des jobs."
+            echo "accessible qu'avec les credentials IAM du backend et des jobs."
           } >> "$GITHUB_STEP_SUMMARY"
