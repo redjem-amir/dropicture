@@ -5,18 +5,16 @@ output: prefixed
 vars:
   SAAS: apps/saas
   WEBSITE: apps/website
-  ENV: apps/saas/.env
 
 tasks:
-  env:
-    desc: Génère le .env partagé du SaaS
+  backend:env:
     internal: true
-    run: once
+    dir: "{{.SAAS}}/backend"
     status:
-      - test -f {{.ENV}}
+      - test -f .env
     cmds:
       - |
-        cat > {{.ENV}} <<EOF
+        cat > .env <<EOF
         POSTGRES_DB_DROPICTURE_SAAS="dropicture_saas"
         POSTGRES_HOST_DROPICTURE_SAAS="localhost"
         POSTGRES_PORT_DROPICTURE_SAAS="5432"
@@ -26,54 +24,58 @@ tasks:
         POSTGRES_PASSWORD_DROPICTURE_SAAS="$(openssl rand -hex 12)"
         REDIS_CACHE_HOST_DROPICTURE_SAAS="localhost"
         REDIS_QUEUE_HOST_DROPICTURE_SAAS="localhost"
-        AWS_REGION="eu-west-3"
-        AWS_ACCESS_KEY_ID="..."
-        AWS_SECRET_ACCESS_KEY="..."
-        CDN_SSM_PREFIX="/dropicture/cloudfront"
-        COOKIE_DOMAIN="localhost"
-        NEXT_PUBLIC_API_URL="http://localhost:3002"
         EOF
-      - echo "→ {{.ENV}} créé. Renseigne les clés AWS avant de lancer jobs."
 
-  link:
-    desc: Relie le .env partagé aux services
+  backend:up:
     internal: true
-    run: once
-    deps: [env]
-    cmds:
-      - ln -sfn ../.env {{.SAAS}}/backend/.env
-      - ln -sfn ../.env {{.SAAS}}/jobs/.env
-
-  infra:
-    desc: Lance Postgres, pgbouncer et Redis
-    internal: true
-    run: once
-    deps: [link]
+    deps: [backend:env]
     dir: "{{.SAAS}}/backend"
     cmds:
       - docker compose up -d --wait
 
+  jobs:env:
+    internal: true
+    deps: [backend:env]
+    dir: "{{.SAAS}}/jobs"
+    status:
+      - test -f .env
+    cmds:
+      - |
+        # Reprend les variables communes du backend (mêmes credentials)
+        grep -E '^(POSTGRES_DB|PGBOUNCER_HOST|PGBOUNCER_PORT|POSTGRES_USER|POSTGRES_PASSWORD|REDIS_CACHE_HOST|REDIS_QUEUE_HOST)_DROPICTURE_SAAS=' \
+          ../backend/.env > .env
+        cat >> .env <<'EOF'
+        AWS_REGION="eu-west-3"
+        AWS_ACCESS_KEY_ID="..."
+        AWS_SECRET_ACCESS_KEY="..."
+        CDN_SSM_PREFIX="/dropicture/cloudfront"
+        EOF
+
+  jobs:
+    desc: Démarre le microservice jobs NestJS
+    dir: "{{.SAAS}}/jobs"
+    deps: [backend:up, jobs:env]
+    cmds:
+      - npm install
+      - npm run start:dev
+
   backend:
     desc: Démarre le backend NestJS
     dir: "{{.SAAS}}/backend"
-    deps: [infra]
+    deps: [backend:up]
     cmds:
       - npm install
       - npm run migration:run
-      - npm run start:dev
-
-  jobs:
-    desc: Démarre le worker de transcodage
-    dir: "{{.SAAS}}/jobs"
-    deps: [infra]
-    cmds:
-      - npm install
       - npm run start:dev
 
   frontend:
     desc: Démarre le frontend Next.js
     dir: "{{.SAAS}}/frontend"
     cmds:
+      - |
+        [ -f .env ] || cat > .env <<'EOF'
+        NEXT_PUBLIC_API_URL="http://localhost:3002"
+        EOF
       - npm install
       - npm run dev
 
@@ -84,16 +86,9 @@ tasks:
       - npm install
       - npm run dev
 
-  reset:
-    desc: Détruit la base et les identifiants générés
-    dir: "{{.SAAS}}/backend"
-    cmds:
-      - docker compose down -v
-      - rm -f ../.env ./.env ../jobs/.env
-
   saas:
-    desc: Setup complet + lance backend, jobs & frontend
+    desc: Setup complet + lance jobs, backend & frontend
     deps:
-      - backend
       - jobs
+      - backend
       - frontend
