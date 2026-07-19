@@ -2,21 +2,12 @@ name: SaaS Deploy
 
 on:
   workflow_dispatch:
-    inputs:
-      force_provision:
-        description: "Run the full provisioning playbook even without infra changes"
-        type: boolean
-        default: false
-      force_build:
-        description: "Rebuild every image even if it already exists in GHCR"
-        type: boolean
-        default: false
 
 permissions:
   contents: read
 
 concurrency:
-  group: saas-${{ github.ref }}
+  group: saas-deploy
   cancel-in-progress: false
 
 env:
@@ -29,35 +20,25 @@ env:
   TF_INPUT: "false"
 
 jobs:
-  validate:
-    name: Terraform validate
+  checks:
+    name: Validate & test
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "<1.12.0"
           terraform_wrapper: false
-      - name: terraform init (no backend)
+      - name: terraform fmt / validate
         working-directory: ${{ env.TF_DIR }}
-        run: terraform init -backend=false
-      - name: terraform fmt
-        working-directory: ${{ env.TF_DIR }}
-        run: terraform fmt -check -recursive
-      - name: terraform validate
-        working-directory: ${{ env.TF_DIR }}
-        run: terraform validate
+        run: |
+          set -euo pipefail
+          terraform init -backend=false
+          terraform fmt -check -recursive
+          terraform validate
 
-  test-backend:
-    name: Backend tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: apps/saas/backend
-    steps:
-      - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.3.14"
@@ -71,8 +52,10 @@ jobs:
           key: ${{ runner.os }}-bun-${{ hashFiles('apps/saas/backend/bun.lock') }}
           restore-keys: ${{ runner.os }}-bun-
       - name: Install dependencies
+        working-directory: apps/saas/backend
         run: bun install --frozen-lockfile
       - name: Run Jest
+        working-directory: apps/saas/backend
         run: bun run test --ci
 
   versions:
@@ -113,18 +96,26 @@ jobs:
             done
           } >> "$GITHUB_STEP_SUMMARY"
 
-  bootstrap:
-    name: Bootstrap state bucket
-    needs: approval
+  terraform:
+    name: Terraform
+    needs: checks
     runs-on: ubuntu-latest
     environment: production
-    timeout-minutes: 10
+    timeout-minutes: 60
+    outputs:
+      has_changes: ${{ steps.plan.outputs.has_changes }}
+    env:
+      TF_VAR_hcloud_token: ${{ secrets.TF_VAR_HCLOUD_TOKEN }}
+      TF_VAR_ssh_public_key_b64: ${{ secrets.TF_VAR_SSH_PUBLIC_KEY_B64 }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
+      - uses: actions/checkout@v4
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+
       - name: Create state bucket if missing
         run: |
           set -euo pipefail
@@ -150,32 +141,15 @@ jobs:
             "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
           echo "State bucket ready."
 
-  plan:
-    name: Terraform plan
-    needs: bootstrap
-    runs-on: ubuntu-latest
-    environment: production
-    timeout-minutes: 20
-    outputs:
-      has_changes: ${{ steps.plan.outputs.has_changes }}
-    env:
-      TF_VAR_hcloud_token: ${{ secrets.TF_VAR_HCLOUD_TOKEN }}
-      TF_VAR_ssh_public_key_b64: ${{ secrets.TF_VAR_SSH_PUBLIC_KEY_B64 }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "<1.12.0"
           terraform_wrapper: false
+
       - name: terraform init
         working-directory: ${{ env.TF_DIR }}
-        run: terraform init
+        run: terraform init -lock-timeout=5m
+
       - name: terraform plan
         id: plan
         working-directory: ${{ env.TF_DIR }}
@@ -185,63 +159,19 @@ jobs:
           exitcode=0
           terraform plan -detailed-exitcode -lock-timeout=5m -out=tfplan || exitcode=$?
           case "$exitcode" in
-            0)
-              echo "No changes — apply will be skipped."
-              echo "has_changes=false" >> "$GITHUB_OUTPUT"
-              ;;
-            2)
-              echo "Changes detected — apply will run."
-              echo "has_changes=true" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              echo "::error::terraform plan failed (exit code $exitcode)."
-              exit 1
-              ;;
+            0) echo "has_changes=false" >> "$GITHUB_OUTPUT" ;;
+            2) echo "has_changes=true"  >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::terraform plan failed (exit code $exitcode)."; exit 1 ;;
           esac
-      - name: Upload plan
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan-${{ github.sha }}
-          path: ${{ env.TF_DIR }}/tfplan
-          retention-days: 1
-          if-no-files-found: error
 
-  apply:
-    name: Terraform apply
-    if: needs.plan.outputs.has_changes == 'true'
-    needs: plan
-    runs-on: ubuntu-latest
-    environment: production
-    timeout-minutes: 60
-    env:
-      TF_VAR_hcloud_token: ${{ secrets.TF_VAR_HCLOUD_TOKEN }}
-      TF_VAR_ssh_public_key_b64: ${{ secrets.TF_VAR_SSH_PUBLIC_KEY_B64 }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-      - uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: "<1.12.0"
-          terraform_wrapper: false
-      - uses: actions/download-artifact@v4
-        with:
-          name: tfplan-${{ github.sha }}
-          path: ${{ env.TF_DIR }}
-      - name: terraform init
-        working-directory: ${{ env.TF_DIR }}
-        run: terraform init
       - name: terraform apply
+        if: steps.plan.outputs.has_changes == 'true'
         working-directory: ${{ env.TF_DIR }}
         run: terraform apply -lock-timeout=5m tfplan
 
   build:
     name: Build & push images
-    needs: [approval, versions]
+    needs: [checks, versions]
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 45
@@ -272,10 +202,7 @@ jobs:
         id: probe
         run: |
           set -euo pipefail
-          if [ "${{ inputs.force_build }}" = "true" ]; then
-            echo "force_build requested — rebuilding."
-            echo "found=false" >> "$GITHUB_OUTPUT"
-          elif docker manifest inspect "${{ steps.img.outputs.ref }}" >/dev/null 2>&1; then
+          if docker manifest inspect "${{ steps.img.outputs.ref }}" >/dev/null 2>&1; then
             echo "${{ steps.img.outputs.ref }} already exists — skipping the build."
             echo "found=true" >> "$GITHUB_OUTPUT"
           else
@@ -304,12 +231,8 @@ jobs:
 
   provision:
     name: Provision ansible
-    if: >-
-      !cancelled()
-      && needs.plan.result == 'success'
-      && (needs.apply.result == 'success'
-          || (needs.apply.result == 'skipped' && inputs.force_provision == true))
-    needs: [plan, apply]
+    needs: terraform
+    if: needs.terraform.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 60
@@ -335,14 +258,12 @@ jobs:
 
   deploy:
     name: Deploy ansible
+    needs: [versions, build, provision]
     if: >-
       !cancelled()
       && needs.versions.result == 'success'
-      && needs.plan.result == 'success'
       && needs.build.result == 'success'
-      && (needs.apply.result == 'success' || needs.apply.result == 'skipped')
       && (needs.provision.result == 'success' || needs.provision.result == 'skipped')
-    needs: [versions, plan, apply, build, provision]
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 60
@@ -356,7 +277,6 @@ jobs:
       POSTGRES_DB_DROPICTURE_SAAS: ${{ secrets.POSTGRES_DB_DROPICTURE_SAAS }}
       POSTGRES_USER_DROPICTURE_SAAS: ${{ secrets.POSTGRES_USER_DROPICTURE_SAAS }}
       POSTGRES_PASSWORD_DROPICTURE_SAAS: ${{ secrets.POSTGRES_PASSWORD_DROPICTURE_SAAS }}
-      OPENWEATHER_API_KEY_DROPICTURE_SAAS: ${{ secrets.OPENWEATHER_API_KEY_DROPICTURE_SAAS }}
       NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
       GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
       GHCR_USERNAME: ${{ github.actor }}

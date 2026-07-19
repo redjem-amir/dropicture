@@ -106,12 +106,13 @@
     - name: Ensure the deployment secrets are present in the environment
       ansible.builtin.assert:
         that:
+          - "lookup('env', 'AWS_ACCESS_KEY_ID') | length > 0"
+          - "lookup('env', 'AWS_SECRET_ACCESS_KEY') | length > 0"
           - "lookup('env', 'POSTGRES_DB_DROPICTURE_SAAS') | length > 0"
           - "lookup('env', 'POSTGRES_USER_DROPICTURE_SAAS') | length > 0"
           - "lookup('env', 'POSTGRES_PASSWORD_DROPICTURE_SAAS') | length > 0"
           - "lookup('env', 'NEXT_PUBLIC_API_URL') | length > 0"
           - "lookup('env', 'GRAFANA_ADMIN_PASSWORD') | length > 0"
-          - "lookup('env', 'OPENWEATHER_API_KEY_DROPICTURE_SAAS') | length > 0"
         fail_msg: >-
           One or more deployment secrets are missing from the environment. In CI
           these come from GitHub Secrets; locally, export them before running.
