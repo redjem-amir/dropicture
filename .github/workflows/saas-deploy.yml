@@ -1,18 +1,6 @@
 name: SaaS Deploy
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "apps/saas/**"
-      - "infra/saas/**"
-      - ".github/workflows/saas-deploy.yml"
-  pull_request:
-    branches: [main]
-    paths:
-      - "apps/saas/**"
-      - "infra/saas/**"
-      - ".github/workflows/saas-deploy.yml"
   workflow_dispatch:
     inputs:
       force_provision:
@@ -127,7 +115,6 @@ jobs:
 
   approval:
     name: Waiting for manual approval
-    if: github.event_name != 'pull_request'
     needs: [validate, test-backend, versions]
     runs-on: ubuntu-latest
     environment: manual-approval
