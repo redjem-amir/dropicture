@@ -10,7 +10,7 @@ const font = Roboto_Flex({
   display: "swap",
 });
 
-const SITE = "https://app.dropicture.com";
+const SITE = process.env.NODE_ENV === 'production' ? "https://app.dropicture.com" : "http://localhost:3001";
 const HEADLINE = "Dropicture · Collectionne, compose, partage";
 const PITCH =
   "Épingle images et boucles vidéo dans des tableaux, retravaille-les, publie-les à celles et ceux qui te suivent. Une plateforme visuelle entre la collection et le réseau.";

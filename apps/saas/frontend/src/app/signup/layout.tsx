@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 const TITLE = "Créer un compte";
 const DESCRIPTION =
-    "Trois étapes · profil, e-mail, mot de passe — et ton premier tableau est prêt à recevoir tes images et tes boucles.";
+    "Trois étapes · profil, e-mail, mot de passe et ton premier tableau est prêt à recevoir tes images et tes boucles.";
 const OG_TITLE = `${TITLE} · Dropicture`;
 
 export const metadata: Metadata = {

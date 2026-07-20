@@ -65,6 +65,16 @@ const CODE_TO_STEP: Record<string, Step> = {
   PASSWORD_MISSING_SPECIAL: 4,
 };
 
+const suggestUsername = (firstname: string, lastname: string) =>
+  `${firstname}.${lastname}`
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9._]/g, '')
+    .replace(/\.{2,}/g, '.')
+    .replace(/^[._]+|[._]+$/g, '')
+    .slice(0, 30);
+
 type Tile = { w: string; kind: 'plain' | 'hatch' | 'clip' };
 
 const ROWS: Tile[][] = [
@@ -112,7 +122,9 @@ export default function Page({
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [username, setUsername] = useState('');
-  const [availability, setAvailability] = useState<Availability>('idle');
+  const [checked, setChecked] = useState<{ user: string; result: 'free' | 'taken' | 'idle' } | null>(
+    null,
+  );
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [reveal, setReveal] = useState(false);
@@ -123,6 +135,15 @@ export default function Page({
   const usernameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+
+  const handle = username.trim();
+  const availability: Availability = !handle
+    ? 'idle'
+    : !USERNAME_RE.test(handle)
+      ? 'invalid'
+      : checked?.user === handle
+        ? checked.result
+        : 'checking';
 
   const goTo = (n: Step) => {
     setDir(n > step ? 1 : -1);
@@ -137,36 +158,19 @@ export default function Page({
   }, [step, calm, done]);
 
   useEffect(() => {
-    if (step !== 2 || username) return;
-    const seed = `${firstname}.${lastname}`
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9._]/g, '')
-      .replace(/\.{2,}/g, '.')
-      .replace(/^[._]+|[._]+$/g, '')
-      .slice(0, 30);
-    if (seed.length >= 3) setUsername(seed);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
-
-  useEffect(() => {
-    const value = username.trim();
-    if (!value) return setAvailability('idle');
-    if (!USERNAME_RE.test(value)) return setAvailability('invalid');
-
-    setAvailability('checking');
+    if (!handle || !USERNAME_RE.test(handle)) return;
+    if (checked?.user === handle) return;
     const controller = new AbortController();
     const t = window.setTimeout(async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/username/${encodeURIComponent(value)}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/username/${encodeURIComponent(handle)}`,
           { signal: controller.signal },
         );
         const data = await res.json();
-        setAvailability(data.available ? 'free' : 'taken');
+        setChecked({ user: handle, result: data.available ? 'free' : 'taken' });
       } catch {
-        if (!controller.signal.aborted) setAvailability('idle');
+        if (!controller.signal.aborted) setChecked({ user: handle, result: 'idle' });
       }
     }, 450);
 
@@ -174,7 +178,7 @@ export default function Page({
       controller.abort();
       window.clearTimeout(t);
     };
-  }, [username]);
+  }, [handle, checked]);
 
   const passed = RULES.filter((r) => r.test(password)).length;
   const passwordOk = passed === RULES.length;
@@ -200,14 +204,17 @@ export default function Page({
       if (!f || !l) return setError(ERROR_MESSAGES.MISSING_FIELDS);
       const ok = (v: string) => v.length >= 2 && v.length <= 30 && NAME_RE.test(v);
       if (!ok(f) || !ok(l)) return setError(ERROR_MESSAGES.INVALID_NAME);
+      if (!username) {
+        const seed = suggestUsername(f, l);
+        if (seed.length >= 3) setUsername(seed);
+      }
       return goTo(2);
     }
 
     if (step === 2) {
-      const u = username.trim();
-      if (!USERNAME_RE.test(u)) return setError(ERROR_MESSAGES.USERNAME_INVALID);
+      if (!USERNAME_RE.test(handle)) return setError(ERROR_MESSAGES.USERNAME_INVALID);
       if (availability === 'taken') return setError(ERROR_MESSAGES.USERNAME_ALREADY_USED);
-      setUsername(u);
+      setUsername(handle);
       return goTo(3);
     }
 
@@ -228,7 +235,7 @@ export default function Page({
         body: JSON.stringify({
           firstname: firstname.trim(),
           lastname: lastname.trim(),
-          username: username.trim().toLowerCase(),
+          username: handle.toLowerCase(),
           email: email.trim(),
           password,
         }),
@@ -249,7 +256,7 @@ export default function Page({
         setError(ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UNKNOWN);
         const target = CODE_TO_STEP[code];
         if (target) {
-          if (target === 2) setAvailability('taken');
+          if (target === 2) setChecked({ user: handle, result: 'taken' });
           goTo(target);
         }
       }
@@ -263,7 +270,7 @@ export default function Page({
     step === 1
       ? firstname.trim().length > 0 && lastname.trim().length > 0
       : step === 2
-        ? USERNAME_RE.test(username.trim()) && availability !== 'taken' && availability !== 'checking'
+        ? USERNAME_RE.test(handle) && availability !== 'taken' && availability !== 'checking'
         : step === 3
           ? email.trim().length > 0
           : passwordOk;
@@ -408,7 +415,7 @@ export default function Page({
                 transition={{ duration: calm ? 0 : 0.25, ease: EASE }}
               >
                 <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">
-                  Inscription — 4 étapes
+                  Inscription 4 étapes
                 </p>
                 <h1 className="mt-2.5 text-[26px] font-semibold leading-[1.15] tracking-[-0.035em]">
                   Ouvre ton espace.
