@@ -3,318 +3,101 @@ import { BadRequestException, Controller, Delete, Get, HttpCode, HttpStatus, Not
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, IsNull, Repository } from 'typeorm';
+import { Brackets, In, IsNull, Not, Repository } from 'typeorm';
 import type { Request } from 'express';
-import { CdnService } from '../services/cdn.service';
+import { MediaService } from '../services/media.service';
 import type { AuthenticatedUser } from '../services/auth.service';
 import { Account } from '../models/account.entity';
 import { Media } from '../models/media.entity';
 import { Follow } from '../models/follow.entity';
-import { Gallery, normalizeTag } from '../models/gallery.entity';
-import { GalleryMedia } from '../models/gallery-media.entity';
 
-const PAGE_SIZE = 40;
-const SUGGESTIONS = 6;
-const TAG_CHIPS = 24;
-
-function encodeCursor(date: Date, galleryId: string, mediaId: string): string {
-  return Buffer.from(`${date.toISOString()}|${galleryId}|${mediaId}`).toString('base64url');
-}
-
-function decodeCursor(raw: string): { ts: Date; galleryId: string; mediaId: string } {
-  const [iso, galleryId, mediaId] = Buffer.from(raw, 'base64url').toString('utf8').split('|');
-  const ts = new Date(iso);
-  if (Number.isNaN(ts.getTime()) || !galleryId || !mediaId) {
-    throw new BadRequestException({ code: 'BAD_CURSOR' });
-  }
-  return { ts, galleryId, mediaId };
-}
-
-type AuthorCard = {
-  id: string;
-  username: string;
-  name: string;
-  bio: string | null;
-  items: number;
-  followers: number;
-  following: boolean;
-  avatar: { base: string; avif: string | null; webp: string | null } | null;
-};
-
-type FeedRow = {
-  m_id: string;
-  g_id: string;
-  g_title: string;
-  g_slug: string;
-  g_tags: string[] | null;
-  g_owner: string;
-  g_published: Date;
-};
+export const FEED_LIMITS = { PAGE_MAX: 80, PAGE_DEFAULT: 40 } as const;
 
 @Controller('/api/discover')
 @UseGuards(AuthGuard('access-token'))
 export class DiscoverController {
   constructor(
-    private readonly cdn: CdnService,
+    private readonly media: MediaService,
     @InjectRepository(Account)
     private readonly accountRepository: Repository<Account>,
     @InjectRepository(Media)
     private readonly mediaRepository: Repository<Media>,
-    @InjectRepository(Gallery)
-    private readonly galleryRepository: Repository<Gallery>,
-    @InjectRepository(GalleryMedia)
-    private readonly galleryMediaRepository: Repository<GalleryMedia>,
     @InjectRepository(Follow)
     private readonly followRepository: Repository<Follow>,
   ) {}
 
-  private async buildAuthorCards(viewerId: string, ids: string[], itemCounts?: Map<string, number>): Promise<AuthorCard[]> {
-    if (!ids.length) return [];
-    const accounts = await this.accountRepository.find({ where: { id: In(ids) } });
-    if (!accounts.length) return [];
-
-    const avatarIds = accounts.map((a) => a.avatarMediaId).filter((v): v is string => !!v);
-    const avatars = avatarIds.length
-      ? await this.mediaRepository.find({
-          where: { id: In(avatarIds), status: 'ready', deletedAt: IsNull() },
-        })
-      : [];
-    const avatarById = new Map(avatars.map((m) => [m.id, m]));
-
-    const followed = await this.followRepository.find({
-      where: { followerId: viewerId, followingId: In(ids) },
-      select: { followingId: true },
-    });
-    const followedIds = new Set(followed.map((f) => f.followingId));
-
-    const followerRows = await this.followRepository
-      .createQueryBuilder('f')
-      .select('f.followingId', 'id')
-      .addSelect('COUNT(*)', 'total')
-      .where('f.followingId IN (:...ids)', { ids })
-      .groupBy('f.followingId')
-      .getRawMany<{ id: string; total: string }>();
-    const followerCount = new Map(followerRows.map((r) => [r.id, Number(r.total)]));
-
-    const counted =
-      itemCounts ??
-      new Map(
-        (
-          await this.mediaRepository
-            .createQueryBuilder('m')
-            .select('m.ownerId', 'id')
-            .addSelect('COUNT(*)', 'total')
-            .where('m.ownerId IN (:...ids)', { ids })
-            .andWhere("m.purpose = 'content'")
-            .andWhere("m.visibility = 'public'")
-            .andWhere("m.status = 'ready'")
-            .andWhere('m.deletedAt IS NULL')
-            .groupBy('m.ownerId')
-            .getRawMany<{ id: string; total: string }>()
-        ).map((r) => [r.id, Number(r.total)] as const),
-      );
-
-    const order = new Map(ids.map((id, i) => [id, i]));
-    return accounts
-      .sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0))
-      .map((a) => {
-        const avatar = a.avatarMediaId ? avatarById.get(a.avatarMediaId) : undefined;
-        const urls = avatar ? this.cdn.urlsFor(avatar) : null;
-        return {
-          id: a.id,
-          username: a.username,
-          name: `${a.firstname} ${a.lastname}`.trim(),
-          bio: a.bio,
-          items: counted.get(a.id) ?? 0,
-          followers: followerCount.get(a.id) ?? 0,
-          following: followedIds.has(a.id),
-          avatar: urls ? { base: urls.base, avif: urls.avif, webp: urls.webp } : null,
-        };
-      });
-  }
-
-  @Throttle({ default: { limit: 120, ttl: 60000 } })
-  @Get('/tags')
-  async tags() {
-    const rows = await this.galleryRepository.manager.query<{ tag: string; total: string }[]>(
-      `SELECT tag.value AS tag, COUNT(*)::text AS total
-               FROM galleries g
-               JOIN gallery_media gm ON gm."galleryId" = g.id
-               JOIN media m ON m.id = gm."mediaId"
-               CROSS JOIN LATERAL jsonb_array_elements_text(g.tags) AS tag(value)
-              WHERE g.visibility = 'public'
-                AND g."deletedAt" IS NULL
-                AND g."publishedAt" IS NOT NULL
-                AND m.visibility = 'public'
-                AND m.status = 'ready'
-                AND m.purpose = 'content'
-                AND m."deletedAt" IS NULL
-              GROUP BY tag.value
-              ORDER BY COUNT(*) DESC, tag.value ASC
-              LIMIT $1`,
-      [TAG_CHIPS],
-    );
-
-    const total = await this.galleryMediaRepository
-      .createQueryBuilder('gm')
-      .innerJoin(Gallery, 'g', 'g.id = gm.galleryId')
-      .innerJoin(Media, 'm', 'm.id = gm.mediaId')
-      .where("g.visibility = 'public'")
-      .andWhere('g.deletedAt IS NULL')
-      .andWhere('g.publishedAt IS NOT NULL')
-      .andWhere("m.visibility = 'public'")
-      .andWhere("m.status = 'ready'")
-      .andWhere("m.purpose = 'content'")
-      .andWhere('m.deletedAt IS NULL')
-      .getCount();
-
-    const labelTags = rows.map((r) => r.tag);
-    let labels: Map<string, string>;
-    if (!labelTags.length) {
-      labels = new Map();
-    } else {
-      const labelRows = await this.galleryRepository
-        .createQueryBuilder('g')
-        .select('g.tags', 'tags')
-        .addSelect('g.tagLabels', 'labels')
-        .where("g.visibility = 'public'")
-        .andWhere('g.deletedAt IS NULL')
-        .andWhere('g.tags ?| ARRAY[:...tags]', { tags: labelTags })
-        .limit(500)
-        .getRawMany<{ tags: string[]; labels: string[] }>();
-      const out = new Map<string, string>();
-      for (const row of labelRows) {
-        (row.tags ?? []).forEach((tag, i) => {
-          const label = row.labels?.[i];
-          if (label && !out.has(tag)) out.set(tag, label);
-        });
-      }
-      labels = out;
-    }
-
-    return {
-      tags: [
-        { tag: null, label: 'Tout', total },
-        ...rows.map((r) => ({
-          tag: r.tag,
-          label: labels.get(r.tag) ?? r.tag,
-          total: Number(r.total),
-        })),
-      ],
-    };
-  }
-
-  @Throttle({ default: { limit: 120, ttl: 60000 } })
-  @Get('/authors')
-  async authors(@Req() req: Request): Promise<{ authors: AuthorCard[] }> {
-    const { sub } = req.user as AuthenticatedUser;
-    const ranked = await this.mediaRepository
-      .createQueryBuilder('m')
-      .select('m.ownerId', 'id')
-      .addSelect('COUNT(*)', 'items')
-      .where('m.ownerId <> :sub', { sub })
-      .andWhere("m.purpose = 'content'")
-      .andWhere("m.visibility = 'public'")
-      .andWhere("m.status = 'ready'")
-      .andWhere('m.deletedAt IS NULL')
-      .groupBy('m.ownerId')
-      .orderBy('COUNT(*)', 'DESC')
-      .limit(SUGGESTIONS)
-      .getRawMany<{ id: string; items: string }>();
-
-    if (!ranked.length) return { authors: [] };
-
-    const ids = ranked.map((r) => r.id);
-    const itemCounts = new Map(ranked.map((r) => [r.id, Number(r.items)] as const));
-    return { authors: await this.buildAuthorCards(sub, ids, itemCounts) };
-  }
-
   @Throttle({ default: { limit: 240, ttl: 60000 } })
   @Get('/feed')
-  async feed(@Req() req: Request, @Query('tag') tag?: string, @Query('scope') scope?: string, @Query('cursor') cursor?: string, @Query('limit') limit?: string) {
+  async feed(@Req() req: Request, @Query('scope') scope?: string, @Query('cursor') cursor?: string, @Query('limit') limit?: string) {
     const { sub } = req.user as AuthenticatedUser;
-    const take = Math.min(80, Math.max(1, Number(limit) || PAGE_SIZE));
-
+    const take = Math.min(FEED_LIMITS.PAGE_MAX, Math.max(1, Number(limit) || FEED_LIMITS.PAGE_DEFAULT));
     const qb = this.mediaRepository
       .createQueryBuilder('m')
-      .innerJoin(GalleryMedia, 'gm', 'gm.mediaId = m.id')
-      .innerJoin(Gallery, 'g', 'g.id = gm.galleryId')
-      .select('m.id', 'm_id')
-      .addSelect('g.id', 'g_id')
-      .addSelect('g.title', 'g_title')
-      .addSelect('g.slug', 'g_slug')
-      .addSelect('g.tagLabels', 'g_tags')
-      .addSelect('g.ownerId', 'g_owner')
-      .addSelect('g.publishedAt', 'g_published')
-      .where("m.visibility = 'public'")
-      .andWhere("m.status = 'ready'")
-      .andWhere("m.purpose = 'content'")
-      .andWhere('m.deletedAt IS NULL')
-      .andWhere("g.visibility = 'public'")
-      .andWhere('g.deletedAt IS NULL')
-      .andWhere('g.publishedAt IS NOT NULL')
-      .orderBy('g.publishedAt', 'DESC')
-      .addOrderBy('g.id', 'DESC')
+      .where("m.role = 'content'")
+      .andWhere('m.publishedAt IS NOT NULL')
+      .orderBy('m.publishedAt', 'DESC')
       .addOrderBy('m.id', 'DESC')
       .limit(take + 1);
-
-    if (tag) {
-      const needle = normalizeTag(tag);
-      if (!needle) throw new BadRequestException({ code: 'BAD_TAG' });
-      qb.andWhere('g.tags @> :needle::jsonb', { needle: JSON.stringify([needle]) });
-    }
-
     if (scope === 'following') {
       const following = await this.followRepository.find({
         where: { followerId: sub },
         select: { followingId: true },
       });
-      if (!following.length) return { items: [], nextCursor: null };
-      qb.andWhere('g.ownerId IN (:...ids)', { ids: following.map((f) => f.followingId) });
+      qb.andWhere('m.ownerId IN (:...ids)', { ids: [sub, ...following.map((f) => f.followingId)] });
     }
-
     if (cursor) {
-      const { ts, galleryId, mediaId } = decodeCursor(cursor);
+      const [iso, id] = Buffer.from(cursor, 'base64url').toString('utf8').split('|');
+      const ts = new Date(iso);
+      if (Number.isNaN(ts.getTime()) || !id) throw new BadRequestException({ code: 'BAD_CURSOR' });
       qb.andWhere(
-        `(g.publishedAt < :ts
-                  OR (g.publishedAt = :ts AND g.id < :gid)
-                  OR (g.publishedAt = :ts AND g.id = :gid AND m.id < :mid))`,
-        { ts, gid: galleryId, mid: mediaId },
+        new Brackets((w) => {
+          w.where('m.publishedAt < :ts', { ts }).orWhere(
+            new Brackets((x) => {
+              x.where('m.publishedAt = :ts', { ts }).andWhere('m.id < :id', { id });
+            }),
+          );
+        }),
       );
     }
-
-    const rawRows = await qb.getRawMany<FeedRow>();
-    const hasMore = rawRows.length > take;
-    const page = hasMore ? rawRows.slice(0, take) : rawRows;
-    if (!page.length) return { items: [], nextCursor: null };
-    const mediaIds = Array.from(new Set(page.map((r) => r.m_id)));
-    const mediaRows = await this.mediaRepository.find({ where: { id: In(mediaIds) } });
-    const mediaById = new Map(mediaRows.map((m) => [m.id, m]));
-    const rows = page.map((meta) => ({ meta, media: mediaById.get(meta.m_id) })).filter((r): r is { meta: FeedRow; media: Media } => !!r.media);
-    if (!rows.length) return { items: [], nextCursor: null };
-    const ownerIds = Array.from(new Set(rows.map((r) => r.meta.g_owner)));
-    const cards = await this.buildAuthorCards(sub, ownerIds);
-    const authors = new Map(cards.map((c) => [c.id, c]));
-
-    const last = rows[rows.length - 1];
+    const rows = await qb.getMany();
+    const hasMore = rows.length > take;
+    const items = hasMore ? rows.slice(0, take) : rows;
+    if (!items.length) return { items: [], nextCursor: null };
+    const ownerIds = Array.from(new Set(items.map((m) => m.ownerId)));
+    const accounts = await this.accountRepository.find({ where: { id: In(ownerIds) } });
+    const avatarIds = accounts.map((a) => a.avatarMediaId).filter((v): v is string => !!v);
+    const avatars = avatarIds.length ? await this.mediaRepository.find({ where: { id: In(avatarIds) } }) : [];
+    const avatarById = new Map(avatars.map((m) => [m.id, m]));
+    const followed = await this.followRepository.find({
+      where: { followerId: sub, followingId: In(ownerIds) },
+      select: { followingId: true },
+    });
+    const followedIds = new Set(followed.map((f) => f.followingId));
+    const authorById = new Map(
+      accounts.map((a) => {
+        const avatar = a.avatarMediaId ? avatarById.get(a.avatarMediaId) : undefined;
+        return [
+          a.id,
+          {
+            username: a.username,
+            name: `${a.firstname} ${a.lastname}`.trim(),
+            avatar: avatar ? this.media.view(avatar) : null,
+            following: followedIds.has(a.id),
+            self: a.id === sub,
+          },
+        ] as const;
+      }),
+    );
+    const last = items[items.length - 1];
+    const nextCursor = hasMore && last?.publishedAt ? Buffer.from(`${last.publishedAt.toISOString()}|${last.id}`).toString('base64url') : null;
     return {
-      items: rows.map(({ media, meta }) => ({
-        key: `${meta.g_id}:${media.id}`,
-        id: media.id,
-        kind: media.kind,
-        width: media.width,
-        height: media.height,
-        durationMs: media.durationMs,
-        gallery: {
-          id: meta.g_id,
-          title: meta.g_title,
-          slug: meta.g_slug,
-          tags: meta.g_tags ?? [],
-        },
-        author: authors.get(meta.g_owner) ?? null,
-        ...this.cdn.urlsFor(media),
+      items: items.map((m) => ({
+        ...this.media.view(m),
+        publishedAt: m.publishedAt?.toISOString() ?? null,
+        mine: m.ownerId === sub,
+        author: authorById.get(m.ownerId) ?? null,
       })),
-      nextCursor: hasMore ? encodeCursor(new Date(last.meta.g_published), last.meta.g_id, last.media.id) : null,
+      nextCursor,
     };
   }
 
@@ -322,24 +105,29 @@ export class DiscoverController {
   @Get('/me')
   async me(@Req() req: Request) {
     const { sub } = req.user as AuthenticatedUser;
-    const [galleries, publishedGalleries, publishedMedia, following, followers] = await Promise.all([
-      this.galleryRepository.count({ where: { ownerId: sub, deletedAt: IsNull() } }),
-      this.galleryRepository.count({
-        where: { ownerId: sub, visibility: 'public', deletedAt: IsNull() },
-      }),
+    const [publishedMedia, following, followers, reach] = await Promise.all([
       this.mediaRepository.count({
-        where: {
-          ownerId: sub,
-          purpose: 'content',
-          visibility: 'public',
-          status: 'ready',
-          deletedAt: IsNull(),
-        },
+        where: { ownerId: sub, role: 'content', publishedAt: Not(IsNull()) },
       }),
       this.followRepository.count({ where: { followerId: sub } }),
       this.followRepository.count({ where: { followingId: sub } }),
+      this.mediaRepository
+        .createQueryBuilder('m')
+        .select('COUNT(DISTINCT m.ownerId)', 'authors')
+        .addSelect('COUNT(*)', 'media')
+        .where("m.role = 'content'")
+        .andWhere('m.publishedAt IS NOT NULL')
+        .getRawOne<{ authors: string; media: string }>(),
     ]);
-    return { galleries, publishedGalleries, publishedMedia, following, followers };
+    return {
+      publishedMedia,
+      following,
+      followers,
+      community: {
+        authors: Number(reach?.authors ?? 0),
+        media: Number(reach?.media ?? 0),
+      },
+    };
   }
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })

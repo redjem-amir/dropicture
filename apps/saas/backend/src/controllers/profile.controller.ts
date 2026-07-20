@@ -1,42 +1,47 @@
 // dropicture/apps/saas/backend/src/controllers/profile.controller.ts
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Headers, HttpCode, HttpStatus, NotFoundException, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Not, Repository } from 'typeorm';
-import { IsIn, IsInt, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import { Brackets, In, IsNull, Not, Repository } from 'typeorm';
+import { ArrayMaxSize, ArrayNotEmpty, IsArray, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 import type { Request } from 'express';
-import { CdnService, MEDIA_LIMITS } from '../services/cdn.service';
+import { MediaService } from '../services/media.service';
 import type { AuthenticatedUser } from '../services/auth.service';
 import { Account } from '../models/account.entity';
 import { Media } from '../models/media.entity';
 
-const SITE = 'https://dropicture.com';
+const SITE = process.env.NODE_ENV === 'production' ? 'https://dropicture.com' : 'http://localhost:3000';
+
+export const PROFILE_LIMITS = {
+  BIO_MAX: 160,
+  BULK_MAX: 200,
+  PAGE_MAX: 120,
+  PAGE_DEFAULT: 48,
+} as const;
 
 class UpdateBioDto {
   @IsOptional()
   @IsString()
-  @MaxLength(160, { message: 'BIO_TOO_LONG' })
+  @MaxLength(PROFILE_LIMITS.BIO_MAX, { message: 'BIO_TOO_LONG' })
   @Transform(({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value))
   bio?: string;
 }
 
-class AvatarUploadDto {
-  @IsString()
-  @IsIn(['image/jpeg', 'image/png', 'image/webp'], { message: 'UNSUPPORTED_MEDIA_TYPE' })
-  contentType!: string;
-
-  @IsInt()
-  @Min(1)
-  contentLength!: number;
+class BulkIdsDto {
+  @IsArray()
+  @ArrayNotEmpty({ message: 'NO_MEDIA' })
+  @ArrayMaxSize(PROFILE_LIMITS.BULK_MAX, { message: 'TOO_MANY_ITEMS' })
+  @IsUUID('4', { each: true })
+  ids!: string[];
 }
 
 @Controller('/api/profile')
 @UseGuards(AuthGuard('access-token'))
 export class ProfileController {
   constructor(
-    private readonly cdn: CdnService,
+    private readonly media: MediaService,
     @InjectRepository(Account)
     private readonly accountRepository: Repository<Account>,
     @InjectRepository(Media)
@@ -49,32 +54,32 @@ export class ProfileController {
     const { sub } = req.user as AuthenticatedUser;
     const account = await this.accountRepository.findOne({ where: { id: sub } });
     if (!account) throw new NotFoundException({ code: 'ACCOUNT_NOT_FOUND' });
-    const avatar = account.avatarMediaId
-      ? await this.mediaRepository.findOne({
-          where: { id: account.avatarMediaId, ownerId: sub, deletedAt: IsNull() },
-        })
-      : null;
-    const counts = await this.mediaRepository
-      .createQueryBuilder('m')
-      .select('m.visibility', 'visibility')
-      .addSelect('COUNT(*)', 'total')
-      .where('m.ownerId = :sub', { sub })
-      .andWhere('m.purpose = :p', { p: 'content' })
-      .andWhere('m.status = :s', { s: 'ready' })
-      .andWhere('m.deletedAt IS NULL')
-      .groupBy('m.visibility')
-      .getRawMany<{ visibility: string; total: string }>();
-    const published = Number(counts.find((c) => c.visibility === 'public')?.total ?? 0);
-    const privateCount = Number(counts.find((c) => c.visibility === 'private')?.total ?? 0);
+    const avatar = account.avatarMediaId ? await this.mediaRepository.findOne({ where: { id: account.avatarMediaId, ownerId: sub } }) : null;
+    const [published, inLibrary, first] = await Promise.all([
+      this.mediaRepository.count({
+        where: { ownerId: sub, role: 'content', publishedAt: Not(IsNull()) },
+      }),
+      this.mediaRepository.count({
+        where: { ownerId: sub, role: 'content', publishedAt: IsNull() },
+      }),
+      this.mediaRepository
+        .createQueryBuilder('m')
+        .select('MIN(m.publishedAt)', 'first')
+        .where('m.ownerId = :sub', { sub })
+        .andWhere("m.role = 'content'")
+        .andWhere('m.publishedAt IS NOT NULL')
+        .getRawOne<{ first: Date | null }>(),
+    ]);
     return {
       username: account.username,
       firstname: account.firstname,
       lastname: account.lastname,
       bio: account.bio,
       publicUrl: `${SITE}/u/?u=${account.username}`,
-      avatar: avatar ? { id: avatar.id, status: avatar.status, ...this.cdn.urlsFor(avatar) } : null,
-      counts: { published, private: privateCount, total: published + privateCount },
-      limits: this.cdn.limits(),
+      avatar: avatar ? this.media.view(avatar) : null,
+      counts: { published, inLibrary },
+      firstPublishedAt: first?.first ? new Date(first.first).toISOString() : null,
+      limits: this.media.limits(),
     };
   }
 
@@ -83,99 +88,118 @@ export class ProfileController {
   async updateBio(@Req() req: Request, @Body() dto: UpdateBioDto) {
     const { sub } = req.user as AuthenticatedUser;
     const bio = dto.bio?.length ? dto.bio : null;
-    await this.accountRepository.update({ id: sub }, { bio });
+    const result = await this.accountRepository.update({ id: sub }, { bio });
+    if (!result.affected) throw new NotFoundException({ code: 'ACCOUNT_NOT_FOUND' });
     return { bio };
   }
 
-  @Throttle({ default: { limit: 120, ttl: 60000 } })
+  @Throttle({ default: { limit: 240, ttl: 60000 } })
   @Get('/media')
-  async listMedia(@Req() req: Request, @Query('filter') filter?: string, @Query('cursor') cursor?: string, @Query('limit') limit?: string) {
+  async listMedia(@Req() req: Request, @Query('cursor') cursor?: string, @Query('limit') limit?: string) {
     const { sub } = req.user as AuthenticatedUser;
-    const take = Math.min(120, Math.max(1, Number(limit) || 48));
-    const offset = Math.max(0, Number(cursor) || 0);
+    const take = Math.min(PROFILE_LIMITS.PAGE_MAX, Math.max(1, Number(limit) || PROFILE_LIMITS.PAGE_DEFAULT));
     const qb = this.mediaRepository
       .createQueryBuilder('m')
       .where('m.ownerId = :sub', { sub })
-      .andWhere('m.purpose = :p', { p: 'content' })
-      .andWhere('m.status = :s', { s: 'ready' })
-      .andWhere('m.deletedAt IS NULL')
-      .orderBy("CASE WHEN m.visibility = 'public' THEN 0 ELSE 1 END", 'ASC')
-      .addOrderBy('COALESCE(m.capturedAt, m.createdAt)', 'DESC')
+      .andWhere("m.role = 'content'")
+      .andWhere('m.publishedAt IS NOT NULL')
+      .orderBy('m.publishedAt', 'DESC')
       .addOrderBy('m.id', 'DESC')
-      .limit(take + 1)
-      .offset(offset);
-    if (filter === 'published') qb.andWhere('m.visibility = :v', { v: 'public' });
-    if (filter === 'private') qb.andWhere('m.visibility = :v', { v: 'private' });
+      .limit(take + 1);
+    if (cursor) {
+      const [iso, id] = Buffer.from(cursor, 'base64url').toString('utf8').split('|');
+      const ts = new Date(iso);
+      if (Number.isNaN(ts.getTime()) || !id) throw new BadRequestException({ code: 'BAD_CURSOR' });
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('m.publishedAt < :ts', { ts }).orWhere(
+            new Brackets((x) => {
+              x.where('m.publishedAt = :ts', { ts }).andWhere('m.id < :id', { id });
+            }),
+          );
+        }),
+      );
+    }
     const rows = await qb.getMany();
     const hasMore = rows.length > take;
     const items = hasMore ? rows.slice(0, take) : rows;
+    const last = items[items.length - 1];
+    const nextCursor = hasMore && last?.publishedAt ? Buffer.from(`${last.publishedAt.toISOString()}|${last.id}`).toString('base64url') : null;
     return {
       items: items.map((m) => ({
-        id: m.id,
-        kind: m.kind,
-        visibility: m.visibility,
-        width: m.width,
-        height: m.height,
-        durationMs: m.durationMs,
-        ...this.cdn.urlsFor(m),
+        ...this.media.view(m),
+        publishedAt: m.publishedAt?.toISOString() ?? null,
       })),
-      nextCursor: hasMore ? String(offset + take) : null,
+      nextCursor,
     };
   }
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
-  @Patch('/media/:mediaId/publish')
+  @Patch('/media/unpublish')
   @HttpCode(HttpStatus.OK)
-  async publish(@Req() req: Request, @Param('mediaId', new ParseUUIDPipe({ version: '4' })) mediaId: string) {
+  async unpublish(@Req() req: Request, @Body() dto: BulkIdsDto) {
     const { sub } = req.user as AuthenticatedUser;
-    const media = await this.cdn.publishMedia(sub, mediaId);
-    return { id: media.id, visibility: media.visibility };
-  }
-
-  @Throttle({ default: { limit: 60, ttl: 60000 } })
-  @Patch('/media/:mediaId/unpublish')
-  @HttpCode(HttpStatus.OK)
-  async unpublish(@Req() req: Request, @Param('mediaId', new ParseUUIDPipe({ version: '4' })) mediaId: string) {
-    const { sub } = req.user as AuthenticatedUser;
-    const media = await this.cdn.unpublishMedia(sub, mediaId);
-    return { id: media.id, visibility: media.visibility };
+    const done = await this.media.unpublish(sub, dto.ids);
+    const doneSet = new Set(done);
+    const pending = dto.ids.filter((id) => !doneSet.has(id));
+    let failed: { id: string; code: string }[] = [];
+    if (pending.length) {
+      const rows = await this.mediaRepository.find({
+        where: { id: In(pending), ownerId: sub },
+        select: { id: true, role: true, publishedAt: true },
+      });
+      const byId = new Map(rows.map((r) => [r.id, r]));
+      failed = pending.map((id) => {
+        const m = byId.get(id);
+        if (!m) return { id, code: 'MEDIA_NOT_FOUND' };
+        if (m.role === 'avatar') return { id, code: 'AVATAR_ALWAYS_PUBLIC' };
+        if (!m.publishedAt) return { id, code: 'ALREADY_PRIVATE' };
+        return { id, code: 'UNPUBLISH_FAILED' };
+      });
+    }
+    return { done, failed };
   }
 
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Post('/avatar')
-  async createAvatarUpload(@Req() req: Request, @Body() dto: AvatarUploadDto) {
+  async uploadAvatar(@Req() req: Request, @Headers('content-type') contentType?: string, @Headers('content-length') contentLength?: string) {
     const { sub } = req.user as AuthenticatedUser;
-    if (dto.contentLength > MEDIA_LIMITS.AVATAR_MAX_BYTES) {
-      throw new BadRequestException({
-        code: 'FILE_TOO_LARGE',
-        message: `Poids maximal : ${Math.round(MEDIA_LIMITS.AVATAR_MAX_BYTES / 1024 / 1024)} Mo.`,
-      });
-    }
-    return this.cdn.createUpload({
+    if (!contentType) throw new BadRequestException({ code: 'UNSUPPORTED_MEDIA_TYPE' });
+    const media = await this.media.upload({
       ownerId: sub,
-      contentType: dto.contentType,
-      contentLength: dto.contentLength,
-      purpose: 'avatar',
+      role: 'avatar',
+      stream: req,
+      mimeType: contentType.split(';')[0].trim(),
+      contentLength: Number(contentLength) || undefined,
     });
+    await this.accountRepository.update({ id: sub }, { avatarMediaId: media.id });
+    const stale = await this.mediaRepository.find({
+      where: { ownerId: sub, role: 'avatar', id: Not(media.id) },
+      select: { id: true },
+    });
+    await this.media.destroy(
+      sub,
+      stale.map((m) => m.id),
+    );
+    return this.media.view(media);
   }
 
   @Throttle({ default: { limit: 20, ttl: 60000 } })
-  @Post('/avatar/:mediaId/complete')
+  @Delete('/avatar')
   @HttpCode(HttpStatus.OK)
-  async completeAvatar(@Req() req: Request, @Param('mediaId', new ParseUUIDPipe({ version: '4' })) mediaId: string) {
+  async removeAvatar(@Req() req: Request) {
     const { sub } = req.user as AuthenticatedUser;
-    const media = await this.cdn.completeUpload(sub, mediaId);
-    if (media.purpose !== 'avatar') {
-      throw new BadRequestException({ code: 'NOT_AN_AVATAR' });
-    }
-    await this.accountRepository.update({ id: sub }, { avatarMediaId: mediaId });
+    const account = await this.accountRepository.findOne({ where: { id: sub } });
+    if (!account) throw new NotFoundException({ code: 'ACCOUNT_NOT_FOUND' });
+    await this.accountRepository.update({ id: sub }, { avatarMediaId: null });
     const stale = await this.mediaRepository.find({
-      where: { ownerId: sub, purpose: 'avatar', id: Not(mediaId) },
+      where: { ownerId: sub, role: 'avatar' },
       select: { id: true },
     });
-    for (const old of stale) {
-      await this.cdn.destroyMedia(sub, old.id).catch(() => undefined);
-    }
-    return { id: media.id, status: media.status };
+    await this.media.destroy(
+      sub,
+      stale.map((m) => m.id),
+    );
+    return { avatar: null };
   }
 }

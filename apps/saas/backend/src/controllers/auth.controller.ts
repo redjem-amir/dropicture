@@ -11,9 +11,10 @@ import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'cl
 import { ACCESS_TOKEN_TTL_SECONDS, ARGON2_OPTIONS, AUTH_COOKIES, AuthService, SESSION_COOKIE_OPTIONS, generateApiKey, type AuthenticatedUser } from '../services/auth.service';
 import { Account } from '../models/account.entity';
 
-export const USERNAME_RE = /^[a-z0-9](?:[a-z0-9_]|\.(?!\.)){1,28}[a-z0-9]$/;
+export const NAME_PATTERN = /^[a-zA-ZÀ-ÿ\s'-]+$/;
+export const USERNAME_PATTERN = /^[a-z0-9](?:[a-z0-9_]|\.(?!\.)){1,28}[a-z0-9]$/;
 
-const RESERVED_USERNAMES = new Set([
+export const RESERVED_USERNAMES = new Set([
   'about',
   'admin',
   'api',
@@ -69,12 +70,8 @@ const RESERVED_USERNAMES = new Set([
   'www',
 ]);
 
-const normalizeEmail = ({ value }: { value: unknown }): unknown => (typeof value === 'string' ? value.toLowerCase().trim() : value);
-
-const normalizeUsername = ({ value }: { value: unknown }): unknown => (typeof value === 'string' ? value.toLowerCase().trim() : value);
-
-const normalizeName = (name: string): string =>
-  name
+export function normalizeName(raw: string): string {
+  return raw
     .trim()
     .replace(/\s+/g, ' ')
     .replace(/-+/g, '-')
@@ -83,17 +80,20 @@ const normalizeName = (name: string): string =>
       word
         .split('-')
         .map((part) => {
-          const isUniform = part === part.toUpperCase() || part === part.toLowerCase();
-          return isUniform ? part.charAt(0).toUpperCase() + part.slice(1).toLowerCase() : part;
+          const uniform = part === part.toUpperCase() || part === part.toLowerCase();
+          return uniform ? part.charAt(0).toUpperCase() + part.slice(1).toLowerCase() : part;
         })
         .join('-'),
     )
     .join(' ');
+}
+
+const DUMMY_HASH = '$argon2id$v=19$m=19456,t=2,p=1$c29tZXNhbHRzb21lc2FsdA$Yw5F8sZkKFi0YxZm7m4FqJ1aK3xD8V2n9QwPqRtUvWs';
 
 export class SigninDto {
   @IsEmail({}, { message: 'EMAIL_INVALID' })
   @IsNotEmpty({ message: 'MISSING_CREDENTIALS' })
-  @Transform(normalizeEmail)
+  @Transform(({ value }: { value: unknown }): unknown => (typeof value === 'string' ? value.toLowerCase().trim() : value))
   email: string;
 
   @IsString()
@@ -107,27 +107,27 @@ export class SignupDto {
   @IsNotEmpty({ message: 'MISSING_FIELDS' })
   @MinLength(2, { message: 'INVALID_NAME' })
   @MaxLength(30, { message: 'INVALID_NAME' })
-  @Matches(/^[a-zA-ZÀ-ÿ\s'-]+$/, { message: 'INVALID_NAME' })
+  @Matches(NAME_PATTERN, { message: 'INVALID_NAME' })
   firstname: string;
 
   @IsString()
   @IsNotEmpty({ message: 'MISSING_FIELDS' })
   @MinLength(2, { message: 'INVALID_NAME' })
   @MaxLength(30, { message: 'INVALID_NAME' })
-  @Matches(/^[a-zA-ZÀ-ÿ\s'-]+$/, { message: 'INVALID_NAME' })
+  @Matches(NAME_PATTERN, { message: 'INVALID_NAME' })
   lastname: string;
 
   @IsString()
   @IsNotEmpty({ message: 'MISSING_FIELDS' })
   @MinLength(3, { message: 'USERNAME_TOO_SHORT' })
   @MaxLength(30, { message: 'USERNAME_TOO_LONG' })
-  @Matches(USERNAME_RE, { message: 'USERNAME_INVALID' })
-  @Transform(normalizeUsername)
+  @Matches(USERNAME_PATTERN, { message: 'USERNAME_INVALID' })
+  @Transform(({ value }: { value: unknown }): unknown => (typeof value === 'string' ? value.toLowerCase().trim() : value))
   username: string;
 
   @IsEmail({}, { message: 'EMAIL_INVALID' })
   @IsNotEmpty({ message: 'MISSING_FIELDS' })
-  @Transform(normalizeEmail)
+  @Transform(({ value }: { value: unknown }): unknown => (typeof value === 'string' ? value.toLowerCase().trim() : value))
   email: string;
 
   @IsString()
@@ -141,8 +141,6 @@ export class SignupDto {
   password: string;
 }
 
-const DUMMY_ARGON2_HASH = '$argon2id$v=19$m=19456,t=2,p=1$c29tZXNhbHRzb21lc2FsdA$Yw5F8sZkKFi0YxZm7m4FqJ1aK3xD8V2n9QwPqRtUvWs';
-
 @Controller('/api/auth')
 export class AuthController {
   constructor(
@@ -155,13 +153,9 @@ export class AuthController {
   @Get('/me')
   @UseGuards(AuthGuard('access-token'))
   async me(@Req() req: Request) {
-    const user = req.user as AuthenticatedUser;
-    const account = await this.accountRepository.findOne({
-      where: { id: user.sub },
-    });
-    if (!account) {
-      throw new HttpException({ code: 'ACCOUNT_NOT_FOUND' }, HttpStatus.NOT_FOUND);
-    }
+    const { sub } = req.user as AuthenticatedUser;
+    const account = await this.accountRepository.findOne({ where: { id: sub } });
+    if (!account) throw new HttpException({ code: 'ACCOUNT_NOT_FOUND' }, HttpStatus.NOT_FOUND);
     return {
       email: account.email,
       username: account.username,
@@ -175,18 +169,14 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async checkUsername(@Param('username') raw: string) {
     const username = raw.toLowerCase().trim();
-    if (!USERNAME_RE.test(username)) {
+    if (!USERNAME_PATTERN.test(username)) {
       return { username, available: false, code: 'USERNAME_INVALID' };
     }
     if (RESERVED_USERNAMES.has(username)) {
       return { username, available: false, code: 'USERNAME_RESERVED' };
     }
     const taken = await this.accountRepository.exists({ where: { username } });
-    return {
-      username,
-      available: !taken,
-      code: taken ? 'USERNAME_ALREADY_USED' : null,
-    };
+    return { username, available: !taken, code: taken ? 'USERNAME_ALREADY_USED' : null };
   }
 
   @Throttle({ default: { limit: 120, ttl: 60000 } })
@@ -197,26 +187,20 @@ export class AuthController {
     if (!cookie) throw new HttpException('Unauthenticated', HttpStatus.UNAUTHORIZED);
     const resolved = await this.authService.resolveSession(cookie);
     if (!resolved) throw new HttpException('Unauthenticated', HttpStatus.UNAUTHORIZED);
-    return {
-      sub: resolved.user.sub,
-      accessExpiresAt: resolved.accessExpiresAt,
-    };
+    return { sub: resolved.user.sub, accessExpiresAt: resolved.accessExpiresAt };
   }
 
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('/signin')
   async signin(@Body() body: SigninDto, @Req() req: Request, @Res() res: Response) {
-    const account = await this.accountRepository.findOne({
-      where: { email: body.email },
-    });
+    const account = await this.accountRepository.createQueryBuilder('a').addSelect('a.passwordHash').where('a.email = :email', { email: body.email }).getOne();
     if (!account) {
-      await argon2Verify(DUMMY_ARGON2_HASH, body.password).catch(() => false);
+      await argon2Verify(DUMMY_HASH, body.password).catch(() => false);
       throw new HttpException({ code: 'INVALID_CREDENTIALS' }, HttpStatus.UNAUTHORIZED);
     }
-    const passwordValid = await argon2Verify(account.password, body.password).catch(() => false);
-    if (!passwordValid) {
-      throw new HttpException({ code: 'INVALID_CREDENTIALS' }, HttpStatus.UNAUTHORIZED);
-    }
+    const valid = await argon2Verify(account.passwordHash, body.password).catch(() => false);
+    if (!valid) throw new HttpException({ code: 'INVALID_CREDENTIALS' }, HttpStatus.UNAUTHORIZED);
+
     const { cookie, maxAgeSeconds } = await this.authService.createSession(account, {
       userAgent: req.headers['user-agent'],
       ip: req.ip,
@@ -226,10 +210,7 @@ export class AuthController {
       maxAge: maxAgeSeconds * 1000,
     });
     await this.accountRepository.update({ id: account.id }, { lastSeenAt: new Date() });
-    return res.status(HttpStatus.OK).send({
-      success: true,
-      expires_in: ACCESS_TOKEN_TTL_SECONDS,
-    });
+    return res.status(HttpStatus.OK).send({ success: true, expires_in: ACCESS_TOKEN_TTL_SECONDS });
   }
 
   @Throttle({ default: { limit: 5, ttl: 3600000 } })
@@ -248,14 +229,9 @@ export class AuthController {
       select: { id: true, email: true, username: true },
     });
     if (existing) {
-      throw new HttpException(
-        {
-          code: existing.email === body.email ? 'EMAIL_ALREADY_USED' : 'USERNAME_ALREADY_USED',
-        },
-        HttpStatus.CONFLICT,
-      );
+      throw new HttpException({ code: existing.email === body.email ? 'EMAIL_ALREADY_USED' : 'USERNAME_ALREADY_USED' }, HttpStatus.CONFLICT);
     }
-    const password = await argon2Hash(body.password, ARGON2_OPTIONS);
+    const passwordHash = await argon2Hash(body.password, ARGON2_OPTIONS);
     try {
       await this.accountRepository.save(
         this.accountRepository.create({
@@ -263,15 +239,16 @@ export class AuthController {
           lastname,
           username: body.username,
           email: body.email,
-          password,
+          passwordHash,
           apiKey: generateApiKey(),
-          apiKeyCreatedAt: new Date(),
+          apiKeyIssuedAt: new Date(),
         }),
       );
     } catch (err) {
-      const code = (err as { code?: string })?.code;
-      if (code === '23505') {
-        throw new HttpException({ code: 'USERNAME_ALREADY_USED' }, HttpStatus.CONFLICT);
+      const pg = err as { code?: string; constraint?: string };
+      if (pg?.code === '23505') {
+        const code = pg.constraint === 'UQ_accounts_email' ? 'EMAIL_ALREADY_USED' : 'USERNAME_ALREADY_USED';
+        throw new HttpException({ code }, HttpStatus.CONFLICT);
       }
       throw err;
     }
@@ -282,9 +259,7 @@ export class AuthController {
   @Post('/session')
   async session(@Req() req: Request, @Res() res: Response) {
     const currentCookie = req.cookies?.[AUTH_COOKIES.SESSION] as string | undefined;
-    if (!currentCookie) {
-      throw new HttpException('Session missing', HttpStatus.UNAUTHORIZED);
-    }
+    if (!currentCookie) throw new HttpException('Session missing', HttpStatus.UNAUTHORIZED);
     const { cookie, maxAgeSeconds } = await this.authService.rotateSession(currentCookie, {
       userAgent: req.headers['user-agent'],
       ip: req.ip,
@@ -293,11 +268,7 @@ export class AuthController {
       ...SESSION_COOKIE_OPTIONS,
       maxAge: maxAgeSeconds * 1000,
     });
-    return res.send({
-      success: true,
-      rotated: true,
-      expires_in: ACCESS_TOKEN_TTL_SECONDS,
-    });
+    return res.send({ success: true, rotated: true, expires_in: ACCESS_TOKEN_TTL_SECONDS });
   }
 
   @Throttle({ default: { limit: 20, ttl: 60000 } })
@@ -305,9 +276,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async signout(@Req() req: Request, @Res() res: Response) {
     const sessionCookie = req.cookies?.[AUTH_COOKIES.SESSION] as string | undefined;
-    if (sessionCookie) {
-      await this.authService.revokeSessionCookie(sessionCookie);
-    }
+    if (sessionCookie) await this.authService.revokeSessionCookie(sessionCookie);
     res.clearCookie(AUTH_COOKIES.SESSION, SESSION_COOKIE_OPTIONS);
     return res.send({ message: 'Logged out' });
   }
