@@ -28,7 +28,7 @@ const BLOCKS = [
     ],
   },
   {
-    title: 'Hébergement — application',
+    title: 'Hébergement application',
     rows: [
       ['Prestataire', 'Hetzner Online GmbH'],
       ['Adresse', 'Industriestr. 25, 91710 Gunzenhausen, Allemagne'],
@@ -36,7 +36,7 @@ const BLOCKS = [
     ],
   },
   {
-    title: 'Hébergement — fichiers et diffusion',
+    title: 'Hébergement fichiers et diffusion',
     rows: [
       ['Prestataire', 'Amazon Web Services EMEA SARL'],
       ['Adresse', '38 avenue John F. Kennedy, L-1855 Luxembourg'],

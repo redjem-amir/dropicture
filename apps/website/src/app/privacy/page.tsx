@@ -118,12 +118,12 @@ export default function Page() {
               {[
                 { n: 'Hetzner Online GmbH', r: 'Serveurs applicatifs', l: 'Allemagne' },
                 { n: 'Amazon Web Services EMEA', r: 'Stockage objet et distribution', l: 'France (eu-west-3)' },
-                { n: 'Cloudflare Inc.', r: 'Réseau de diffusion et protection', l: 'UE — clauses contractuelles types' },
+                { n: 'Cloudflare Inc.', r: 'Réseau de diffusion et protection', l: 'UE clauses contractuelles types' },
                 { n: '[PRESTATAIRE PAIEMENT]', r: 'Traitement des paiements', l: '[PAYS]' },
               ].map((s) => (
                 <li key={s.n} className="flex flex-wrap items-baseline gap-x-2 text-[13px]">
                   <span className="font-medium text-[#171717]">{s.n}</span>
-                  <span className="text-[#666]">— {s.r}</span>
+                  <span className="text-[#666]">{s.r}</span>
                   <span className="font-mono text-[11px] text-[#A1A1A1]">{s.l}</span>
                 </li>
               ))}

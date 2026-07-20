@@ -1,274 +1,264 @@
-// dropicture/apps/website/src/components/LayoutPublic.tsx
+// dropicture/apps/website/src/components/PublicLayout.tsx
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 
-const APP = 'https://app.dropicture.com';
-const CONSENT_KEY = 'dropicture.cookie-consent';
+const API = process.env.NEXT_PUBLIC_SAAS_BACKEND_URL;
+const APP = process.env.NEXT_PUBLIC_SAAS_FRONTEND_URL;
+const DEBOUNCE_MS = 180;
+
+type MediaView = {
+  id: string;
+  kind: 'image' | 'video';
+  width: number | null;
+  height: number | null;
+  durationMs: number | null;
+  url: string;
+};
+
+type Suggestion = {
+  username: string;
+  name: string;
+  bio: string | null;
+  avatar: MediaView | null;
+  photos: number;
+};
 
 const NAV = [
-  { label: 'Explorer', href: '/explore' },
-  { label: 'Profils', href: '/profiles' },
-  { label: 'Comment ça marche', href: '/#how' },
+  { href: '/#profiles', label: 'Profils' },
+  { href: '/#explore', label: 'Explorer' },
+  { href: '/#how', label: 'Comment ça marche' },
+  { href: '/#security', label: 'Sécurité' },
 ];
 
-const FOOTER = [
-  {
-    title: 'Découvrir',
-    links: [
-      { label: 'Explorer', href: '/explore', external: false },
-      { label: 'Profils', href: '/profiles', external: false },
-      { label: 'Thèmes', href: '/topics', external: false },
-    ],
-  },
-  {
-    title: 'Compte',
-    links: [
-      { label: 'Se connecter', href: `${APP}/signin`, external: true },
-      { label: 'Créer un compte', href: `${APP}/signup`, external: true },
-      { label: 'Nous écrire', href: 'mailto:contact@dropicture.com', external: true },
-    ],
-  },
-  {
-    title: 'Légal',
-    links: [
-      { label: 'Conditions générales', href: '/terms', external: false },
-      { label: 'Confidentialité', href: '/privacy', external: false },
-      { label: 'Cookies', href: '/cookies', external: false },
-      { label: 'Mentions légales', href: '/legal', external: false },
-    ],
-  },
-];
+const initials = (name: string, username: string) =>
+  (name.trim().charAt(0) || username.charAt(0) || '?').toUpperCase();
 
-export default function LayoutPublic({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-  const [consentAsked, setConsentAsked] = useState(false);
+export default function PublicLayout({ children }: { children: ReactNode }) {
+  const [term, setTerm] = useState('');
+  const [fetched, setFetched] = useState<{ q: string; profiles: Suggestion[] } | null>(null);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+
+  const box = useRef<HTMLDivElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const listId = useId();
+
+  const q = term.trim();
+  const results = q && fetched?.q === q ? fetched.profiles : [];
+  const loading = !!q && fetched?.q !== q;
 
   useEffect(() => {
-    try {
-      if (!window.localStorage.getItem(CONSENT_KEY)) setConsentAsked(true);
-    } catch {
-      setConsentAsked(true);
-    }
-  }, []);
+    if (!q) return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      fetch(`${API}/api/public/search?q=${encodeURIComponent(q)}`, { signal: controller.signal })
+        .then((res) => (res.ok ? res.json() : { profiles: [] }))
+        .then((data: { profiles: Suggestion[] }) => {
+          setFetched({ q, profiles: data.profiles ?? [] });
+          setActive(-1);
+        })
+        .catch(() => {
+          if (!controller.signal.aborted) setFetched({ q, profiles: [] });
+        });
+    }, DEBOUNCE_MS);
 
-  const decide = (value: 'all' | 'essential') => {
-    try {
-      window.localStorage.setItem(CONSENT_KEY, value);
-    } catch {
-      /* navigation privée */
-    }
-    setConsentAsked(false);
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [q]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (e: PointerEvent) => {
+      if (!box.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointer);
+    return () => document.removeEventListener('pointerdown', onPointer);
+  }, [open]);
+
+  const go = (username: string) => {
+    setOpen(false);
+    setTerm('');
+    window.location.href = `/u/?u=${encodeURIComponent(username)}`;
   };
 
-  const isActive = (href: string) => !href.includes('#') && pathname.startsWith(href);
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') {
+      setOpen(false);
+      input.current?.blur();
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setOpen(true);
+      setActive((i) => Math.min(results.length - 1, i + 1));
+      return;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActive((i) => Math.max(-1, i - 1));
+      return;
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const chosen = results[active] ?? results[0];
+      if (chosen) go(chosen.username);
+      else if (q) go(q.replace(/^@/, ''));
+    }
+  };
+
+  const showPanel = open && !!q;
 
   return (
-    <div className="relative flex min-h-dvh flex-col bg-white font-sans text-[#171717] antialiased">
-      <Link
-        href="#content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-[#171717] focus:px-3 focus:py-2 focus:text-[13px] focus:font-medium focus:text-white"
-      >
-        Aller au contenu
-      </Link>
-      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute inset-x-0 top-0 h-180 bg-[repeating-linear-gradient(to_right,rgba(9,9,11,0.05)_0_1px,transparent_1px_72px),repeating-linear-gradient(to_bottom,rgba(9,9,11,0.05)_0_1px,transparent_1px_72px)] mask-[radial-gradient(ellipse_85%_100%_at_50%_-5%,#000_25%,transparent_80%)]" />
-        <div className="absolute inset-x-0 top-0 h-180 mask-[radial-gradient(ellipse_85%_100%_at_50%_-5%,#000_25%,transparent_80%)]">
-          <div className="absolute inset-0 bg-[repeating-linear-gradient(to_right,transparent_0_31.5px,#D4D4D8_31.5px_40.5px,transparent_40.5px_72px)] mask-[repeating-linear-gradient(to_bottom,transparent_0_36px,#000_36px_37px,transparent_37px_72px)]" />
-          <div className="absolute inset-0 bg-[repeating-linear-gradient(to_bottom,transparent_0_31.5px,#D4D4D8_31.5px_40.5px,transparent_40.5px_72px)] mask-[repeating-linear-gradient(to_right,transparent_0_36px,#000_36px_37px,transparent_37px_72px)]" />
-        </div>
-      </div>
-      <header className="sticky top-0 z-40 border-b border-[#EAEAEA] bg-white/80 backdrop-blur-md">
+    <div className="flex min-h-dvh flex-col bg-white text-[#171717]">
+      <header className="sticky top-0 z-40 border-b border-[#EAEAEA] bg-white/85 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:px-6">
-          <Link href="/" className="group flex shrink-0 items-center gap-2.5">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 16 16"
-              fill="none"
-              aria-hidden
-              className="shrink-0 text-[#171717]"
-            >
-              <rect x="1.85" y="1.85" width="12.3" height="12.3" rx="3.7" stroke="currentColor" strokeWidth="1.5" />
-              <rect
-                x="5.35"
-                y="5.35"
-                width="5.3"
-                height="5.3"
-                rx="1.2"
-                fill="currentColor"
-                transform="rotate(45 8 8)"
-                className="origin-center transition-transform duration-500 ease-out group-hover:rotate-90"
-              />
-            </svg>
-            <span className="hidden text-[14px] font-semibold tracking-[-0.02em] sm:block">
-              Dropicture
-            </span>
+          <Link href="/" className="shrink-0 text-[15px] font-semibold tracking-[-0.03em]">
+            dropicture
           </Link>
-          <nav className="ml-4 hidden items-center gap-0.5 md:flex">
-            {NAV.map((l) => (
+          <nav className="ml-2 hidden items-center gap-1 lg:flex">
+            {NAV.map((item) => (
               <Link
-                key={l.href}
-                href={l.href}
-                aria-current={isActive(l.href) ? 'page' : undefined}
-                className={`rounded-lg px-2.5 py-1.5 text-[13px] transition ${isActive(l.href)
-                  ? 'bg-[#F4F4F5] font-medium text-[#171717]'
-                  : 'text-[#666] hover:bg-[#FAFAFA] hover:text-[#171717]'
-                  }`}
+                key={item.href}
+                href={item.href}
+                className="rounded-lg px-2.5 py-1.5 text-[13px] text-[#666] transition hover:bg-[#FAFAFA] hover:text-[#171717]"
               >
-                {l.label}
+                {item.label}
               </Link>
             ))}
           </nav>
-          <Link
-            href="/explore"
-            className="ml-auto flex h-9 min-w-0 max-w-72 flex-1 items-center gap-2 rounded-lg border border-[#EAEAEA] bg-[#FAFAFA] px-3 text-[13px] text-[#A1A1A1] transition hover:border-[#D4D4D4] hover:bg-white md:ml-4"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0">
-              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
-              <path d="M16.5 16.5 21 21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-            <span className="min-w-0 flex-1 truncate text-left">Chercher une galerie, un profil</span>
-          </Link>
-          <div className="flex shrink-0 items-center gap-2">
-            <Link
-              href={`${APP}/signin`}
-              className="hidden rounded-lg px-2.5 py-1.5 text-[13px] text-[#666] transition hover:bg-[#FAFAFA] hover:text-[#171717] sm:block"
-            >
-              Se connecter
-            </Link>
-            <Link
-              href={`${APP}/signup`}
-              className="inline-flex h-9 items-center rounded-lg bg-[#171717] px-3 text-[13px] font-medium text-white transition hover:bg-[#383838]"
-            >
-              Commencer
-            </Link>
-          </div>
-        </div>
-        <nav className="border-t border-[#EAEAEA] md:hidden">
-          <div className="flex gap-1 overflow-x-auto px-4 py-2 scrollbar-none sm:px-6 [&::-webkit-scrollbar]:hidden">
-            {NAV.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                aria-current={isActive(l.href) ? 'page' : undefined}
-                className={`shrink-0 rounded-full border px-3 py-1 text-[12px] transition ${isActive(l.href)
-                  ? 'border-[#171717] bg-[#171717] text-white'
-                  : 'border-[#EAEAEA] bg-white text-[#666] hover:border-[#D4D4D4] hover:text-[#171717]'
-                  }`}
+          <div ref={box} className="relative ml-auto w-full max-w-xs">
+            <div className="relative">
+              <svg
+                aria-hidden
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[#A1A1A1]"
               >
-                {l.label}
-              </Link>
-            ))}
-          </div>
-        </nav>
-      </header>
-      <main id="content" className="relative z-10 flex-1">
-        {children}
-      </main>
-      <footer className="relative z-10 border-t border-[#EAEAEA] bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
-            <div className="col-span-2 sm:col-span-1">
-              <div className="group flex items-center gap-2.5">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 16 16"
-                  fill="none"
+                <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.8" />
+                <path d="m16 16 4.5 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+              <input
+                ref={input}
+                type="search"
+                role="combobox"
+                aria-expanded={showPanel}
+                aria-controls={listId}
+                aria-autocomplete="list"
+                aria-activedescendant={active >= 0 ? `${listId}-${active}` : undefined}
+                value={term}
+                onChange={(e) => {
+                  setTerm(e.target.value);
+                  setActive(-1);
+                  setOpen(true);
+                }}
+                onFocus={() => setOpen(true)}
+                onKeyDown={onKeyDown}
+                maxLength={30}
+                placeholder="Chercher un compte"
+                className="h-9 w-full rounded-lg border border-[#EAEAEA] bg-white pl-8 pr-8 text-[13px] outline-none transition placeholder:text-[#A1A1A1] focus:border-[#171717] focus:ring-4 focus:ring-[#171717]/8"
+              />
+              {loading && (
+                <span
                   aria-hidden
-                  className="shrink-0 text-[#171717]"
-                >
-                  <rect x="1.85" y="1.85" width="12.3" height="12.3" rx="3.7" stroke="currentColor" strokeWidth="1.5" />
-                  <rect
-                    x="5.35"
-                    y="5.35"
-                    width="5.3"
-                    height="5.3"
-                    rx="1.2"
-                    fill="currentColor"
-                    transform="rotate(45 8 8)"
-                    className="origin-center transition-transform duration-500 ease-out group-hover:rotate-90"
-                  />
-                </svg>
-                <span className="text-[13px] font-semibold tracking-[-0.02em]">Dropicture</span>
-              </div>
-              <p className="mt-3 max-w-56 text-[13px] leading-relaxed text-[#8F8F8F]">
-                Chacun garde sa bibliothèque privée et expose ce qu’il choisit.
-              </p>
-              <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-[#A1A1A1]">
-                Hébergé en Europe
-              </p>
+                  className="absolute right-2.5 top-1/2 size-3 -translate-y-1/2 animate-spin rounded-full border-2 border-[#EAEAEA] border-t-[#171717]"
+                />
+              )}
             </div>
-            {FOOTER.map((col) => (
-              <div key={col.title}>
-                <h2 className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">
-                  {col.title}
-                </h2>
-                <ul className="mt-3 space-y-2">
-                  {col.links.map((l) =>
-                    l.external ? (
-                      <li key={l.href}>
-                        <Link href={l.href} className="text-[13px] text-[#666] transition hover:text-[#171717]">
-                          {l.label}
-                        </Link>
-                      </li>
+            {showPanel && (
+              <div
+                id={listId}
+                role="listbox"
+                className="absolute inset-x-0 top-11 overflow-hidden rounded-xl border border-[#EAEAEA] bg-white/95 p-1 shadow-[0_1px_2px_rgba(9,9,11,0.04),0_16px_40px_-16px_rgba(9,9,11,0.22)] backdrop-blur-xl"
+              >
+                {results.length === 0 && !loading && (
+                  <p className="px-3 py-3 text-[13px] text-[#8F8F8F]">
+                    Aucun compte ne correspond à «&nbsp;{q}&nbsp;».
+                  </p>
+                )}
+                {results.map((p, i) => (
+                  <button
+                    key={p.username}
+                    type="button"
+                    id={`${listId}-${i}`}
+                    role="option"
+                    aria-selected={i === active}
+                    onMouseEnter={() => setActive(i)}
+                    onClick={() => go(p.username)}
+                    className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left transition ${i === active ? 'bg-[#FAFAFA]' : ''
+                      }`}
+                  >
+                    {p.avatar ? (
+                      <img
+                        src={p.avatar.url}
+                        alt=""
+                        width={32}
+                        height={32}
+                        className="size-8 shrink-0 rounded-full object-cover"
+                      />
                     ) : (
-                      <li key={l.href}>
-                        <Link href={l.href} className="text-[13px] text-[#666] transition hover:text-[#171717]">
-                          {l.label}
-                        </Link>
-                      </li>
-                    ),
-                  )}
-                </ul>
+                      <span
+                        aria-hidden
+                        className="grid size-8 shrink-0 place-items-center rounded-full bg-[#171717] font-mono text-[11px] font-medium text-white"
+                      >
+                        {initials(p.name, p.username)}
+                      </span>
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[13px] font-medium text-[#171717]">
+                        {p.name}
+                      </span>
+                      <span className="block truncate font-mono text-[11px] text-[#8F8F8F]">
+                        @{p.username}
+                      </span>
+                    </span>
+                    <span className="shrink-0 font-mono text-[10px] tabular-nums text-[#A1A1A1]">
+                      {p.photos}
+                    </span>
+                  </button>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-          <div className="mt-12 flex flex-wrap items-center gap-3 border-t border-[#EAEAEA] pt-6">
-            <p className="font-mono text-[11px] text-[#A1A1A1]">
-              © {new Date().getFullYear()} Dropicture
-            </p>
-            <p className="ml-auto font-mono text-[11px] text-[#D4D4D8]">
-              Conçu et hébergé en France
-            </p>
-          </div>
+          <Link
+            href={`${APP}/signin`}
+            className="hidden h-9 shrink-0 items-center rounded-lg px-3 text-[13px] font-medium text-[#666] transition hover:text-[#171717] sm:inline-flex"
+          >
+            Se connecter
+          </Link>
+          <Link
+            href={`${APP}/signup`}
+            className="inline-flex h-9 shrink-0 items-center rounded-lg bg-[#171717] px-3 text-[13px] font-medium text-white transition hover:bg-[#383838]"
+          >
+            Créer un compte
+          </Link>
+        </div>
+      </header>
+      <main className="flex-1">{children}</main>
+      <footer className="border-t border-[#EAEAEA] bg-[#FAFAFA]/60">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-8 sm:px-6">
+          <p className="text-[13px] font-semibold tracking-[-0.02em]">dropicture</p>
+          <p className="text-[12px] text-[#8F8F8F]">
+            Bibliothèque privée, vitrine publique. Hébergé en Union européenne.
+          </p>
+          <nav className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-2 text-[12px] text-[#666]">
+            <Link href="/legal/" className="transition hover:text-[#171717]">
+              Mentions légales
+            </Link>
+            <Link href="/privacy/" className="transition hover:text-[#171717]">
+              Confidentialité
+            </Link>
+            <Link href="/terms/" className="transition hover:text-[#171717]">
+              Conditions
+            </Link>
+          </nav>
         </div>
       </footer>
-      {consentAsked && (
-        <div role="dialog" aria-label="Préférences de cookies" className="fixed inset-x-0 bottom-0 z-50 p-4">
-          <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-4 rounded-xl border border-[#EAEAEA] bg-white/90 px-4 py-3.5 shadow-[0_1px_2px_rgba(9,9,11,0.04),0_20px_48px_-20px_rgba(9,9,11,0.25)] backdrop-blur-xl">
-            <p className="min-w-56 flex-1 text-[13px] leading-relaxed text-[#666]">
-              Nous utilisons des cookies strictement nécessaires au fonctionnement du site, et des
-              cookies de mesure d’audience si tu les acceptes.{' '}
-              <Link
-                href="/cookies"
-                className="text-[#171717] underline decoration-[#EAEAEA] underline-offset-4 hover:decoration-[#171717]"
-              >
-                En savoir plus
-              </Link>
-            </p>
-            <div className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={() => decide('essential')}
-                className="inline-flex h-9 items-center rounded-lg border border-[#EAEAEA] bg-white px-3 text-[13px] font-medium text-[#171717] transition hover:border-[#D4D4D4] hover:bg-[#FAFAFA]"
-              >
-                Essentiels uniquement
-              </button>
-              <button
-                type="button"
-                onClick={() => decide('all')}
-                className="inline-flex h-9 items-center rounded-lg bg-[#171717] px-3 text-[13px] font-medium text-white transition hover:bg-[#383838]"
-              >
-                Tout accepter
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
