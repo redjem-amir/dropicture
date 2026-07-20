@@ -12,12 +12,14 @@ import type { Request } from 'express';
 import type { Redis } from 'ioredis';
 import RedisMock from 'ioredis-mock';
 import request from 'supertest';
+import { randomUUID } from 'crypto';
 import { AuthController } from '../controllers/auth.controller';
 import { SettingsController } from '../controllers/settings.controller';
 import { Account } from '../models/account.entity';
+import { Media } from '../models/media.entity';
+import { MediaService } from '../services/media.service';
 import { ARGON2_OPTIONS, AUTH_COOKIES, AuthService } from '../services/auth.service';
 import { RedisService } from '../services/redis.service';
-import { randomUUID } from 'crypto';
 
 class FakeAccounts {
   readonly rows = new Map<string, Account>();
@@ -29,10 +31,10 @@ class FakeAccounts {
       avatarMediaId: null,
       bio: null,
       apiKey: null,
-      apiKeyCreatedAt: null,
+      apiKeyIssuedAt: null,
       lastSeenAt: null,
       createdAt: new Date(),
-      lastUpdate: new Date(),
+      updatedAt: new Date(),
       ...dto,
     } as Account;
   }
@@ -49,7 +51,7 @@ class FakeAccounts {
       const kept = Object.entries(select).filter(([, on]) => on);
       return Object.fromEntries(kept.map(([col]) => [col, (row as unknown as Record<string, unknown>)[col]]));
     }
-    const { apiKey: _apiKey, ...visible } = row;
+    const { passwordHash: _p, apiKey: _k, ...visible } = row as Account & Record<string, unknown>;
     return visible;
   }
 
@@ -65,16 +67,36 @@ class FakeAccounts {
 
   async increment(where: unknown, column: string, by: number) {
     const rows = this.match(where);
-    rows.forEach((row) => this.rows.set(row.id, { ...row, [column]: (row as unknown as Record<string, number>)[column] + by }));
+    rows.forEach((row) =>
+      this.rows.set(row.id, {
+        ...row,
+        [column]: (row as unknown as Record<string, number>)[column] + by,
+      }),
+    );
     return { affected: rows.length };
+  }
+
+  createQueryBuilder(_alias?: string) {
+    const params: Record<string, unknown> = {};
+    const rows = () => [...this.rows.values()];
+    const qb = {
+      select: () => qb,
+      addSelect: () => qb,
+      where: (_c: string, p?: Record<string, unknown>) => (Object.assign(params, p), qb),
+      andWhere: (_c: string, p?: Record<string, unknown>) => (Object.assign(params, p), qb),
+      getOne: async () => {
+        if (!Object.keys(params).length) return null;
+        const found = rows().find(
+          (r) => (params.email === undefined || r.email === params.email) && (params.sub === undefined || r.id === params.sub) && (params.id === undefined || r.id === params.id),
+        );
+        return found ? { ...found } : null;
+      },
+    };
+    return qb;
   }
 
   peek(id: string): Account {
     return this.rows.get(id) as Account;
-  }
-
-  peekByEmail(email: string): Account {
-    return this.match({ email })[0];
   }
 
   private matchesClause(row: Account, clause: unknown): boolean {
@@ -89,6 +111,24 @@ class FakeAccounts {
     return [...this.rows.values()].filter((row) => clauses.some((clause) => this.matchesClause(row, clause)));
   }
 }
+
+class FakeMediaRepo {
+  find = jest.fn(async () => [] as { id: string }[]);
+  createQueryBuilder() {
+    const qb: Record<string, unknown> = {};
+    for (const m of ['select', 'addSelect', 'where', 'andWhere', 'groupBy', 'orderBy']) {
+      qb[m] = () => qb;
+    }
+    qb.getRawOne = async () => null;
+    return qb;
+  }
+}
+
+const mediaService = {
+  view: (m: { id: string }) => ({ id: m.id, url: `cdn/${m.id}` }),
+  limits: jest.fn(() => ({})),
+  destroy: jest.fn(async (_owner: string, ids: string[]) => ids),
+};
 
 const TEST_PASSWORD = 'Sup3rSecret!';
 
@@ -108,7 +148,7 @@ describe('Rate limiting (@Throttle)', () => {
         lastname: 'Lovelace',
         username: 'ada_lovelace',
         email: 'ada@example.com',
-        password: passwordHash,
+        passwordHash,
         apiKey: 'seeded_api_key',
       }),
     );
@@ -128,7 +168,14 @@ describe('Rate limiting (@Throttle)', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [ThrottlerModule.forRoot({ throttlers: [{ limit: 60, ttl: 60_000 }] })],
       controllers: [AuthController, SettingsController],
-      providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }, AuthService, { provide: getRepositoryToken(Account), useValue: accounts }, { provide: RedisService, useValue: { cache: redis } }],
+      providers: [
+        { provide: APP_GUARD, useClass: ThrottlerGuard },
+        AuthService,
+        { provide: MediaService, useValue: mediaService },
+        { provide: getRepositoryToken(Account), useValue: accounts },
+        { provide: getRepositoryToken(Media), useValue: new FakeMediaRepo() },
+        { provide: RedisService, useValue: { cache: redis } },
+      ],
     })
       .overrideGuard(AuthGuard('access-token'))
       .useFactory({
@@ -172,7 +219,13 @@ describe('Rate limiting (@Throttle)', () => {
     const signup = (n: number) =>
       http()
         .post('/api/auth/signup')
-        .send({ firstname: 'Ada', lastname: 'Lovelace', username: `ada${n}`, email: `ada${n}@example.com`, password: TEST_PASSWORD });
+        .send({
+          firstname: 'Ada',
+          lastname: 'Lovelace',
+          username: `ada_${n}x`,
+          email: `ada${n}@example.com`,
+          password: TEST_PASSWORD,
+        });
     for (let i = 0; i < 5; i++) {
       await signup(i).expect(201);
     }

@@ -10,12 +10,16 @@ import type { Request } from 'express';
 import type { Redis } from 'ioredis';
 import RedisMock from 'ioredis-mock';
 import request, { type Response as TestResponse } from 'supertest';
+import { randomUUID } from 'crypto';
 import { AuthController } from '../controllers/auth.controller';
 import { SettingsController } from '../controllers/settings.controller';
 import { Account } from '../models/account.entity';
+import { Media } from '../models/media.entity';
+import { MediaService } from '../services/media.service';
 import { ARGON2_OPTIONS, AUTH_COOKIES, AuthService } from '../services/auth.service';
 import { RedisService } from '../services/redis.service';
-import { randomUUID } from 'crypto';
+
+const SITE = 'http://localhost:3000';
 
 class FakeAccounts {
   readonly rows = new Map<string, Account>();
@@ -27,10 +31,10 @@ class FakeAccounts {
       avatarMediaId: null,
       bio: null,
       apiKey: null,
-      apiKeyCreatedAt: null,
+      apiKeyIssuedAt: null,
       lastSeenAt: null,
-      createdAt: new Date(),
-      lastUpdate: new Date(),
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
       ...dto,
     } as Account;
   }
@@ -47,7 +51,7 @@ class FakeAccounts {
       const kept = Object.entries(select).filter(([, on]) => on);
       return Object.fromEntries(kept.map(([col]) => [col, (row as unknown as Record<string, unknown>)[col]]));
     }
-    const { apiKey: _apiKey, ...visible } = row;
+    const { passwordHash: _p, apiKey: _k, ...visible } = row as Account & Record<string, unknown>;
     return visible;
   }
 
@@ -69,16 +73,36 @@ class FakeAccounts {
 
   async increment(where: unknown, column: string, by: number) {
     const rows = this.match(where);
-    rows.forEach((row) => this.rows.set(row.id, { ...row, [column]: (row as unknown as Record<string, number>)[column] + by }));
+    rows.forEach((row) =>
+      this.rows.set(row.id, {
+        ...row,
+        [column]: (row as unknown as Record<string, number>)[column] + by,
+      }),
+    );
     return { affected: rows.length };
+  }
+
+  createQueryBuilder(_alias?: string) {
+    const params: Record<string, unknown> = {};
+    const rows = () => [...this.rows.values()];
+    const qb = {
+      select: () => qb,
+      addSelect: () => qb,
+      where: (_c: string, p?: Record<string, unknown>) => (Object.assign(params, p), qb),
+      andWhere: (_c: string, p?: Record<string, unknown>) => (Object.assign(params, p), qb),
+      getOne: async () => {
+        if (!Object.keys(params).length) return null;
+        const found = rows().find(
+          (r) => (params.email === undefined || r.email === params.email) && (params.sub === undefined || r.id === params.sub) && (params.id === undefined || r.id === params.id),
+        );
+        return found ? { ...found } : null;
+      },
+    };
+    return qb;
   }
 
   peek(id: string): Account {
     return this.rows.get(id) as Account;
-  }
-
-  peekByEmail(email: string): Account {
-    return this.match({ email })[0];
   }
 
   private matchesClause(row: Account, clause: unknown): boolean {
@@ -94,12 +118,40 @@ class FakeAccounts {
   }
 }
 
+class FakeMediaRepo {
+  raw: Record<string, string> | null = null;
+  rows: { id: string }[] = [];
+
+  find = jest.fn(async () => this.rows);
+
+  createQueryBuilder() {
+    const qb: Record<string, unknown> = {};
+    for (const m of ['select', 'addSelect', 'where', 'andWhere', 'groupBy', 'orderBy']) {
+      qb[m] = () => qb;
+    }
+    qb.getRawOne = async () => this.raw;
+    return qb;
+  }
+}
+
+const mediaService = {
+  view: (m: { id: string }) => ({ id: m.id, url: `cdn/${m.id}` }),
+  limits: jest.fn(() => ({
+    image: { maxBytes: 8388608 },
+    video: { maxBytes: 104857600 },
+    avatar: { maxBytes: 8388608, accepted: ['image/jpeg'] },
+    accepted: ['image/jpeg', 'video/mp4'],
+  })),
+  destroy: jest.fn(async (_owner: string, ids: string[]) => ids),
+};
+
 const TEST_PASSWORD = 'Sup3rSecret!';
 const NEW_PASSWORD = 'An0ther-Secret!';
 
-describe('SettingsController — /api/settings', () => {
+describe('SettingsController /api/settings', () => {
   let app: INestApplication;
   let accounts: FakeAccounts;
+  let mediaRepo: FakeMediaRepo;
   let redis: Redis;
   let authService: AuthService;
   let passwordHash: string;
@@ -118,9 +170,9 @@ describe('SettingsController — /api/settings', () => {
         lastname: 'Lovelace',
         username: 'ada_lovelace',
         email: 'ada@example.com',
-        password: passwordHash,
+        passwordHash,
         apiKey: 'seeded_api_key',
-        apiKeyCreatedAt: new Date('2026-01-01T00:00:00.000Z'),
+        apiKeyIssuedAt: new Date('2026-01-01T00:00:00.000Z'),
         ...overrides,
       }),
     );
@@ -139,10 +191,17 @@ describe('SettingsController — /api/settings', () => {
 
   beforeAll(async () => {
     accounts = new FakeAccounts();
+    mediaRepo = new FakeMediaRepo();
     redis = new RedisMock();
     const moduleRef = await Test.createTestingModule({
       controllers: [AuthController, SettingsController],
-      providers: [AuthService, { provide: getRepositoryToken(Account), useValue: accounts }, { provide: RedisService, useValue: { cache: redis } }],
+      providers: [
+        AuthService,
+        { provide: MediaService, useValue: mediaService },
+        { provide: getRepositoryToken(Account), useValue: accounts },
+        { provide: getRepositoryToken(Media), useValue: mediaRepo },
+        { provide: RedisService, useValue: { cache: redis } },
+      ],
     })
       .overrideGuard(AuthGuard('access-token'))
       .useFactory({
@@ -171,6 +230,9 @@ describe('SettingsController — /api/settings', () => {
 
   beforeEach(async () => {
     accounts.rows.clear();
+    mediaRepo.raw = null;
+    mediaRepo.rows = [];
+    jest.clearAllMocks();
     await redis.flushall();
     const account = await seedAccount();
     accountId = account.id;
@@ -186,7 +248,9 @@ describe('SettingsController — /api/settings', () => {
 
   describe('authentification requise', () => {
     it.each([
+      ['get', '/api/settings/'],
       ['patch', '/api/settings/me'],
+      ['patch', '/api/settings/username'],
       ['patch', '/api/settings/email'],
       ['patch', '/api/settings/password'],
       ['get', '/api/settings/apikey'],
@@ -195,6 +259,40 @@ describe('SettingsController — /api/settings', () => {
       ['delete', '/api/settings/account'],
     ])('%s %s → 401 sans cookie', async (method, path) => {
       await http()[method as 'get'](path).send({}).expect(401);
+    });
+  });
+
+  describe('GET /', () => {
+    it('renvoie le compte, l’URL publique et l’agrégat de stockage', async () => {
+      mediaRepo.raw = {
+        bytes: '5000',
+        images: '4',
+        videos: '1',
+        published: '2',
+        private: '3',
+      };
+      const res = await http().get('/api/settings/').set('Cookie', cookie).expect(200);
+      expect(res.body).toMatchObject({
+        username: 'ada_lovelace',
+        firstname: 'Ada',
+        lastname: 'Lovelace',
+        email: 'ada@example.com',
+        publicUrl: `${SITE}/u/?u=ada_lovelace`,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        storage: { bytes: '5000', images: 4, videos: 1, published: 2, private: 3 },
+      });
+      expect(res.body.limits).toEqual(mediaService.limits());
+    });
+
+    it('renvoie un stockage neutre quand l’agrégat est vide', async () => {
+      const res = await http().get('/api/settings/').set('Cookie', cookie).expect(200);
+      expect(res.body.storage).toEqual({
+        bytes: '0',
+        images: 0,
+        videos: 0,
+        published: 0,
+        private: 0,
+      });
     });
   });
 
@@ -227,6 +325,45 @@ describe('SettingsController — /api/settings', () => {
       accounts.rows.clear();
       const res = await http().patch('/api/settings/me').set('Cookie', cookie).send({ firstname: 'Ada', lastname: 'Lovelace' }).expect(404);
       expect(res.body).toEqual({ code: 'ACCOUNT_NOT_FOUND' });
+    });
+  });
+
+  describe('PATCH /username', () => {
+    it('change le username et renvoie la nouvelle URL publique', async () => {
+      const res = await http().patch('/api/settings/username').set('Cookie', cookie).send({ username: '  ADA_Byron ' }).expect(200);
+      expect(res.body).toEqual({
+        success: true,
+        username: 'ada_byron',
+        publicUrl: `${SITE}/u/?u=ada_byron`,
+      });
+      expect(accounts.peek(accountId).username).toBe('ada_byron');
+    });
+
+    it('est idempotent si le username est inchangé', async () => {
+      const res = await http().patch('/api/settings/username').set('Cookie', cookie).send({ username: 'ada_lovelace' }).expect(200);
+      expect(res.body.username).toBe('ada_lovelace');
+    });
+
+    it('renvoie 409 si le username est déjà pris', async () => {
+      await seedAccount({ email: 'grace@example.com', username: 'grace_h', apiKey: 'other' });
+      const res = await http().patch('/api/settings/username').set('Cookie', cookie).send({ username: 'grace_h' }).expect(409);
+      expect(res.body).toEqual({ code: 'USERNAME_ALREADY_USED' });
+      expect(accounts.peek(accountId).username).toBe('ada_lovelace');
+    });
+
+    it('renvoie 400 USERNAME_RESERVED pour un nom réservé', async () => {
+      const res = await http().patch('/api/settings/username').set('Cookie', cookie).send({ username: 'admin' }).expect(400);
+      expect(res.body).toEqual({ code: 'USERNAME_RESERVED' });
+    });
+
+    it('renvoie 400 USERNAME_INVALID pour un nom malformé', async () => {
+      const res = await http().patch('/api/settings/username').set('Cookie', cookie).send({ username: 'ada..byron' }).expect(400);
+      expect(res.body).toEqual({ code: 'USERNAME_INVALID' });
+    });
+
+    it('renvoie 400 USERNAME_TOO_SHORT en dessous de 3 caractères', async () => {
+      const res = await http().patch('/api/settings/username').set('Cookie', cookie).send({ username: 'ab' }).expect(400);
+      expect(res.body.message).toContain('USERNAME_TOO_SHORT');
     });
   });
 
@@ -283,12 +420,17 @@ describe('SettingsController — /api/settings', () => {
       expect(res.body.message).toEqual(expect.arrayContaining(['PASSWORD_TOO_SHORT', 'PASSWORD_MISSING_UPPERCASE']));
     });
 
+    it('refuse un nouveau mot de passe identique à l’ancien → 400 PASSWORD_UNCHANGED', async () => {
+      const res = await http().patch('/api/settings/password').set('Cookie', cookie).send({ currentPassword: TEST_PASSWORD, newPassword: TEST_PASSWORD }).expect(400);
+      expect(res.body).toEqual({ code: 'PASSWORD_UNCHANGED' });
+    });
+
     it('change le mot de passe, incrémente tokenVersion et ré-émet un cookie', async () => {
       const res = await http().patch('/api/settings/password').set('Cookie', cookie).send(body).expect(200);
       expect(res.body).toEqual({ success: true, expires_in: 300 });
       const account = accounts.peek(accountId);
       expect(account.tokenVersion).toBe(2);
-      expect(account.password).toMatch(/^\$argon2id\$/);
+      expect(account.passwordHash).toMatch(/^\$argon2id\$/);
       const fresh = cookieValue(setCookie(res));
       expect(fresh).not.toBe(rawCookie);
       await http().get('/api/auth/me').set('Cookie', cookie).expect(401);
@@ -297,7 +439,7 @@ describe('SettingsController — /api/settings', () => {
       await http().post('/api/auth/signin').send({ email: 'ada@example.com', password: NEW_PASSWORD }).expect(200);
     });
 
-    it('déconnecte immédiatement les autres appareils (tokenVersion vérifié à chaque résolution)', async () => {
+    it('déconnecte immédiatement les autres appareils', async () => {
       const other = await openSession(accounts.peek(accountId));
       await http().patch('/api/settings/password').set('Cookie', cookie).send(body).expect(200);
       await http().get('/api/auth/me').set('Cookie', other.header).expect(401);
@@ -306,22 +448,25 @@ describe('SettingsController — /api/settings', () => {
   });
 
   describe('GET|POST|DELETE /apikey', () => {
-    it('GET renvoie la clé courante et sa date', async () => {
+    it('GET renvoie la clé courante et sa date d’émission', async () => {
       const res = await http().get('/api/settings/apikey').set('Cookie', cookie).expect(200);
-      expect(res.body).toEqual({ apiKey: 'seeded_api_key', createdAt: '2026-01-01T00:00:00.000Z' });
+      expect(res.body).toEqual({
+        apiKey: 'seeded_api_key',
+        issuedAt: '2026-01-01T00:00:00.000Z',
+      });
     });
 
     it('GET renvoie null si aucune clé', async () => {
-      await accounts.update({ id: accountId }, { apiKey: null, apiKeyCreatedAt: null });
+      await accounts.update({ id: accountId }, { apiKey: null, apiKeyIssuedAt: null });
       const res = await http().get('/api/settings/apikey').set('Cookie', cookie).expect(200);
-      expect(res.body).toEqual({ apiKey: null, createdAt: null });
+      expect(res.body).toEqual({ apiKey: null, issuedAt: null });
     });
 
     it('POST génère une nouvelle clé et la persiste', async () => {
       const res = await http().post('/api/settings/apikey').set('Cookie', cookie).expect(200);
       expect(res.body.apiKey).toMatch(/^[\w-]{32}$/);
       expect(res.body.apiKey).not.toBe('seeded_api_key');
-      expect(typeof res.body.createdAt).toBe('string');
+      expect(typeof res.body.issuedAt).toBe('string');
       expect(accounts.peek(accountId).apiKey).toBe(res.body.apiKey);
       const reread = await http().get('/api/settings/apikey').set('Cookie', cookie).expect(200);
       expect(reread.body.apiKey).toBe(res.body.apiKey);
@@ -338,7 +483,7 @@ describe('SettingsController — /api/settings', () => {
       expect(res.body).toEqual({ success: true });
       const account = accounts.peek(accountId);
       expect(account.apiKey).toBeNull();
-      expect(account.apiKeyCreatedAt).toBeNull();
+      expect(account.apiKeyIssuedAt).toBeNull();
     });
   });
 
@@ -353,9 +498,11 @@ describe('SettingsController — /api/settings', () => {
       await http().delete('/api/settings/account').set('Cookie', cookie).send({}).expect(400);
     });
 
-    it('supprime le compte, détruit la session et efface le cookie', async () => {
+    it('purge les médias, supprime le compte, détruit la session et efface le cookie', async () => {
+      mediaRepo.rows = [{ id: 'm1' }, { id: 'm2' }];
       const res = await http().delete('/api/settings/account').set('Cookie', cookie).send({ password: TEST_PASSWORD }).expect(200);
       expect(res.body).toEqual({ success: true });
+      expect(mediaService.destroy).toHaveBeenCalledWith(accountId, ['m1', 'm2']);
       expect(setCookie(res)).toMatch(/session=;/);
       expect(accounts.peek(accountId)).toBeUndefined();
       expect(await redis.get(`session:${rawCookie.split('.')[0]}`)).toBeNull();

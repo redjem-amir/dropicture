@@ -10,11 +10,11 @@ import type { Request } from 'express';
 import type { Redis } from 'ioredis';
 import RedisMock from 'ioredis-mock';
 import request, { type Response as TestResponse } from 'supertest';
+import { randomUUID } from 'crypto';
 import { AuthController } from '../controllers/auth.controller';
 import { Account } from '../models/account.entity';
 import { ARGON2_OPTIONS, AUTH_COOKIES, AuthService } from '../services/auth.service';
 import { RedisService } from '../services/redis.service';
-import { randomUUID } from 'crypto';
 
 class FakeAccounts {
   readonly rows = new Map<string, Account>();
@@ -26,10 +26,10 @@ class FakeAccounts {
       avatarMediaId: null,
       bio: null,
       apiKey: null,
-      apiKeyCreatedAt: null,
+      apiKeyIssuedAt: null,
       lastSeenAt: null,
       createdAt: new Date(),
-      lastUpdate: new Date(),
+      updatedAt: new Date(),
       ...dto,
     } as Account;
   }
@@ -46,7 +46,7 @@ class FakeAccounts {
       const kept = Object.entries(select).filter(([, on]) => on);
       return Object.fromEntries(kept.map(([col]) => [col, (row as unknown as Record<string, unknown>)[col]]));
     }
-    const { apiKey: _apiKey, ...visible } = row;
+    const { passwordHash: _p, apiKey: _k, ...visible } = row as Account & Record<string, unknown>;
     return visible;
   }
 
@@ -68,8 +68,32 @@ class FakeAccounts {
 
   async increment(where: unknown, column: string, by: number) {
     const rows = this.match(where);
-    rows.forEach((row) => this.rows.set(row.id, { ...row, [column]: (row as unknown as Record<string, number>)[column] + by }));
+    rows.forEach((row) =>
+      this.rows.set(row.id, {
+        ...row,
+        [column]: (row as unknown as Record<string, number>)[column] + by,
+      }),
+    );
     return { affected: rows.length };
+  }
+
+  createQueryBuilder(_alias?: string) {
+    const params: Record<string, unknown> = {};
+    const rows = () => [...this.rows.values()];
+    const qb = {
+      select: () => qb,
+      addSelect: () => qb,
+      where: (_clause: string, p?: Record<string, unknown>) => (Object.assign(params, p), qb),
+      andWhere: (_clause: string, p?: Record<string, unknown>) => (Object.assign(params, p), qb),
+      getOne: async () => {
+        if (!Object.keys(params).length) return null;
+        const found = rows().find(
+          (r) => (params.email === undefined || r.email === params.email) && (params.sub === undefined || r.id === params.sub) && (params.id === undefined || r.id === params.id),
+        );
+        return found ? { ...found } : null;
+      },
+    };
+    return qb;
   }
 
   peek(id: string): Account {
@@ -95,7 +119,7 @@ class FakeAccounts {
 
 const TEST_PASSWORD = 'Sup3rSecret!';
 
-describe('AuthController — /api/auth', () => {
+describe('AuthController /api/auth', () => {
   let app: INestApplication;
   let accounts: FakeAccounts;
   let redis: Redis;
@@ -103,7 +127,6 @@ describe('AuthController — /api/auth', () => {
   let passwordHash: string;
 
   const http = () => request(app.getHttpServer());
-
   const cookieHeader = (raw: string) => `${AUTH_COOKIES.SESSION}=${raw}`;
 
   const seedAccount = (overrides: Partial<Account> = {}) =>
@@ -113,7 +136,7 @@ describe('AuthController — /api/auth', () => {
         lastname: 'Lovelace',
         username: 'ada_lovelace',
         email: 'ada@example.com',
-        password: passwordHash,
+        passwordHash,
         ...overrides,
       }),
     );
@@ -190,10 +213,10 @@ describe('AuthController — /api/auth', () => {
       const account = accounts.peekByEmail('ada@example.com');
       expect(account).toBeDefined();
       expect(account.username).toBe('ada_lovelace');
-      expect(account.password).toMatch(/^\$argon2id\$/);
-      expect(account.password).not.toContain(TEST_PASSWORD);
+      expect(account.passwordHash).toMatch(/^\$argon2id\$/);
+      expect(account.passwordHash).not.toContain(TEST_PASSWORD);
       expect(account.apiKey).toMatch(/^[\w-]{32}$/);
-      expect(account.apiKeyCreatedAt).toBeInstanceOf(Date);
+      expect(account.apiKeyIssuedAt).toBeInstanceOf(Date);
       expect(account.tokenVersion).toBe(1);
     });
 
@@ -248,6 +271,7 @@ describe('AuthController — /api/auth', () => {
     it.each([
       ['trop court', 'ab', 'USERNAME_TOO_SHORT'],
       ['caractères interdits', 'ada!lovelace', 'USERNAME_INVALID'],
+      ['deux points consécutifs', 'ada..lovelace', 'USERNAME_INVALID'],
     ])('refuse un username %s → 400 %s', async (_label, username, code) => {
       const res = await http()
         .post('/api/auth/signup')
@@ -289,6 +313,18 @@ describe('AuthController — /api/auth', () => {
       expect(res.body).toEqual({ code: 'INVALID_NAME' });
     });
 
+    it('mappe une violation d’unicité Postgres (23505) sur un 409', async () => {
+      const save = jest.spyOn(accounts, 'save').mockRejectedValueOnce(
+        Object.assign(new Error('duplicate key'), {
+          code: '23505',
+          constraint: 'UQ_accounts_email',
+        }),
+      );
+      const res = await http().post('/api/auth/signup').send(payload).expect(409);
+      expect(res.body).toEqual({ code: 'EMAIL_ALREADY_USED' });
+      save.mockRestore();
+    });
+
     it('rejette les champs inconnus (pas de mass-assignment)', async () => {
       const res = await http()
         .post('/api/auth/signup')
@@ -313,7 +349,11 @@ describe('AuthController — /api/auth', () => {
     it('renvoie available:false USERNAME_ALREADY_USED si pris', async () => {
       await seedAccount();
       const res = await http().get('/api/auth/username/ADA_Lovelace').expect(200);
-      expect(res.body).toEqual({ username: 'ada_lovelace', available: false, code: 'USERNAME_ALREADY_USED' });
+      expect(res.body).toEqual({
+        username: 'ada_lovelace',
+        available: false,
+        code: 'USERNAME_ALREADY_USED',
+      });
     });
 
     it('renvoie available:false USERNAME_RESERVED pour un nom réservé', async () => {
@@ -373,9 +413,11 @@ describe('AuthController — /api/auth', () => {
     it('renvoie 401 sans cookie', async () => {
       await http().get('/api/auth/me').expect(401);
     });
+
     it('renvoie 401 avec un cookie bidon', async () => {
       await http().get('/api/auth/me').set('Cookie', cookieHeader('bidon.bidon')).expect(401);
     });
+
     it('renvoie email/username/firstname/lastname', async () => {
       const { header } = await openSession(await seedAccount());
       const res = await http().get('/api/auth/me').set('Cookie', header).expect(200);
@@ -385,10 +427,11 @@ describe('AuthController — /api/auth', () => {
         firstname: 'Ada',
         lastname: 'Lovelace',
       });
-      expect(res.body).not.toHaveProperty('password');
+      expect(res.body).not.toHaveProperty('passwordHash');
       expect(res.body).not.toHaveProperty('apiKey');
       expect(res.body).not.toHaveProperty('id');
     });
+
     it('renvoie 404 ACCOUNT_NOT_FOUND si le compte a disparu mais que la session vit encore', async () => {
       const { header } = await openSession(await seedAccount());
       accounts.rows.clear();
@@ -402,9 +445,11 @@ describe('AuthController — /api/auth', () => {
       const res = await http().post('/api/auth/resolve').expect(401);
       expect(res.body.message).toBe('Unauthenticated');
     });
+
     it('renvoie 401 si la session n’existe plus', async () => {
       await http().post('/api/auth/resolve').set('Cookie', cookieHeader('inexistant.nonce')).expect(401);
     });
+
     it('renvoie sub et accessExpiresAt', async () => {
       const account = await seedAccount();
       const { header } = await openSession(account);
@@ -420,6 +465,7 @@ describe('AuthController — /api/auth', () => {
       expect(res.body.message).toBe('Session missing');
     });
 
+    // NB : la route utilise @Res() sans @HttpCode, Nest répond donc 201.
     it('émet un nouveau cookie et conserve le même sid', async () => {
       const { raw, header } = await openSession(await seedAccount());
       const res = await http().post('/api/auth/session').set('Cookie', header).expect(201);
@@ -463,6 +509,7 @@ describe('AuthController — /api/auth', () => {
       expect(await redis.get(`session:${raw.split('.')[0]}`)).toBeNull();
       await http().get('/api/auth/me').set('Cookie', header).expect(401);
     });
+
     it('répond 200 même sans cookie (idempotent)', async () => {
       await http().post('/api/auth/signout').expect(200);
     });
@@ -470,7 +517,16 @@ describe('AuthController — /api/auth', () => {
 
   it('parcours complet : signup → signin → me → rotation → signout', async () => {
     const agent = request.agent(app.getHttpServer());
-    await agent.post('/api/auth/signup').send({ firstname: 'Ada', lastname: 'Lovelace', username: 'ada_lovelace', email: 'ada@example.com', password: TEST_PASSWORD }).expect(201);
+    await agent
+      .post('/api/auth/signup')
+      .send({
+        firstname: 'Ada',
+        lastname: 'Lovelace',
+        username: 'ada_lovelace',
+        email: 'ada@example.com',
+        password: TEST_PASSWORD,
+      })
+      .expect(201);
     await agent.post('/api/auth/signin').send({ email: 'ada@example.com', password: TEST_PASSWORD }).expect(200);
     await agent.get('/api/auth/me').expect(200);
     await agent.post('/api/auth/session').expect(201);

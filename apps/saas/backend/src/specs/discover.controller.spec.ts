@@ -8,29 +8,23 @@ import cookieParser from 'cookie-parser';
 import type { Request } from 'express';
 import request from 'supertest';
 import { DiscoverController } from '../controllers/discover.controller';
-import { CdnService } from '../services/cdn.service';
+import { MediaService } from '../services/media.service';
 import { Account } from '../models/account.entity';
 import { Media } from '../models/media.entity';
-import { Gallery } from '../models/gallery.entity';
-import { GalleryMedia } from '../models/gallery-media.entity';
 import { Follow } from '../models/follow.entity';
 
-const VIEWER_ID = '11111111-1111-1111-1111-111111111111';
+const VIEWER_ID = '11111111-1111-4111-8111-111111111111';
+const AUTHOR_ID = '22222222-2222-4222-8222-222222222222';
 
 type Lazy<T> = T | (() => T);
-
 const unwrap = <T>(v: Lazy<T>): T => (typeof v === 'function' ? (v as () => T)() : v);
-
-const queue = <T>(values: T[], fallback: T) => {
-  const pending = [...values];
-  return () => (pending.length ? (pending.shift() as T) : fallback);
-};
 
 type QbTerminals = {
   getRawMany?: Lazy<unknown>;
   getRawOne?: Lazy<unknown>;
   getCount?: Lazy<number>;
   getMany?: Lazy<unknown>;
+  getOne?: Lazy<unknown>;
   execute?: Lazy<unknown>;
 };
 
@@ -59,6 +53,7 @@ const makeQb = (terminals: QbTerminals) => {
     'update',
     'set',
     'returning',
+    'setParameters',
   ];
   for (const m of chain) qb[m] = jest.fn(() => qb);
   const defaults: Required<QbTerminals> = {
@@ -66,6 +61,7 @@ const makeQb = (terminals: QbTerminals) => {
     getRawOne: null,
     getCount: 0,
     getMany: [],
+    getOne: null,
     execute: { raw: [], affected: 0 },
   };
   const merged = { ...defaults, ...terminals };
@@ -88,23 +84,22 @@ const makeRepo = () => {
   return repo;
 };
 
-const cdn = {
-  urlsFor: (m: { id: string }) => ({
-    base: `cdn/${m.id}`,
-    avif: `cdn/${m.id}/image.avif`,
-    webp: `cdn/${m.id}/image.webp`,
-    poster: null,
-    video: null,
-    thumbhash: null,
+const mediaService = {
+  view: (m: { id: string; mimeType?: string; width?: number | null; height?: number | null; durationMs?: number | null }) => ({
+    id: m.id,
+    mimeType: m.mimeType ?? 'image/jpeg',
+    width: m.width ?? null,
+    height: m.height ?? null,
+    durationMs: m.durationMs ?? null,
+    url: `cdn/${m.id}`,
   }),
+  limits: jest.fn(() => ({})),
 };
 
-describe('DiscoverController — /api/discover', () => {
+describe('DiscoverController /api/discover', () => {
   let app: INestApplication;
   let accounts: ReturnType<typeof makeRepo>;
   let media: ReturnType<typeof makeRepo>;
-  let galleries: ReturnType<typeof makeRepo>;
-  let galleryMedia: ReturnType<typeof makeRepo>;
   let follows: ReturnType<typeof makeRepo>;
 
   const http = () => request(app.getHttpServer());
@@ -113,17 +108,13 @@ describe('DiscoverController — /api/discover', () => {
   beforeAll(async () => {
     accounts = makeRepo();
     media = makeRepo();
-    galleries = makeRepo();
-    galleryMedia = makeRepo();
     follows = makeRepo();
     const moduleRef = await Test.createTestingModule({
       controllers: [DiscoverController],
       providers: [
-        { provide: CdnService, useValue: cdn },
+        { provide: MediaService, useValue: mediaService },
         { provide: getRepositoryToken(Account), useValue: accounts },
         { provide: getRepositoryToken(Media), useValue: media },
-        { provide: getRepositoryToken(Gallery), useValue: galleries },
-        { provide: getRepositoryToken(GalleryMedia), useValue: galleryMedia },
         { provide: getRepositoryToken(Follow), useValue: follows },
       ],
     })
@@ -147,7 +138,7 @@ describe('DiscoverController — /api/discover', () => {
   });
 
   beforeEach(() => {
-    for (const repo of [accounts, media, galleries, galleryMedia, follows]) {
+    for (const repo of [accounts, media, follows]) {
       repo.find.mockReset().mockResolvedValue([]);
       repo.findOne.mockReset().mockResolvedValue(null);
       repo.count.mockReset().mockResolvedValue(0);
@@ -166,6 +157,125 @@ describe('DiscoverController — /api/discover', () => {
     it('401 sans en-tête x-user sur GET /me', async () => {
       await http().get('/api/discover/me').expect(401);
     });
+
+    it('401 sans en-tête x-user sur GET /feed', async () => {
+      await http().get('/api/discover/feed').expect(401);
+    });
+  });
+
+  describe('GET /feed', () => {
+    it('renvoie { items: [], nextCursor: null } quand aucun média publié', async () => {
+      media._qb = { getMany: [] };
+      const res = await asViewer(http().get('/api/discover/feed')).expect(200);
+      expect(res.body).toEqual({ items: [], nextCursor: null });
+    });
+
+    it('mappe les items avec leur auteur et calcule nextCursor', async () => {
+      const publishedAt = new Date('2026-06-01T00:00:00.000Z');
+      media._qb = {
+        getMany: [
+          { id: 'm1', ownerId: AUTHOR_ID, mimeType: 'image/jpeg', width: 800, height: 600, durationMs: null, publishedAt },
+          { id: 'm2', ownerId: AUTHOR_ID, mimeType: 'image/jpeg', width: 800, height: 600, durationMs: null, publishedAt },
+        ],
+      };
+      accounts.find.mockResolvedValue([{ id: AUTHOR_ID, username: 'bob', firstname: 'Bob', lastname: 'Martin', avatarMediaId: null }]);
+      follows.find.mockResolvedValue([{ followingId: AUTHOR_ID }]);
+
+      const res = await asViewer(http().get('/api/discover/feed?limit=1')).expect(200);
+
+      expect(res.body.items).toHaveLength(1);
+      expect(res.body.items[0]).toEqual({
+        id: 'm1',
+        mimeType: 'image/jpeg',
+        width: 800,
+        height: 600,
+        durationMs: null,
+        url: 'cdn/m1',
+        publishedAt: publishedAt.toISOString(),
+        mine: false,
+        author: {
+          username: 'bob',
+          name: 'Bob Martin',
+          avatar: null,
+          following: true,
+          self: false,
+        },
+      });
+      expect(typeof res.body.nextCursor).toBe('string');
+      expect(Buffer.from(res.body.nextCursor as string, 'base64url').toString('utf8')).toBe(`${publishedAt.toISOString()}|m1`);
+    });
+
+    it('marque mine:true et author.self:true pour les médias du viewer', async () => {
+      const publishedAt = new Date('2026-06-01T00:00:00.000Z');
+      media._qb = {
+        getMany: [{ id: 'm1', ownerId: VIEWER_ID, mimeType: 'image/jpeg', width: null, height: null, durationMs: null, publishedAt }],
+      };
+      accounts.find.mockResolvedValue([{ id: VIEWER_ID, username: 'ada', firstname: 'Ada', lastname: 'Lovelace', avatarMediaId: null }]);
+      const res = await asViewer(http().get('/api/discover/feed')).expect(200);
+      expect(res.body.items[0].mine).toBe(true);
+      expect(res.body.items[0].author.self).toBe(true);
+      expect(res.body.nextCursor).toBeNull();
+    });
+
+    it('résout l’avatar de l’auteur via le dépôt Media', async () => {
+      const publishedAt = new Date('2026-06-01T00:00:00.000Z');
+      media._qb = {
+        getMany: [{ id: 'm1', ownerId: AUTHOR_ID, mimeType: 'image/jpeg', width: null, height: null, durationMs: null, publishedAt }],
+      };
+      accounts.find.mockResolvedValue([{ id: AUTHOR_ID, username: 'bob', firstname: 'Bob', lastname: 'Martin', avatarMediaId: 'av-1' }]);
+      media.find.mockResolvedValue([{ id: 'av-1', mimeType: 'image/png', width: 128, height: 128, durationMs: null }]);
+      const res = await asViewer(http().get('/api/discover/feed')).expect(200);
+      expect(res.body.items[0].author.avatar).toEqual({
+        id: 'av-1',
+        mimeType: 'image/png',
+        width: 128,
+        height: 128,
+        durationMs: null,
+        url: 'cdn/av-1',
+      });
+    });
+
+    it('scope=following restreint aux comptes suivis (+ le viewer)', async () => {
+      follows.find.mockResolvedValue([{ followingId: AUTHOR_ID }]);
+      media._qb = { getMany: [] };
+      const res = await asViewer(http().get('/api/discover/feed?scope=following')).expect(200);
+      expect(res.body).toEqual({ items: [], nextCursor: null });
+      expect(follows.find).toHaveBeenCalledWith({
+        where: { followerId: VIEWER_ID },
+        select: { followingId: true },
+      });
+    });
+
+    it('400 BAD_CURSOR pour un curseur illisible', async () => {
+      const cursor = Buffer.from('pas-une-date|m1').toString('base64url');
+      const res = await asViewer(http().get(`/api/discover/feed?cursor=${cursor}`)).expect(400);
+      expect(res.body).toEqual({ code: 'BAD_CURSOR' });
+    });
+  });
+
+  describe('GET /me', () => {
+    it('agrège les compteurs et la portée communautaire', async () => {
+      media.count.mockResolvedValueOnce(10);
+      follows.count.mockResolvedValueOnce(5).mockResolvedValueOnce(7);
+      media._qb = { getRawOne: { authors: '12', media: '340' } };
+      const res = await asViewer(http().get('/api/discover/me')).expect(200);
+      expect(res.body).toEqual({
+        publishedMedia: 10,
+        following: 5,
+        followers: 7,
+        community: { authors: 12, media: 340 },
+      });
+    });
+
+    it('renvoie des zéros quand l’agrégat est vide', async () => {
+      const res = await asViewer(http().get('/api/discover/me')).expect(200);
+      expect(res.body).toEqual({
+        publishedMedia: 0,
+        following: 0,
+        followers: 0,
+        community: { authors: 0, media: 0 },
+      });
+    });
   });
 
   describe('POST /follows/:username', () => {
@@ -182,12 +292,12 @@ describe('DiscoverController — /api/discover', () => {
     });
 
     it('insère et renvoie { username, following:true, followers }', async () => {
-      accounts.findOne.mockResolvedValue({ id: 'other-id', username: 'bob' });
+      accounts.findOne.mockResolvedValue({ id: AUTHOR_ID, username: 'bob' });
       follows.count.mockResolvedValue(4);
       const res = await asViewer(http().post('/api/discover/follows/bob')).expect(200);
       expect(res.body).toEqual({ username: 'bob', following: true, followers: 4 });
       expect(follows.createQueryBuilder).toHaveBeenCalled();
-      expect(follows.count).toHaveBeenCalledWith({ where: { followingId: 'other-id' } });
+      expect(follows.count).toHaveBeenCalledWith({ where: { followingId: AUTHOR_ID } });
     });
   });
 
@@ -199,138 +309,14 @@ describe('DiscoverController — /api/discover', () => {
     });
 
     it('supprime et renvoie { username, following:false, followers }', async () => {
-      accounts.findOne.mockResolvedValue({ id: 'other-id', username: 'bob' });
+      accounts.findOne.mockResolvedValue({ id: AUTHOR_ID, username: 'bob' });
       follows.count.mockResolvedValue(2);
       const res = await asViewer(http().delete('/api/discover/follows/bob')).expect(200);
       expect(res.body).toEqual({ username: 'bob', following: false, followers: 2 });
-      expect(follows.delete).toHaveBeenCalledWith({ followerId: VIEWER_ID, followingId: 'other-id' });
-    });
-  });
-
-  describe('GET /me', () => {
-    it('agrège les cinq compteurs dans le bon ordre', async () => {
-      galleries.count.mockResolvedValueOnce(3).mockResolvedValueOnce(2);
-      media.count.mockResolvedValueOnce(10);
-      follows.count.mockResolvedValueOnce(5).mockResolvedValueOnce(7);
-      const res = await asViewer(http().get('/api/discover/me')).expect(200);
-      expect(res.body).toEqual({ galleries: 3, publishedGalleries: 2, publishedMedia: 10, following: 5, followers: 7 });
-    });
-  });
-
-  describe('GET /tags', () => {
-    it('préfixe { tag:null, label:"Tout" } puis les tags libellés', async () => {
-      galleries.manager.query.mockResolvedValue([{ tag: 'nature', total: '3' }]);
-      galleryMedia._qb = { getCount: 12 };
-      galleries._qb = { getRawMany: [{ tags: ['nature'], labels: ['Nature'] }] };
-      const res = await asViewer(http().get('/api/discover/tags')).expect(200);
-      expect(res.body.tags[0]).toEqual({ tag: null, label: 'Tout', total: 12 });
-      expect(res.body.tags[1]).toEqual({ tag: 'nature', label: 'Nature', total: 3 });
-    });
-  });
-
-  describe('GET /authors', () => {
-    it('renvoie authors:[] quand le classement est vide', async () => {
-      media._qb = { getRawMany: [] };
-      const res = await asViewer(http().get('/api/discover/authors')).expect(200);
-      expect(res.body).toEqual({ authors: [] });
-    });
-
-    it('assemble les cartes auteur { id, username, name, bio, items, followers, following, avatar }', async () => {
-      media._qb = { getRawMany: [{ id: 'author-1', items: '5' }] };
-      accounts.find.mockResolvedValue([{ id: 'author-1', username: 'bob', firstname: 'Bob', lastname: 'Martin', bio: 'hello', avatarMediaId: 'av-1' }]);
-      media.find.mockResolvedValue([{ id: 'av-1', status: 'ready' }]);
-      follows.find.mockResolvedValue([]);
-      follows._qb = { getRawMany: [{ id: 'author-1', total: '10' }] };
-      const res = await asViewer(http().get('/api/discover/authors')).expect(200);
-      expect(res.body.authors).toEqual([
-        {
-          id: 'author-1',
-          username: 'bob',
-          name: 'Bob Martin',
-          bio: 'hello',
-          items: 5,
-          followers: 10,
-          following: false,
-          avatar: { base: 'cdn/av-1', avif: 'cdn/av-1/image.avif', webp: 'cdn/av-1/image.webp' },
-        },
-      ]);
-    });
-  });
-
-  describe('GET /feed', () => {
-    it('retour anticipé { items:[], nextCursor:null } quand scope=following sans abonnement', async () => {
-      follows.find.mockResolvedValue([]);
-      const res = await asViewer(http().get('/api/discover/feed?scope=following')).expect(200);
-      expect(res.body).toEqual({ items: [], nextCursor: null });
-    });
-
-    it('mappe les items et calcule nextCursor', async () => {
-      const mediaEntity = { id: 'm1', kind: 'image', width: 800, height: 600, durationMs: null };
-      const rawRow = {
-        m_id: 'm1',
-        g_id: 'g1',
-        g_title: 'Trip',
-        g_slug: 'trip',
-        g_tags: ['Nature'],
-        g_owner: 'author-1',
-        g_published: new Date('2026-01-01T00:00:00.000Z'),
-      };
-      media._qb = { getRawMany: queue<unknown>([[rawRow], [{ id: 'author-1', total: '3' }]], []) };
-      media.find.mockResolvedValueOnce([mediaEntity]);
-      accounts.find.mockResolvedValue([{ id: 'author-1', username: 'bob', firstname: 'Bob', lastname: 'Martin', bio: null, avatarMediaId: null }]);
-      follows.find.mockResolvedValue([]);
-      follows._qb = { getRawMany: [] };
-      const res = await asViewer(http().get('/api/discover/feed')).expect(200);
-      expect(res.body.nextCursor).toBeNull();
-      expect(res.body.items).toEqual([
-        {
-          key: 'g1:m1',
-          id: 'm1',
-          kind: 'image',
-          width: 800,
-          height: 600,
-          durationMs: null,
-          gallery: { id: 'g1', title: 'Trip', slug: 'trip', tags: ['Nature'] },
-          author: {
-            id: 'author-1',
-            username: 'bob',
-            name: 'Bob Martin',
-            bio: null,
-            items: 3,
-            followers: 0,
-            following: false,
-            avatar: null,
-          },
-          base: 'cdn/m1',
-          avif: 'cdn/m1/image.avif',
-          webp: 'cdn/m1/image.webp',
-          poster: null,
-          video: null,
-          thumbhash: null,
-        },
-      ]);
-    });
-
-    it('hydrate par identifiant : un média présent deux fois sort deux fois', async () => {
-      const mediaEntity = { id: 'm1', kind: 'image', width: 800, height: 600, durationMs: null };
-      const row = (galleryId: string) => ({
-        m_id: 'm1',
-        g_id: galleryId,
-        g_title: galleryId,
-        g_slug: galleryId,
-        g_tags: [],
-        g_owner: 'author-1',
-        g_published: new Date('2026-01-01T00:00:00.000Z'),
+      expect(follows.delete).toHaveBeenCalledWith({
+        followerId: VIEWER_ID,
+        followingId: AUTHOR_ID,
       });
-      media._qb = { getRawMany: queue<unknown>([[row('g1'), row('g2')], []], []) };
-      media.find.mockResolvedValueOnce([mediaEntity]);
-      accounts.find.mockResolvedValue([{ id: 'author-1', username: 'bob', firstname: 'Bob', lastname: 'Martin', bio: null, avatarMediaId: null }]);
-      follows.find.mockResolvedValue([]);
-      follows._qb = { getRawMany: [] };
-      const res = await asViewer(http().get('/api/discover/feed')).expect(200);
-      expect(res.body.items.map((i: { key: string }) => i.key)).toEqual(['g1:m1', 'g2:m1']);
-      // Une seule requête d'hydratation malgré deux lignes.
-      expect(media.find).toHaveBeenCalledTimes(1);
     });
   });
 });

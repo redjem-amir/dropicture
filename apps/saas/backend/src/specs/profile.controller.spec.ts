@@ -1,5 +1,5 @@
 // dropicture/apps/saas/backend/src/specs/profile.controller.spec.ts
-import { CanActivate, ExecutionContext, INestApplication, UnauthorizedException, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, CanActivate, ExecutionContext, INestApplication, UnauthorizedException, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -9,109 +9,95 @@ import type { Request } from 'express';
 import request from 'supertest';
 import { randomUUID } from 'crypto';
 import { ProfileController } from '../controllers/profile.controller';
-import { CdnService, MEDIA_LIMITS } from '../services/cdn.service';
+import { MediaService } from '../services/media.service';
 import { Account } from '../models/account.entity';
 import { Media } from '../models/media.entity';
 
-const SITE = 'https://dropicture.com';
-const OWNER_ID = randomUUID();
+const SITE = 'http://localhost:3000';
+const OWNER_ID = '11111111-1111-4111-8111-111111111111';
+const MEDIA_A = '22222222-2222-4222-8222-222222222222';
 
-class FakeAccounts {
-  readonly rows = new Map<string, Account>();
+type Lazy<T> = T | (() => T);
+const unwrap = <T>(v: Lazy<T>): T => (typeof v === 'function' ? (v as () => T)() : v);
 
-  seed(overrides: Partial<Account> = {}): Account {
-    const account = {
-      id: OWNER_ID,
-      username: 'ada_lovelace',
-      firstname: 'Ada',
-      lastname: 'Lovelace',
-      bio: null,
-      avatarMediaId: null,
-      ...overrides,
-    } as Account;
-    this.rows.set(account.id, account);
-    return account;
-  }
-
-  update = jest.fn(async (where: { id: string }, patch: Partial<Account>) => {
-    const row = this.rows.get(where.id);
-    if (row) this.rows.set(where.id, { ...row, ...patch });
-    return { affected: row ? 1 : 0 };
-  });
-
-  async findOne({ where }: { where: { id: string } }) {
-    return this.rows.get(where.id) ?? null;
-  }
-
-  peek(id: string): Account {
-    return this.rows.get(id) as Account;
-  }
-}
-
-class FakeMedia {
-  readonly rows = new Map<string, Media>();
-  rawMany: Array<{ visibility: string; total: string }> = [];
-  many: Media[] = [];
-  finds: Media[] = [];
-
-  seed(media: Partial<Media>): Media {
-    const row = media as Media;
-    if (row.id) this.rows.set(row.id, row);
-    return row;
-  }
-
-  async findOne({ where }: { where: { id: string } }) {
-    const clause = Array.isArray(where) ? where[0] : where;
-    return this.rows.get(clause.id) ?? null;
-  }
-
-  async find() {
-    return this.finds;
-  }
-
-  createQueryBuilder() {
-    const qb: Record<string, unknown> = {};
-    for (const method of ['select', 'addSelect', 'where', 'andWhere', 'groupBy', 'orderBy', 'addOrderBy', 'limit', 'offset', 'take', 'skip']) {
-      qb[method] = () => qb;
-    }
-    qb.getRawMany = async () => this.rawMany;
-    qb.getMany = async () => this.many;
-    return qb;
-  }
-}
-
-const cdn = {
-  urlsFor: (m: Media) => ({
-    base: `cdn/${m.id}`,
-    avif: `cdn/${m.id}/image.avif`,
-    webp: `cdn/${m.id}/image.webp`,
-    poster: null,
-    video: null,
-    thumbhash: null,
-  }),
-  limits: () => ({
-    image: { maxBytes: 8388608 },
-    video: { maxBytes: 1, minDurationMs: 1, maxDurationMs: 1 },
-    avatar: { maxBytes: 8388608 },
-    accepted: ['image/jpeg'],
-  }),
-  publishMedia: jest.fn(async (_ownerId: string, id: string) => ({ id, visibility: 'public' })),
-  unpublishMedia: jest.fn(async (_ownerId: string, id: string) => ({ id, visibility: 'private' })),
-  createUpload: jest.fn(async () => ({ strategy: 'post', mediaId: 'm', key: 'k', url: 'u', fields: {}, expiresAt: 'x' })),
-  completeUpload: jest.fn(async (_ownerId: string, id: string) => ({ id, purpose: 'avatar', status: 'ready' })),
-  destroyMedia: jest.fn(async () => undefined),
+type QbTerminals = {
+  getRawMany?: Lazy<unknown>;
+  getRawOne?: Lazy<unknown>;
+  getMany?: Lazy<unknown>;
 };
 
-describe('ProfileController — /api/profile', () => {
+const makeQb = (terminals: QbTerminals) => {
+  const qb: Record<string, jest.Mock> = {};
+  const chain = ['select', 'addSelect', 'where', 'andWhere', 'orWhere', 'groupBy', 'orderBy', 'addOrderBy', 'limit', 'offset', 'take', 'skip', 'innerJoin', 'leftJoin'];
+  for (const m of chain) qb[m] = jest.fn(() => qb);
+  const defaults: Required<QbTerminals> = { getRawMany: [], getRawOne: null, getMany: [] };
+  const merged = { ...defaults, ...terminals };
+  for (const key of Object.keys(defaults) as (keyof QbTerminals)[]) {
+    qb[key] = jest.fn(async () => unwrap(merged[key]));
+  }
+  return qb;
+};
+
+const makeRepo = () => {
+  const repo = {
+    _qb: {} as QbTerminals,
+    find: jest.fn(async () => [] as unknown[]),
+    findOne: jest.fn(async () => null),
+    count: jest.fn(async () => 0),
+    update: jest.fn(async () => ({ affected: 1 })),
+    createQueryBuilder: jest.fn(() => makeQb(repo._qb)),
+  };
+  return repo;
+};
+
+const mediaService = {
+  view: jest.fn((m: { id: string; mimeType?: string; width?: number | null; height?: number | null; durationMs?: number | null }) => ({
+    id: m.id,
+    mimeType: m.mimeType ?? 'image/jpeg',
+    width: m.width ?? null,
+    height: m.height ?? null,
+    durationMs: m.durationMs ?? null,
+    url: `cdn/${m.id}`,
+  })),
+  limits: jest.fn(() => ({
+    image: { maxBytes: 8388608 },
+    video: { maxBytes: 104857600 },
+    avatar: { maxBytes: 8388608, accepted: ['image/jpeg', 'image/png', 'image/webp'] },
+    accepted: ['image/jpeg', 'image/png', 'video/mp4'],
+  })),
+  upload: jest.fn(async (_p: unknown) => ({
+    id: 'new-avatar',
+    ownerId: OWNER_ID,
+    role: 'avatar',
+    mimeType: 'image/jpeg',
+    width: null,
+    height: null,
+    durationMs: null,
+  })),
+  unpublish: jest.fn(async (_owner: string, ids: string[]) => ids),
+  destroy: jest.fn(async (_owner: string, ids: string[]) => ids),
+};
+
+describe('ProfileController /api/profile', () => {
   let app: INestApplication;
-  let accounts: FakeAccounts;
-  let media: FakeMedia;
+  let accounts: ReturnType<typeof makeRepo>;
+  let media: ReturnType<typeof makeRepo>;
 
   const http = () => request(app.getHttpServer());
+  const auth = (req: request.Test) => req.set('x-user', OWNER_ID);
+
+  const account = {
+    id: OWNER_ID,
+    username: 'ada_lovelace',
+    firstname: 'Ada',
+    lastname: 'Lovelace',
+    bio: null as string | null,
+    avatarMediaId: null as string | null,
+  };
 
   beforeAll(async () => {
-    accounts = new FakeAccounts();
-    media = new FakeMedia();
+    accounts = makeRepo();
+    media = makeRepo();
 
     const authGuard: CanActivate = {
       canActivate(context: ExecutionContext) {
@@ -126,7 +112,7 @@ describe('ProfileController — /api/profile', () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [ProfileController],
       providers: [
-        { provide: CdnService, useValue: cdn },
+        { provide: MediaService, useValue: mediaService },
         { provide: getRepositoryToken(Account), useValue: accounts },
         { provide: getRepositoryToken(Media), useValue: media },
       ],
@@ -144,13 +130,26 @@ describe('ProfileController — /api/profile', () => {
   });
 
   beforeEach(() => {
-    accounts.rows.clear();
-    media.rows.clear();
-    media.rawMany = [];
-    media.many = [];
-    media.finds = [];
     jest.clearAllMocks();
-    accounts.seed();
+    for (const repo of [accounts, media]) {
+      repo.find.mockResolvedValue([]);
+      repo.findOne.mockResolvedValue(null);
+      repo.count.mockResolvedValue(0);
+      repo.update.mockResolvedValue({ affected: 1 });
+      repo._qb = {};
+    }
+    accounts.findOne.mockResolvedValue({ ...account });
+    mediaService.upload.mockImplementation(async (_p: unknown) => ({
+      id: 'new-avatar',
+      ownerId: OWNER_ID,
+      role: 'avatar',
+      mimeType: 'image/jpeg',
+      width: null,
+      height: null,
+      durationMs: null,
+    }));
+    mediaService.unpublish.mockImplementation(async (_o: string, ids: string[]) => ids);
+    mediaService.destroy.mockImplementation(async (_o: string, ids: string[]) => ids);
   });
 
   afterAll(async () => {
@@ -165,17 +164,15 @@ describe('ProfileController — /api/profile', () => {
 
   describe('GET /', () => {
     it('renvoie 404 ACCOUNT_NOT_FOUND si le compte est absent', async () => {
-      accounts.rows.clear();
-      const res = await http().get('/api/profile').set('x-user', OWNER_ID).expect(404);
+      accounts.findOne.mockResolvedValue(null);
+      const res = await auth(http().get('/api/profile')).expect(404);
       expect(res.body).toEqual({ code: 'ACCOUNT_NOT_FOUND' });
     });
 
-    it('renvoie le profil, les compteurs agrégés et les limites', async () => {
-      media.rawMany = [
-        { visibility: 'public', total: '2' },
-        { visibility: 'private', total: '3' },
-      ];
-      const res = await http().get('/api/profile').set('x-user', OWNER_ID).expect(200);
+    it('renvoie le profil, les compteurs et les limites', async () => {
+      media.count.mockResolvedValueOnce(2).mockResolvedValueOnce(3);
+      media._qb = { getRawOne: { first: new Date('2026-01-01T00:00:00.000Z') } };
+      const res = await auth(http().get('/api/profile')).expect(200);
       expect(res.body).toMatchObject({
         username: 'ada_lovelace',
         firstname: 'Ada',
@@ -183,157 +180,200 @@ describe('ProfileController — /api/profile', () => {
         bio: null,
         publicUrl: `${SITE}/u/?u=ada_lovelace`,
         avatar: null,
-        counts: { published: 2, private: 3, total: 5 },
+        counts: { published: 2, inLibrary: 3 },
+        firstPublishedAt: '2026-01-01T00:00:00.000Z',
       });
-      expect(res.body.limits).toEqual(cdn.limits());
+      expect(res.body.limits).toEqual(mediaService.limits());
     });
 
     it('résout l’avatar via le dépôt Media quand avatarMediaId est présent', async () => {
-      const avatarId = randomUUID();
-      accounts.seed({ avatarMediaId: avatarId });
-      media.seed({ id: avatarId, status: 'ready' });
-      const res = await http().get('/api/profile').set('x-user', OWNER_ID).expect(200);
+      accounts.findOne.mockResolvedValue({ ...account, avatarMediaId: 'av-1' });
+      media.findOne.mockResolvedValue({
+        id: 'av-1',
+        mimeType: 'image/png',
+        width: 128,
+        height: 128,
+        durationMs: null,
+      });
+      const res = await auth(http().get('/api/profile')).expect(200);
       expect(res.body.avatar).toEqual({
-        id: avatarId,
-        status: 'ready',
-        base: `cdn/${avatarId}`,
-        avif: `cdn/${avatarId}/image.avif`,
-        webp: `cdn/${avatarId}/image.webp`,
-        poster: null,
-        video: null,
-        thumbhash: null,
+        id: 'av-1',
+        mimeType: 'image/png',
+        width: 128,
+        height: 128,
+        durationMs: null,
+        url: 'cdn/av-1',
+      });
+      expect(media.findOne).toHaveBeenCalledWith({
+        where: { id: 'av-1', ownerId: OWNER_ID },
       });
     });
   });
 
   describe('PATCH /', () => {
     it('met à jour une bio valide', async () => {
-      const res = await http().patch('/api/profile').set('x-user', OWNER_ID).send({ bio: 'Comtesse de Lovelace' }).expect(200);
+      const res = await auth(http().patch('/api/profile')).send({ bio: '  Comtesse de Lovelace  ' }).expect(200);
       expect(res.body).toEqual({ bio: 'Comtesse de Lovelace' });
       expect(accounts.update).toHaveBeenCalledWith({ id: OWNER_ID }, { bio: 'Comtesse de Lovelace' });
-      expect(accounts.peek(OWNER_ID).bio).toBe('Comtesse de Lovelace');
     });
 
     it('refuse une bio de plus de 160 caractères → 400 BIO_TOO_LONG', async () => {
-      const res = await http()
-        .patch('/api/profile')
-        .set('x-user', OWNER_ID)
+      const res = await auth(http().patch('/api/profile'))
         .send({ bio: 'a'.repeat(161) })
         .expect(400);
       expect(res.body.message).toContain('BIO_TOO_LONG');
     });
 
     it('renvoie { bio: null } pour une bio vide', async () => {
-      const res = await http().patch('/api/profile').set('x-user', OWNER_ID).send({ bio: '' }).expect(200);
+      const res = await auth(http().patch('/api/profile')).send({ bio: '' }).expect(200);
       expect(res.body).toEqual({ bio: null });
+      expect(accounts.update).toHaveBeenCalledWith({ id: OWNER_ID }, { bio: null });
     });
 
     it('renvoie { bio: null } quand la bio est absente', async () => {
-      const res = await http().patch('/api/profile').set('x-user', OWNER_ID).send({}).expect(200);
+      const res = await auth(http().patch('/api/profile')).send({}).expect(200);
       expect(res.body).toEqual({ bio: null });
+    });
+
+    it('renvoie 404 si le compte a disparu', async () => {
+      accounts.update.mockResolvedValue({ affected: 0 });
+      const res = await auth(http().patch('/api/profile')).send({ bio: 'x' }).expect(404);
+      expect(res.body).toEqual({ code: 'ACCOUNT_NOT_FOUND' });
     });
   });
 
   describe('GET /media', () => {
-    it('mappe les items et calcule nextCursor quand il y a une page suivante', async () => {
-      const rows = [
-        { id: 'a', kind: 'image', visibility: 'public', width: 100, height: 200, durationMs: null },
-        { id: 'b', kind: 'image', visibility: 'private', width: 300, height: 400, durationMs: null },
-        { id: 'c', kind: 'video', visibility: 'public', width: 500, height: 600, durationMs: 4000 },
-      ] as unknown as Media[];
-      media.many = rows;
-      const res = await http().get('/api/profile/media').query({ limit: '2' }).set('x-user', OWNER_ID).expect(200);
-      expect(res.body.items).toHaveLength(2);
+    it('mappe les items publiés et calcule nextCursor', async () => {
+      const first = new Date('2026-06-03T00:00:00.000Z');
+      media._qb = {
+        getMany: [
+          { id: 'a', mimeType: 'image/jpeg', width: 100, height: 200, durationMs: null, publishedAt: first },
+          { id: 'b', mimeType: 'image/jpeg', width: 300, height: 400, durationMs: null, publishedAt: new Date('2026-06-02T00:00:00.000Z') },
+        ],
+      };
+      const res = await auth(http().get('/api/profile/media').query({ limit: '1' })).expect(200);
+      expect(res.body.items).toHaveLength(1);
       expect(res.body.items[0]).toEqual({
         id: 'a',
-        kind: 'image',
-        visibility: 'public',
+        mimeType: 'image/jpeg',
         width: 100,
         height: 200,
         durationMs: null,
-        base: 'cdn/a',
-        avif: 'cdn/a/image.avif',
-        webp: 'cdn/a/image.webp',
-        poster: null,
-        video: null,
-        thumbhash: null,
+        url: 'cdn/a',
+        publishedAt: first.toISOString(),
       });
-      expect(res.body.nextCursor).toBe('2');
+      expect(Buffer.from(res.body.nextCursor as string, 'base64url').toString('utf8')).toBe(`${first.toISOString()}|a`);
     });
 
-    it('renvoie nextCursor null quand tous les résultats tiennent dans la page', async () => {
-      media.many = [{ id: 'a', kind: 'image', visibility: 'public', width: 1, height: 1, durationMs: null }] as unknown as Media[];
-      const res = await http().get('/api/profile/media').query({ limit: '2' }).set('x-user', OWNER_ID).expect(200);
+    it('renvoie nextCursor null quand tout tient dans la page', async () => {
+      media._qb = {
+        getMany: [{ id: 'a', mimeType: 'image/jpeg', publishedAt: new Date('2026-06-03T00:00:00.000Z') }],
+      };
+      const res = await auth(http().get('/api/profile/media').query({ limit: '2' })).expect(200);
       expect(res.body.items).toHaveLength(1);
       expect(res.body.nextCursor).toBeNull();
     });
 
-    it('reprend la pagination depuis le curseur reçu', async () => {
-      media.many = [
-        { id: 'c', kind: 'image', visibility: 'public', width: 1, height: 1, durationMs: null },
-        { id: 'd', kind: 'image', visibility: 'public', width: 1, height: 1, durationMs: null },
-        { id: 'e', kind: 'image', visibility: 'public', width: 1, height: 1, durationMs: null },
-      ] as unknown as Media[];
-      const res = await http().get('/api/profile/media').query({ limit: '2', cursor: '2' }).set('x-user', OWNER_ID).expect(200);
-      expect(res.body.nextCursor).toBe('4');
+    it('400 BAD_CURSOR pour un curseur illisible', async () => {
+      const cursor = Buffer.from('nawak|a').toString('base64url');
+      const res = await auth(http().get(`/api/profile/media?cursor=${cursor}`)).expect(400);
+      expect(res.body).toEqual({ code: 'BAD_CURSOR' });
     });
   });
 
-  describe('PATCH /media/:mediaId/publish|unpublish', () => {
-    it('publie un média via le CDN', async () => {
-      const mediaId = randomUUID();
-      const res = await http().patch(`/api/profile/media/${mediaId}/publish`).set('x-user', OWNER_ID).expect(200);
-      expect(cdn.publishMedia).toHaveBeenCalledWith(OWNER_ID, mediaId);
-      expect(res.body).toEqual({ id: mediaId, visibility: 'public' });
+  describe('PATCH /media/unpublish', () => {
+    it('dépublie en lot via MediaService.unpublish', async () => {
+      const res = await auth(http().patch('/api/profile/media/unpublish'))
+        .send({ ids: [MEDIA_A] })
+        .expect(200);
+      expect(mediaService.unpublish).toHaveBeenCalledWith(OWNER_ID, [MEDIA_A]);
+      expect(res.body).toEqual({ done: [MEDIA_A], failed: [] });
     });
 
-    it('dépublie un média via le CDN', async () => {
-      const mediaId = randomUUID();
-      const res = await http().patch(`/api/profile/media/${mediaId}/unpublish`).set('x-user', OWNER_ID).expect(200);
-      expect(cdn.unpublishMedia).toHaveBeenCalledWith(OWNER_ID, mediaId);
-      expect(res.body).toEqual({ id: mediaId, visibility: 'private' });
+    it('classe un média absent dans failed avec MEDIA_NOT_FOUND', async () => {
+      mediaService.unpublish.mockResolvedValueOnce([]);
+      media.find.mockResolvedValue([]);
+      const res = await auth(http().patch('/api/profile/media/unpublish'))
+        .send({ ids: [MEDIA_A] })
+        .expect(200);
+      expect(res.body).toEqual({ done: [], failed: [{ id: MEDIA_A, code: 'MEDIA_NOT_FOUND' }] });
+    });
+
+    it('classe un avatar dans failed avec AVATAR_ALWAYS_PUBLIC', async () => {
+      mediaService.unpublish.mockResolvedValueOnce([]);
+      media.find.mockResolvedValue([{ id: MEDIA_A, role: 'avatar', publishedAt: new Date() }]);
+      const res = await auth(http().patch('/api/profile/media/unpublish'))
+        .send({ ids: [MEDIA_A] })
+        .expect(200);
+      expect(res.body.failed).toEqual([{ id: MEDIA_A, code: 'AVATAR_ALWAYS_PUBLIC' }]);
+    });
+
+    it('classe un média déjà privé dans failed avec ALREADY_PRIVATE', async () => {
+      mediaService.unpublish.mockResolvedValueOnce([]);
+      media.find.mockResolvedValue([{ id: MEDIA_A, role: 'content', publishedAt: null }]);
+      const res = await auth(http().patch('/api/profile/media/unpublish'))
+        .send({ ids: [MEDIA_A] })
+        .expect(200);
+      expect(res.body.failed).toEqual([{ id: MEDIA_A, code: 'ALREADY_PRIVATE' }]);
+    });
+
+    it('refuse un identifiant non-uuid → 400', async () => {
+      await auth(http().patch('/api/profile/media/unpublish'))
+        .send({ ids: ['pas-un-uuid'] })
+        .expect(400);
     });
   });
 
   describe('POST /avatar', () => {
-    it('refuse un fichier trop lourd → 400 FILE_TOO_LARGE', async () => {
-      const res = await http()
-        .post('/api/profile/avatar')
-        .set('x-user', OWNER_ID)
-        .send({ contentType: 'image/jpeg', contentLength: MEDIA_LIMITS.AVATAR_MAX_BYTES + 1 })
-        .expect(400);
+    it('refuse une requête sans content-type → 400 UNSUPPORTED_MEDIA_TYPE', async () => {
+      const res = await auth(http().post('/api/profile/avatar')).unset('Content-Type').expect(400);
+      expect(res.body).toEqual({ code: 'UNSUPPORTED_MEDIA_TYPE' });
+      expect(mediaService.upload).not.toHaveBeenCalled();
+    });
+
+    it('téléverse l’avatar, met à jour avatarMediaId et renvoie la vue', async () => {
+      const res = await auth(http().post('/api/profile/avatar')).set('Content-Type', 'image/jpeg').send('binarydata').expect(201);
+      expect(mediaService.upload).toHaveBeenCalledWith(expect.objectContaining({ ownerId: OWNER_ID, role: 'avatar', mimeType: 'image/jpeg' }));
+      expect(accounts.update).toHaveBeenCalledWith({ id: OWNER_ID }, { avatarMediaId: 'new-avatar' });
+      expect(res.body).toEqual({
+        id: 'new-avatar',
+        mimeType: 'image/jpeg',
+        width: null,
+        height: null,
+        durationMs: null,
+        url: 'cdn/new-avatar',
+      });
+    });
+
+    it('supprime les anciens avatars via MediaService.destroy', async () => {
+      const staleId = randomUUID();
+      media.find.mockResolvedValue([{ id: staleId }]);
+      await auth(http().post('/api/profile/avatar')).set('Content-Type', 'image/jpeg').send('binarydata').expect(201);
+      expect(mediaService.destroy).toHaveBeenCalledWith(OWNER_ID, [staleId]);
+    });
+
+    it('propage l’erreur d’upload → 400 FILE_TOO_LARGE', async () => {
+      mediaService.upload.mockRejectedValueOnce(new BadRequestException({ code: 'FILE_TOO_LARGE' }));
+      const res = await auth(http().post('/api/profile/avatar')).set('Content-Type', 'image/jpeg').send('binarydata').expect(400);
       expect(res.body.code).toBe('FILE_TOO_LARGE');
-      expect(cdn.createUpload).not.toHaveBeenCalled();
-    });
-
-    it('crée un upload avatar valide', async () => {
-      const res = await http().post('/api/profile/avatar').set('x-user', OWNER_ID).send({ contentType: 'image/jpeg', contentLength: 1024 }).expect(201);
-      expect(cdn.createUpload).toHaveBeenCalledWith(expect.objectContaining({ ownerId: OWNER_ID, contentType: 'image/jpeg', contentLength: 1024, purpose: 'avatar' }));
-      expect(res.body).toMatchObject({ strategy: 'post', mediaId: 'm' });
-    });
-  });
-
-  describe('POST /avatar/:mediaId/complete', () => {
-    it('met à jour avatarMediaId quand l’upload est un avatar', async () => {
-      const mediaId = randomUUID();
-      cdn.completeUpload.mockResolvedValueOnce({ id: mediaId, purpose: 'avatar', status: 'ready' });
-      const res = await http().post(`/api/profile/avatar/${mediaId}/complete`).set('x-user', OWNER_ID).expect(200);
-      expect(accounts.update).toHaveBeenCalledWith({ id: OWNER_ID }, { avatarMediaId: mediaId });
-      expect(res.body).toEqual({ id: mediaId, status: 'ready' });
-    });
-
-    it('refuse un média qui n’est pas un avatar → 400 NOT_AN_AVATAR', async () => {
-      const mediaId = randomUUID();
-      cdn.completeUpload.mockResolvedValueOnce({ id: mediaId, purpose: 'content', status: 'ready' });
-      const res = await http().post(`/api/profile/avatar/${mediaId}/complete`).set('x-user', OWNER_ID).expect(400);
-      expect(res.body).toEqual({ code: 'NOT_AN_AVATAR' });
       expect(accounts.update).not.toHaveBeenCalled();
     });
   });
 
-  describe('route supprimée', () => {
-    it('POST /cdn-session n’existe plus → 404', async () => {
-      await http().post('/api/profile/cdn-session').set('x-user', OWNER_ID).expect(404);
+  describe('DELETE /avatar', () => {
+    it('détache et supprime les avatars', async () => {
+      const staleId = randomUUID();
+      media.find.mockResolvedValue([{ id: staleId }]);
+      const res = await auth(http().delete('/api/profile/avatar')).expect(200);
+      expect(res.body).toEqual({ avatar: null });
+      expect(accounts.update).toHaveBeenCalledWith({ id: OWNER_ID }, { avatarMediaId: null });
+      expect(mediaService.destroy).toHaveBeenCalledWith(OWNER_ID, [staleId]);
+    });
+
+    it('renvoie 404 si le compte est absent', async () => {
+      accounts.findOne.mockResolvedValue(null);
+      const res = await auth(http().delete('/api/profile/avatar')).expect(404);
+      expect(res.body).toEqual({ code: 'ACCOUNT_NOT_FOUND' });
     });
   });
 });

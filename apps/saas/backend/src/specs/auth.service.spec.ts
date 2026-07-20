@@ -18,41 +18,51 @@ class FakeAccounts {
       lastname: 'Lovelace',
       username: 'ada_lovelace',
       email: 'ada@example.com',
-      password: '$argon2id$fake',
+      passwordHash: '$argon2id$fake',
       tokenVersion: 1,
       avatarMediaId: null,
       bio: null,
       apiKey: null,
-      apiKeyCreatedAt: null,
+      apiKeyIssuedAt: null,
       lastSeenAt: null,
       createdAt: new Date(),
-      lastUpdate: new Date(),
+      updatedAt: new Date(),
       ...overrides,
-    };
+    } as Account;
     this.rows.set(account.id, account);
     return { ...account };
   }
+
   peek(id: string): Account {
     return this.rows.get(id) as Account;
   }
-  async findOne({ where }: any) {
+
+  async findOne({ where }: { where: Record<string, unknown> }) {
     const row = this.match(where)[0];
     return row ? { ...row } : null;
   }
-  async update(where: any, patch: any) {
+
+  async update(where: Record<string, unknown>, patch: Partial<Account>) {
     const rows = this.match(where);
     rows.forEach((row) => this.rows.set(row.id, { ...row, ...patch }));
     return { affected: rows.length };
   }
-  async increment(where: any, column: string, by: number) {
+
+  async increment(where: Record<string, unknown>, column: string, by: number) {
     const rows = this.match(where);
-    rows.forEach((row) => this.rows.set(row.id, { ...row, [column]: (row as any)[column] + by }));
+    rows.forEach((row) =>
+      this.rows.set(row.id, {
+        ...row,
+        [column]: (row as unknown as Record<string, number>)[column] + by,
+      }),
+    );
     return { affected: rows.length };
   }
-  private match(where: any): Account[] {
+
+  private match(where: Record<string, unknown>): Account[] {
     const criteria = Object.entries(where ?? {});
     if (!criteria.length) return [];
-    return [...this.rows.values()].filter((row) => criteria.every(([key, value]) => (row as any)[key] === value));
+    return [...this.rows.values()].filter((row) => criteria.every(([key, value]) => (row as unknown as Record<string, unknown>)[key] === value));
   }
 }
 
@@ -113,9 +123,7 @@ describe('AuthService', () => {
     });
 
     it('tronque le user-agent à 200 caractères', async () => {
-      const { cookie } = await service.createSession(account, {
-        userAgent: 'x'.repeat(500),
-      });
+      const { cookie } = await service.createSession(account, { userAgent: 'x'.repeat(500) });
       expect((await readRecord(split(cookie).sid)).userAgent).toHaveLength(200);
     });
 
@@ -130,9 +138,9 @@ describe('AuthService', () => {
     it('résout une session valide', async () => {
       const { cookie } = await service.createSession(account);
       const resolved = await service.resolveSession(cookie);
-
       expect(resolved).toMatchObject({ user: { sub: account.id } });
       expect(resolved?.accessExpiresAt).toBeCloseTo(now() + ACCESS_TOKEN_TTL_SECONDS, -1);
+      expect(resolved?.absoluteExpiresAt).toBeCloseTo(now() + ABSOLUTE_TIMEOUT_SECONDS, -1);
     });
 
     it.each([
@@ -181,7 +189,7 @@ describe('AuthService', () => {
       expect(await redis.get(`session:${sid}`)).toBeNull();
     });
 
-    it('renvoie null et purge la session si tokenVersion a été incrémenté (révocation globale)', async () => {
+    it('renvoie null et purge la session si tokenVersion a été incrémenté', async () => {
       const { cookie } = await service.createSession(account);
       const { sid } = split(cookie);
       await service.revokeAllTokens(account.id);
@@ -222,6 +230,15 @@ describe('AuthService', () => {
       expect(record.accessExpiresAt).toBeCloseTo(now() + ACCESS_TOKEN_TTL_SECONDS, -1);
       expect(await redis.get(`session:rotated:${sid}:${oldNonce}`)).toBe(rotated.cookie);
       expect(await redis.ttl(`session:rotated:${sid}:${oldNonce}`)).toBe(REFRESH_GRACE_WINDOW_SECONDS);
+    });
+
+    it('met à jour le contexte (user-agent / ip) fourni', async () => {
+      const { cookie } = await service.createSession(account, { userAgent: 'jest', ip: '10.0.0.1' });
+      const { sid } = split(cookie);
+      await service.rotateSession(cookie, { userAgent: 'y'.repeat(500), ip: '10.0.0.2' });
+      const record = await readRecord(sid);
+      expect(record.userAgent).toHaveLength(200);
+      expect(record.ip).toBe('10.0.0.2');
     });
 
     it('est idempotente pendant la fenêtre de grâce (rejeu du même ancien cookie)', async () => {
@@ -309,9 +326,7 @@ describe('AuthService', () => {
     it('revokeSessionCookie supprime la session', async () => {
       const { cookie } = await service.createSession(account);
       const { sid } = split(cookie);
-
       await service.revokeSessionCookie(cookie);
-
       expect(await redis.get(`session:${sid}`)).toBeNull();
       expect(await service.resolveSession(cookie)).toBeNull();
     });
