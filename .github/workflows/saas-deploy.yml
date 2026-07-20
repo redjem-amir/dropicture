@@ -73,7 +73,7 @@ jobs:
         run: |
           set -euo pipefail
           declare -A sha
-          for svc in frontend backend jobs; do
+          for svc in frontend backend; do
             s=$(git log -1 --format=%H -- "apps/saas/$svc")
             if [ -z "$s" ]; then
               echo "::error::no commit found touching apps/saas/$svc"
@@ -85,13 +85,12 @@ jobs:
           tags=$(jq -nc \
             --arg frontend "${sha[frontend]}" \
             --arg backend  "${sha[backend]}" \
-            --arg jobs     "${sha[jobs]}" \
-            '{frontend: $frontend, backend: $backend, jobs: $jobs}')
+            '{frontend: $frontend, backend: $backend}')
           echo "tags=$tags" >> "$GITHUB_OUTPUT"
           {
             echo "| Service | Tag |"
             echo "|---|---|"
-            for svc in frontend backend jobs; do
+            for svc in frontend backend; do
               echo "| $svc | \`${sha[$svc]:0:12}\` |"
             done
           } >> "$GITHUB_STEP_SUMMARY"
@@ -120,7 +119,7 @@ jobs:
         run: |
           set -euo pipefail
           if aws s3api head-bucket --bucket "$STATE_BUCKET" 2>/dev/null; then
-            echo "State bucket $STATE_BUCKET already exists — nothing to do."
+            echo "State bucket $STATE_BUCKET already exists nothing to do."
             exit 0
           fi
           echo "Creating state bucket $STATE_BUCKET in $AWS_REGION ..."
@@ -181,7 +180,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        service: [frontend, backend, jobs]
+        service: [frontend, backend]
     steps:
       - uses: actions/checkout@v4
 
@@ -203,10 +202,10 @@ jobs:
         run: |
           set -euo pipefail
           if docker manifest inspect "${{ steps.img.outputs.ref }}" >/dev/null 2>&1; then
-            echo "${{ steps.img.outputs.ref }} already exists — skipping the build."
+            echo "${{ steps.img.outputs.ref }} already exists skipping the build."
             echo "found=true" >> "$GITHUB_OUTPUT"
           else
-            echo "${{ steps.img.outputs.ref }} is missing — building."
+            echo "${{ steps.img.outputs.ref }} is missing building."
             echo "found=false" >> "$GITHUB_OUTPUT"
           fi
 
@@ -273,7 +272,6 @@ jobs:
       SSH_PRIVATE_KEY_B64: ${{ secrets.SSH_PRIVATE_KEY_B64 }}
       FRONTEND_IMAGE_TAG: ${{ fromJSON(needs.versions.outputs.tags).frontend }}
       BACKEND_IMAGE_TAG: ${{ fromJSON(needs.versions.outputs.tags).backend }}
-      JOBS_IMAGE_TAG: ${{ fromJSON(needs.versions.outputs.tags).jobs }}
       POSTGRES_DB_DROPICTURE_SAAS: ${{ secrets.POSTGRES_DB_DROPICTURE_SAAS }}
       POSTGRES_USER_DROPICTURE_SAAS: ${{ secrets.POSTGRES_USER_DROPICTURE_SAAS }}
       POSTGRES_PASSWORD_DROPICTURE_SAAS: ${{ secrets.POSTGRES_PASSWORD_DROPICTURE_SAAS }}

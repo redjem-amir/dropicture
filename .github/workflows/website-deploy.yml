@@ -1,5 +1,5 @@
 # dropicture/.github/workflows/website-deploy.yml
-name: Website — Deploy
+name: Website Deploy
 
 on:
   push:
@@ -58,6 +58,10 @@ jobs:
   build:
     name: Build website
     runs-on: ubuntu-latest
+    environment: production
+    env:
+      NEXT_PUBLIC_SAAS_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_SAAS_BACKEND_URL }}
+      NEXT_PUBLIC_SAAS_FRONTEND_URL: ${{ secrets.NEXT_PUBLIC_SAAS_FRONTEND_URL }}
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -72,6 +76,22 @@ jobs:
           key: bun-${{ runner.os }}-${{ hashFiles('bun.lock', 'apps/website/bun.lock') }}
           restore-keys: |
             bun-${{ runner.os }}-
+
+      - name: Check public env
+        run: |
+          set -euo pipefail
+          for name in NEXT_PUBLIC_SAAS_BACKEND_URL NEXT_PUBLIC_SAAS_FRONTEND_URL; do
+            value="${!name-}"
+            test -n "$value" || { echo "ERROR: $name is empty add it to the 'production' environment secrets"; exit 1; }
+            case "$value" in
+              https://*) ;;
+              *) echo "ERROR: $name must be an absolute https URL"; exit 1 ;;
+            esac
+            case "$value" in
+              */) echo "ERROR: $name must not end with a slash"; exit 1 ;;
+            esac
+            echo "$name is set."
+          done
       - name: Install dependencies
         working-directory: ${{ env.WEBSITE_DIR }}
         run: bun install --frozen-lockfile
@@ -82,8 +102,21 @@ jobs:
         working-directory: ${{ env.WEBSITE_DIR }}
         run: |
           set -euo pipefail
-          test -d "$BUILD_OUTPUT" || { echo "ERROR: export folder missing — check output: 'export' in next.config.ts"; exit 1; }
+          test -d "$BUILD_OUTPUT" || { echo "ERROR: export folder missing check output: 'export' in next.config.ts"; exit 1; }
           test -f "$BUILD_OUTPUT/index.html" || { echo "ERROR: index.html missing from export folder"; exit 1; }
+          test -f "$BUILD_OUTPUT/u/index.html" || { echo "ERROR: /u/ missing from export folder"; exit 1; }
+          # Les URL doivent être inlinées : sinon le site appellerait
+          # « undefined/api/public » une fois en ligne, sans erreur au déploiement.
+          grep -rq "$NEXT_PUBLIC_SAAS_BACKEND_URL" "$BUILD_OUTPUT" \
+            || { echo "ERROR: backend URL not inlined in the bundle"; exit 1; }
+          grep -rq "$NEXT_PUBLIC_SAAS_FRONTEND_URL" "$BUILD_OUTPUT" \
+            || { echo "ERROR: frontend URL not inlined in the bundle"; exit 1; }
+          if grep -rq "undefined/api/public" "$BUILD_OUTPUT"; then
+            echo "ERROR: an undefined env var leaked into the bundle"
+            exit 1
+          fi
+          echo "Export OK."
+
       - uses: actions/upload-artifact@v4
         if: github.event_name != 'pull_request'
         with:
@@ -107,7 +140,7 @@ jobs:
         run: |
           set -euo pipefail
           if aws s3api head-bucket --bucket "$STATE_BUCKET" 2>/dev/null; then
-            echo "State bucket $STATE_BUCKET already exists — nothing to do."
+            echo "State bucket $STATE_BUCKET already exists nothing to do."
             exit 0
           fi
           echo "Creating state bucket $STATE_BUCKET in $AWS_REGION ..."
@@ -162,17 +195,16 @@ jobs:
         id: plan
         working-directory: ${{ env.TF_DIR }}
         run: |
-          # -detailed-exitcode -> 0 = no changes, 1 = error, 2 = changes present
           exitcode=0
           terraform plan -detailed-exitcode -out=tfplan || exitcode=$?
           if [ "$exitcode" -eq 1 ]; then
             echo "terraform plan errored."
             exit 1
           elif [ "$exitcode" -eq 2 ]; then
-            echo "Changes detected — apply will run."
+            echo "Changes detected apply will run."
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
           else
-            echo "No changes — apply will be skipped."
+            echo "No changes apply will be skipped."
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           fi
       - uses: actions/upload-artifact@v4

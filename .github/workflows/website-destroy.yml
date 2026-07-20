@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: 'DESTROY everything — type "destroy" to confirm'
+        description: 'DESTROY everything type "destroy" to confirm'
         required: true
         type: string
         default: ""
@@ -92,7 +92,7 @@ jobs:
               bucket.meta.client.head_bucket(Bucket=name)
           except ClientError as exc:
               if exc.response["Error"]["Code"] in ("404", "NoSuchBucket"):
-                  print(f"Bucket {name} does not exist — nothing to empty.")
+                  print(f"Bucket {name} does not exist nothing to empty.")
                   raise SystemExit(0)
               raise
 
@@ -151,7 +151,7 @@ jobs:
               bucket.meta.client.head_bucket(Bucket=name)
           except ClientError as exc:
               if exc.response["Error"]["Code"] in ("404", "NoSuchBucket"):
-                  print(f"Bucket {name} does not exist — nothing to do.")
+                  print(f"Bucket {name} does not exist nothing to do.")
                   raise SystemExit(0)
               raise
 

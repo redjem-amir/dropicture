@@ -53,7 +53,7 @@ jobs:
         run: |
           set -euo pipefail
           if aws s3api head-bucket --bucket "$STATE_BUCKET" 2>/dev/null; then
-            echo "State bucket $STATE_BUCKET already exists — nothing to do."
+            echo "State bucket $STATE_BUCKET already exists nothing to do."
             exit 0
           fi
           echo "Creating state bucket $STATE_BUCKET in $AWS_REGION ..."
@@ -120,7 +120,7 @@ jobs:
           esac
 
           {
-            echo "## Plan CDN — ${#TARGETS[@]} cibles"
+            echo "## Plan CDN ${#TARGETS[@]} cibles"
             echo ""
             echo "> La partie Hetzner est hors périmètre : les nœuds, le réseau"
             echo "> et le firewall ne sont ni lus ni modifiés."
@@ -136,8 +136,6 @@ jobs:
         run: |
           set -euo pipefail
           PLAN=$(terraform show -json cdn.tfplan)
-
-          # Aucune ressource Hetzner ne doit apparaître, quelle que soit l'action.
           HETZNER=$(echo "$PLAN" | jq -r '
             .resource_changes[]
             | select(.change.actions | any(. != "no-op"))
@@ -148,8 +146,6 @@ jobs:
             echo "$HETZNER"
             exit 1
           fi
-
-          # Aucun bucket ni distribution ne doit être détruit ou recréé.
           DESTRUCTIVE=$(echo "$PLAN" | jq -r '
             .resource_changes[]
             | select(.change.actions | index("delete"))
@@ -171,8 +167,6 @@ jobs:
         working-directory: ${{ env.TF_DIR }}
         run: |
           set -euo pipefail
-          # Un apply ciblé ne recalcule pas les outputs : certains peuvent être
-          # absents ou périmés dans l'état. On dégrade au lieu d'échouer.
           out() { terraform output -raw "$1" 2>/dev/null || echo "n/a"; }
           {
             echo "### Déployé"
@@ -189,5 +183,5 @@ jobs:
             echo "Appliqué par @${{ github.actor }}."
             echo ""
             echo "Seul \`media/\` est servi par CloudFront ; \`originals/\` n'est"
-            echo "accessible qu'avec les credentials IAM du backend et des jobs."
+            echo "accessible qu'avec les credentials IAM du backend."
           } >> "$GITHUB_STEP_SUMMARY"

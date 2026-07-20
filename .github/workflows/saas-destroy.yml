@@ -240,7 +240,7 @@ jobs:
               s3.meta.client.head_bucket(Bucket=name)
           except ClientError as exc:
               if exc.response["Error"]["Code"] in ("404", "NoSuchBucket"):
-                  print(f"Bucket {name} does not exist — nothing to do.")
+                  print(f"Bucket {name} does not exist nothing to do.")
                   raise SystemExit(0)
               raise
 
@@ -302,7 +302,7 @@ jobs:
           zone_id=$(curl -fsS -H "$auth" "$api/zones?name=${CLOUDFLARE_ZONE_NAME}" \
             | jq -r '.result[0].id // empty')
           if [ -z "$zone_id" ]; then
-            echo "Zone ${CLOUDFLARE_ZONE_NAME} not visible to the token — nothing to revoke."
+            echo "Zone ${CLOUDFLARE_ZONE_NAME} not visible to the token nothing to revoke."
             exit 0
           fi
           echo "Zone id: $zone_id"
@@ -311,7 +311,7 @@ jobs:
             | jq -r --arg z "$CLOUDFLARE_ZONE_NAME" \
                 '(.result // [])[] | select((.hostnames | index($z)) or (.hostnames | index("*." + $z))) | .id')
           if [ -z "$ids" ]; then
-            echo "No Origin CA certificate for ${CLOUDFLARE_ZONE_NAME} — nothing to revoke."
+            echo "No Origin CA certificate for ${CLOUDFLARE_ZONE_NAME} nothing to revoke."
             exit 0
           fi
 
