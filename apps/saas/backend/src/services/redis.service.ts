@@ -11,30 +11,13 @@ function env(name: string, fallback: string): string {
   return fallback;
 }
 
-const COMMON = {
+export const REDIS_CACHE_OPTIONS = {
   db: 0,
   connectTimeout: 10_000,
   retryStrategy: (times: number) => Math.min(times * 100, 3_000),
-};
-
-export const REDIS_CACHE_OPTIONS = {
-  ...COMMON,
   host: env('REDIS_CACHE_HOST_DROPICTURE_SAAS', '127.0.0.1'),
   port: 6379,
   maxRetriesPerRequest: 3,
-};
-
-export const REDIS_QUEUE_OPTIONS = {
-  ...COMMON,
-  host: env('REDIS_QUEUE_HOST_DROPICTURE_SAAS', '127.0.0.1'),
-  port: 6380,
-  maxRetriesPerRequest: null,
-  commandTimeout: 5_000,
-};
-
-export const REDIS_QUEUE_BLOCKING_OPTIONS = {
-  ...REDIS_QUEUE_OPTIONS,
-  commandTimeout: undefined,
 };
 
 @Injectable()
@@ -47,20 +30,9 @@ export class RedisService implements OnModuleDestroy {
   });
 
   constructor() {
-    this.cache.on('connect', () =>
-      this.logger.log(
-        `Redis cache connected (${REDIS_CACHE_OPTIONS.host}:${REDIS_CACHE_OPTIONS.port})`,
-      ),
-    );
-    this.cache.on('reconnecting', (delay: number) =>
-      this.logger.warn(`Redis cache reconnecting in ${delay}ms`),
-    );
-    this.cache.on('error', (err: Error) =>
-      this.logger.error(`Redis cache error: ${err.message}`),
-    );
-    this.logger.log(
-      `Redis queue → ${REDIS_QUEUE_OPTIONS.host}:${REDIS_QUEUE_OPTIONS.port} (BullMQ)`,
-    );
+    this.cache.on('connect', () => this.logger.log(`Redis cache connected (${REDIS_CACHE_OPTIONS.host}:${REDIS_CACHE_OPTIONS.port})`));
+    this.cache.on('reconnecting', (delay: number) => this.logger.warn(`Redis cache reconnecting in ${delay}ms`));
+    this.cache.on('error', (err: Error) => this.logger.error(`Redis cache error: ${err.message}`));
   }
 
   async onModuleDestroy(): Promise<void> {
