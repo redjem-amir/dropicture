@@ -5,12 +5,12 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { Account } from '../models/account.entity';
 import { Follow } from '../models/follow.entity';
 import { Media } from '../models/media.entity';
-import { Gallery } from '../models/gallery.entity';
-import { GalleryMedia } from '../models/gallery-media.entity';
+import { Album } from '../models/album.entity';
+import { Placement } from '../models/placement.entity';
 
 config();
 
-export const entities = [Account, Media, Gallery, GalleryMedia, Follow];
+export const entities = [Account, Album, Follow, Media, Placement];
 
 const base = {
   type: 'postgres' as const,
