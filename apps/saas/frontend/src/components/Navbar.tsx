@@ -3,200 +3,371 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
-import { useUser } from '@/components/UserProvider';
+import { useEffect, useId, useRef, useState } from 'react';
 
-const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-const SITE = 'https://dropicture.com';
+const API = process.env.NEXT_PUBLIC_API_URL ?? '';
+const SITE = process.env.NEXT_PUBLIC_WEBSITE_URL ?? 'https://dropicture.com';
+const DEBOUNCE_MS = 180;
 
-type NavItem = { href: string; label: string; exact?: boolean };
+type MediaView = {
+  id: string;
+  kind: 'image' | 'video';
+  width: number | null;
+  height: number | null;
+  durationMs: number | null;
+  url: string;
+};
 
-const NAV: NavItem[] = [
-  { href: '/auth', label: 'Fil', exact: true },
+type Suggestion = {
+  username: string;
+  name: string;
+  bio: string | null;
+  avatar: MediaView | null;
+  photos: number;
+};
+
+type Me = { username: string; firstname: string; lastname: string; avatar: MediaView | null };
+
+const LINKS = [
+  { href: '/auth', label: 'Fil' },
   { href: '/auth/library', label: 'Bibliothèque' },
   { href: '/auth/profile', label: 'Vitrine' },
-];
+] as const;
 
-const QUOTA = { used: 42.7, total: 200 };
-const HANDLE = 'marie.frames';
+const initials = (name: string, username: string) =>
+  (name.trim().charAt(0) || username.charAt(0) || '?').toUpperCase();
 
 export default function Navbar() {
   const pathname = usePathname();
-  const calm = useReducedMotion() === true;
-  const { user, isLoading, logout } = useUser();
-  const [open, setOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
 
-  const [prevPathname, setPrevPathname] = useState(pathname);
-  if (pathname !== prevPathname) {
-    setPrevPathname(pathname);
+  const [me, setMe] = useState<Me | null>(null);
+  const [menu, setMenu] = useState(false);
+
+  const [term, setTerm] = useState('');
+
+  const [fetched, setFetched] = useState<{ q: string; profiles: Suggestion[] } | null>(null);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+
+  const searchBox = useRef<HTMLDivElement>(null);
+  const menuBox = useRef<HTMLDivElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const listId = useId();
+
+  const q = term.trim();
+  const results = q && fetched?.q === q ? fetched.profiles : [];
+  const loading = !!q && fetched?.q !== q;
+
+  const [lastPath, setLastPath] = useState(pathname);
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
     setOpen(false);
+    setMenu(false);
   }
 
   useEffect(() => {
-    if (!open) return;
-    const onDown = (e: MouseEvent) => {
-      if (!menuRef.current?.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      setOpen(false);
-      triggerRef.current?.focus();
-    };
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [open]);
+    fetch(`${API}/api/profile`, { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((p) => p && setMe(p))
+      .catch(() => undefined);
+  }, []);
 
-  const initials = `${user?.firstname?.[0] ?? ''}${user?.lastname?.[0] ?? ''}`.toUpperCase() || '?';
-  const pct = Math.min(100, Math.round((QUOTA.used / QUOTA.total) * 100));
-  const isActive = (href: string, exact?: boolean) =>
-    exact ? pathname === href : pathname.startsWith(href);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+        e.preventDefault();
+        input.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  useEffect(() => {
+    if (!q) return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      fetch(`${API}/api/public/search?q=${encodeURIComponent(q)}`, { signal: controller.signal })
+        .then((r) => (r.ok ? r.json() : { profiles: [] }))
+        .then((data: { profiles: Suggestion[] }) => {
+          setFetched({ q, profiles: data.profiles ?? [] });
+          setActive(-1);
+        })
+        .catch(() => {
+          if (!controller.signal.aborted) setFetched({ q, profiles: [] });
+        });
+    }, DEBOUNCE_MS);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [q]);
+
+  useEffect(() => {
+    const onPointer = (e: PointerEvent) => {
+      if (!searchBox.current?.contains(e.target as Node)) setOpen(false);
+      if (!menuBox.current?.contains(e.target as Node)) setMenu(false);
+    };
+    document.addEventListener('pointerdown', onPointer);
+    return () => document.removeEventListener('pointerdown', onPointer);
+  }, []);
+
+  const go = (s: Suggestion) => {
+    setOpen(false);
+    setTerm('');
+    if (me && s.username === me.username) window.location.href = '/auth/profile';
+    else window.open(`${SITE}/u/?u=${encodeURIComponent(s.username)}`, '_blank', 'noopener');
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') {
+      setOpen(false);
+      input.current?.blur();
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setOpen(true);
+      setActive((i) => Math.min(results.length - 1, i + 1));
+      return;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActive((i) => Math.max(-1, i - 1));
+      return;
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const chosen = results[active] ?? results[0];
+      if (chosen) go(chosen);
+    }
+  };
+
+  const signout = async () => {
+    await fetch(`${API}/api/auth/signout`, { method: 'POST', credentials: 'include' }).catch(
+      () => undefined,
+    );
+    window.location.href = '/signin';
+  };
+
+  const showPanel = open && !!q;
+  const name = me ? `${me.firstname} ${me.lastname}`.trim() : '';
 
   return (
-    <header className="z-30 shrink-0 border-b border-[#EAEAEA] bg-white/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-[#EAEAEA] bg-white/85 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:px-6">
-        <Link
-          href="/app"
-          className="group -mx-2 flex shrink-0 items-center gap-2.5 rounded-lg px-2 py-1.5 outline-none transition hover:bg-[#FAFAFA] focus-visible:ring-4 focus-visible:ring-[#171717]/15"
-        >
-          <svg width="20" height="20" viewBox="0 0 16 16" fill="none" aria-hidden className="shrink-0 text-[#171717]">
-            <rect x="1.85" y="1.85" width="12.3" height="12.3" rx="3.7" stroke="currentColor" strokeWidth="1.5" />
-            <rect
-              x="5.35" y="5.35" width="5.3" height="5.3" rx="1.2"
-              fill="currentColor" transform="rotate(45 8 8)"
-              className="origin-center transition-transform duration-500 ease-out group-hover:rotate-90"
-            />
-          </svg>
-          <span className="hidden text-[14px] font-semibold tracking-[-0.02em] text-[#171717] sm:block">
-            Dropicture
-          </span>
+        <Link href="/auth" className="shrink-0 text-[15px] font-semibold tracking-[-0.03em]">
+          dropicture
         </Link>
-        <nav className="ml-2 flex min-w-0 items-center gap-0.5 overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden">
-          {NAV.map((n) => (
-            <Link
-              key={n.href}
-              href={n.href}
-              aria-current={isActive(n.href, n.exact) ? 'page' : undefined}
-              className={`shrink-0 rounded-lg px-2.5 py-1.5 text-[13px] transition ${isActive(n.href, n.exact)
-                ? 'bg-[#F4F4F5] font-medium text-[#171717]'
-                : 'text-[#666] hover:bg-[#FAFAFA] hover:text-[#171717]'
-                }`}
-            >
-              {n.label}
-            </Link>
-          ))}
-        </nav>
-        <Link
-          href="/auth/library"
-          className="ml-auto hidden h-9 shrink-0 items-center gap-2 rounded-lg bg-[#171717] px-3 text-[13px] font-medium text-white transition hover:bg-[#383838] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#171717]/20 sm:inline-flex"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path d="M12 15.5V4.5M8 8.5 12 4.5l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M4.5 15v3.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          </svg>
-          Déposer
-        </Link>
-        <div ref={menuRef} className="relative ml-auto shrink-0 sm:ml-0">
-          {isLoading || !user ? (
-            <div className="size-8 animate-pulse rounded-full bg-[#F4F4F5]" />
-          ) : (
-            <>
-              <button
-                ref={triggerRef}
-                type="button"
-                onClick={() => setOpen((v) => !v)}
-                aria-expanded={open}
-                aria-haspopup="menu"
-                aria-label={`Compte de ${user.firstname} ${user.lastname}`}
-                className="grid size-8 place-items-center rounded-full bg-[#171717] font-mono text-[10px] font-medium text-white outline-none transition hover:bg-[#383838] focus-visible:ring-4 focus-visible:ring-[#171717]/20"
+        <nav className="ml-2 flex items-center gap-0.5">
+          {LINKS.map((l) => {
+            const on = l.href === '/auth' ? pathname === '/auth' : pathname.startsWith(l.href);
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={on ? 'page' : undefined}
+                className={`rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition ${on ? 'bg-[#F4F4F5] text-[#171717]' : 'text-[#8F8F8F] hover:text-[#171717]'
+                  }`}
               >
-                {initials}
-              </button>
-              <AnimatePresence>
-                {open && (
-                  <motion.div
-                    role="menu"
-                    initial={{ opacity: 0, y: -4, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -4, scale: 0.98 }}
-                    transition={{ duration: calm ? 0 : 0.14, ease: EASE }}
-                    className="absolute right-0 top-full z-50 mt-2 w-68 origin-top-right overflow-hidden rounded-xl border border-[#EAEAEA] bg-white p-1 shadow-[0_1px_2px_rgba(9,9,11,0.04),0_16px_40px_-16px_rgba(9,9,11,0.18)]"
+                {l.label}
+              </Link>
+            );
+          })}
+        </nav>
+        <div ref={searchBox} className="relative ml-auto w-full max-w-xs">
+          <div className="relative">
+            <svg
+              aria-hidden
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[#A1A1A1]"
+            >
+              <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.8" />
+              <path d="m16 16 4.5 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+            <input
+              ref={input}
+              type="search"
+              role="combobox"
+              aria-expanded={showPanel}
+              aria-controls={listId}
+              aria-autocomplete="list"
+              aria-activedescendant={active >= 0 ? `${listId}-${active}` : undefined}
+              value={term}
+              onChange={(e) => {
+                setTerm(e.target.value);
+                setActive(-1);
+                setOpen(true);
+              }}
+              onFocus={() => setOpen(true)}
+              onKeyDown={onKeyDown}
+              maxLength={30}
+              placeholder="Chercher un compte"
+              className="h-9 w-full rounded-lg border border-[#EAEAEA] bg-white pl-8 pr-9 text-[13px] outline-none transition placeholder:text-[#A1A1A1] focus:border-[#171717] focus:ring-4 focus:ring-[#171717]/8"
+            />
+            {loading ? (
+              <span
+                aria-hidden
+                className="absolute right-2.5 top-1/2 size-3 -translate-y-1/2 animate-spin rounded-full border-2 border-[#EAEAEA] border-t-[#171717]"
+              />
+            ) : (
+              !term && (
+                <kbd
+                  aria-hidden
+                  className="absolute right-2 top-1/2 hidden -translate-y-1/2 rounded border border-[#EAEAEA] bg-[#FAFAFA] px-1.5 font-mono text-[10px] leading-4 text-[#A1A1A1] sm:block"
+                >
+                  /
+                </kbd>
+              )
+            )}
+          </div>
+          {showPanel && (
+            <div
+              id={listId}
+              role="listbox"
+              className="absolute inset-x-0 top-11 overflow-hidden rounded-xl border border-[#EAEAEA] bg-white/95 p-1 shadow-[0_1px_2px_rgba(9,9,11,0.04),0_16px_40px_-16px_rgba(9,9,11,0.22)] backdrop-blur-xl"
+            >
+              {results.length === 0 && !loading && (
+                <p className="px-3 py-3 text-[13px] text-[#8F8F8F]">
+                  Aucun compte ne correspond à «&nbsp;{q}&nbsp;».
+                </p>
+              )}
+              {results.map((s, i) => {
+                const self = me?.username === s.username;
+                return (
+                  <button
+                    key={s.username}
+                    type="button"
+                    id={`${listId}-${i}`}
+                    role="option"
+                    aria-selected={i === active}
+                    onMouseEnter={() => setActive(i)}
+                    onClick={() => go(s)}
+                    className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left transition ${i === active ? 'bg-[#FAFAFA]' : ''
+                      }`}
                   >
-                    <div className="flex items-center gap-3 px-3 py-3">
-                      <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-[#171717] font-mono text-[12px] font-medium text-white">
-                        {initials}
+                    {s.avatar ? (
+                      <img
+                        src={s.avatar.url}
+                        alt=""
+                        width={32}
+                        height={32}
+                        className="size-8 shrink-0 rounded-full object-cover"
+                      />
+                    ) : (
+                      <span
+                        aria-hidden
+                        className="grid size-8 shrink-0 place-items-center rounded-full bg-[#171717] font-mono text-[11px] font-medium text-white"
+                      >
+                        {initials(s.name, s.username)}
                       </span>
-                      <div className="min-w-0">
-                        <p className="truncate text-[13px] font-medium text-[#171717]">
-                          {user.firstname} {user.lastname}
-                        </p>
-                        <p className="truncate font-mono text-[11px] text-[#8F8F8F]">@{HANDLE}</p>
-                      </div>
-                    </div>
-                    <div className="px-3 pb-3">
-                      <div className="h-1 w-full overflow-hidden rounded-full bg-[#F4F4F5]">
-                        <div
-                          className={`h-full rounded-full ${pct > 90 ? 'bg-[#E5484D]' : 'bg-[#171717]'}`}
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                      <p className="mt-1.5 flex items-center justify-between font-mono text-[10px] tabular-nums text-[#A1A1A1]">
-                        <span>{QUOTA.used} Go sur {QUOTA.total} Go</span>
-                        <span className="text-[#171717]">{pct} %</span>
-                      </p>
-                    </div>
-                    <div className="mx-1 h-px bg-[#EAEAEA]" />
-                    <div className="pt-1">
-                      <Link
-                        href="/auth/settings"
-                        role="menuitem"
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-[#666] transition hover:bg-[#FAFAFA] hover:text-[#171717]"
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-1.5 truncate text-[13px] font-medium text-[#171717]">
+                        <span className="truncate">{s.name}</span>
+                        {self && (
+                          <span className="shrink-0 rounded bg-[#171717] px-1 py-px font-mono text-[9px] uppercase tracking-widest text-white">
+                            toi
+                          </span>
+                        )}
+                      </span>
+                      <span className="block truncate font-mono text-[11px] text-[#8F8F8F]">
+                        @{s.username} · {s.photos} en vitrine
+                      </span>
+                    </span>
+                    {!self && (
+                      <svg
+                        aria-hidden
+                        width="11"
+                        height="11"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        className="shrink-0 text-[#A1A1A1]"
                       >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="text-[#A1A1A1]">
-                          <circle cx="12" cy="12" r="3.2" stroke="currentColor" strokeWidth="1.7" />
-                          <path d="M12 3.5v2.2M12 18.3v2.2M20.5 12h-2.2M5.7 12H3.5M18 6l-1.6 1.6M7.6 16.4 6 18M18 18l-1.6-1.6M7.6 7.6 6 6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-                        </svg>
-                        Réglages
-                      </Link>
-                      <Link
-                        href={`${SITE}/@${HANDLE}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        role="menuitem"
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-[#666] transition hover:bg-[#FAFAFA] hover:text-[#171717]"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="text-[#A1A1A1]">
-                          <circle cx="12" cy="12" r="8.6" stroke="currentColor" strokeWidth="1.6" />
-                          <path d="M3.4 12h17.2M12 3.4a15 15 0 0 1 0 17.2M12 3.4a15 15 0 0 0 0 17.2" stroke="currentColor" strokeWidth="1.6" />
-                        </svg>
-                        Voir ma page publique
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden className="ml-auto text-[#D4D4D8]">
-                          <path d="M7 17 17 7M9 7h8v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </Link>
-                      <div className="mx-2 my-1 h-px bg-[#EAEAEA]" />
-                      <button
-                        type="button"
-                        role="menuitem"
-                        onClick={logout}
-                        className="group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[13px] text-[#666] transition hover:bg-[#FEF2F2] hover:text-[#E5484D]"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="text-[#A1A1A1] transition-colors group-hover:text-[#E5484D]">
-                          <path d="M9.5 21H5.5A2 2 0 0 1 3.5 19V5a2 2 0 0 1 2-2h4M16 16.5l4.5-4.5L16 7.5M20.5 12H9.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        Se déconnecter
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </>
+                        <path d="M7 17 17 7M9 7h8v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <div ref={menuBox} className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => setMenu((v) => !v)}
+            aria-expanded={menu}
+            aria-haspopup="menu"
+            aria-label="Menu du compte"
+            className="grid size-9 place-items-center overflow-hidden rounded-full border border-[#EAEAEA] bg-white transition hover:border-[#D4D4D4]"
+          >
+            {me?.avatar ? (
+              <img src={me.avatar.url} alt="" className="size-full object-cover" />
+            ) : (
+              <span aria-hidden className="font-mono text-[11px] font-medium text-[#171717]">
+                {me ? initials(name, me.username) : '·'}
+              </span>
+            )}
+          </button>
+          {menu && (
+            <div
+              role="menu"
+              className="absolute right-0 top-11 w-56 overflow-hidden rounded-xl border border-[#EAEAEA] bg-white/95 p-1 shadow-[0_1px_2px_rgba(9,9,11,0.04),0_16px_40px_-16px_rgba(9,9,11,0.22)] backdrop-blur-xl"
+            >
+              {me && (
+                <div className="px-2 py-2">
+                  <p className="truncate text-[13px] font-medium text-[#171717]">{name}</p>
+                  <p className="truncate font-mono text-[11px] text-[#8F8F8F]">@{me.username}</p>
+                </div>
+              )}
+              <span aria-hidden className="mx-2 block h-px bg-[#EAEAEA]" />
+              <Link
+                href="/auth/profile"
+                role="menuitem"
+                onClick={() => setMenu(false)}
+                className="block rounded-lg px-2 py-2 text-[13px] text-[#171717] transition hover:bg-[#FAFAFA]"
+              >
+                Ma vitrine
+              </Link>
+              <Link
+                href="/auth/settings"
+                role="menuitem"
+                onClick={() => setMenu(false)}
+                className="block rounded-lg px-2 py-2 text-[13px] text-[#171717] transition hover:bg-[#FAFAFA]"
+              >
+                Réglages
+              </Link>
+              {me && (
+                <Link
+                  href={`${SITE}/u/?u=${encodeURIComponent(me.username)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  role="menuitem"
+                  onClick={() => setMenu(false)}
+                  className="flex items-center justify-between rounded-lg px-2 py-2 text-[13px] text-[#171717] transition hover:bg-[#FAFAFA]"
+                >
+                  Voir ma page publique
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden className="text-[#A1A1A1]">
+                    <path d="M7 17 17 7M9 7h8v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </Link>
+              )}
+              <span aria-hidden className="mx-2 block h-px bg-[#EAEAEA]" />
+              <button
+                type="button"
+                role="menuitem"
+                onClick={signout}
+                className="block w-full rounded-lg px-2 py-2 text-left text-[13px] text-[#E5484D] transition hover:bg-[#FEF2F2]"
+              >
+                Se déconnecter
+              </button>
+            </div>
           )}
         </div>
       </div>
