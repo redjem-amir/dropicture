@@ -14,6 +14,9 @@ services:
       - --entryPoints.web.http.redirections.entryPoint.to=websecure
       - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --entryPoints.websecure.address=:443
+      - --entryPoints.websecure.transport.respondingTimeouts.readTimeout=600s
+      - --entryPoints.websecure.transport.respondingTimeouts.writeTimeout=600s
+      - --entryPoints.websecure.transport.respondingTimeouts.idleTimeout=180s
       - --entryPoints.metrics.address=:8082
       - --entryPoints.websecure.forwardedHeaders.trustedIPs={{ cloudflare_trusted_ips | join(',') }}
       - --metrics.prometheus=true
@@ -160,7 +163,6 @@ services:
       POSTGRES_USER_DROPICTURE_SAAS: "{{ lookup('env', 'POSTGRES_USER_DROPICTURE_SAAS') }}"
       POSTGRES_PASSWORD_DROPICTURE_SAAS: "{{ lookup('env', 'POSTGRES_PASSWORD_DROPICTURE_SAAS') | replace('$', '$$') }}"
       REDIS_CACHE_HOST_DROPICTURE_SAAS: dropicture-saas-redis-cache
-      REDIS_QUEUE_HOST_DROPICTURE_SAAS: dropicture-saas-redis-queue
       AWS_REGION: "{{ lookup('env', 'AWS_REGION') | default('eu-west-3', true) }}"
       AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
       AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') | replace('$', '$$') }}"
@@ -172,6 +174,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+    stop_grace_period: 2m
     deploy:
       replicas: {{ backend_replicas | default(1) }}
       placement:
@@ -200,52 +203,8 @@ services:
         delay: 5s
         window: 30s
       resources:
-        reservations: { cpus: "0.20", memory: 256M }
-        limits: { cpus: "0.85", memory: 960M }
-
-  dropicture-saas-jobs:
-    image: ghcr.io/redjem-amir/dropicture/saas/jobs:{{ lookup('env', 'JOBS_IMAGE_TAG') | default('latest', true) }}
-    networks:
-      - backend
-      - egress
-    environment:
-      VIPS_CONCURRENCY: "1"
-      REDIS_QUEUE_HOST_DROPICTURE_SAAS: dropicture-saas-redis-queue
-      PGBOUNCER_HOST_DROPICTURE_SAAS: dropicture-saas-pgbouncer
-      PGBOUNCER_PORT_DROPICTURE_SAAS: "6432"
-      POSTGRES_DB_DROPICTURE_SAAS: "{{ lookup('env', 'POSTGRES_DB_DROPICTURE_SAAS') }}"
-      POSTGRES_USER_DROPICTURE_SAAS: "{{ lookup('env', 'POSTGRES_USER_DROPICTURE_SAAS') }}"
-      POSTGRES_PASSWORD_DROPICTURE_SAAS: "{{ lookup('env', 'POSTGRES_PASSWORD_DROPICTURE_SAAS') | replace('$', '$$') }}"
-      AWS_REGION: "{{ lookup('env', 'AWS_REGION') | default('eu-west-3', true) }}"
-      AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
-      AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') | replace('$', '$$') }}"
-      CDN_SSM_PREFIX: /dropicture/cloudfront
-    tmpfs:
-      - /tmp:size=2g,mode=1777
-    stop_grace_period: 3m
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.labels.dropicture.role == jobs
-        max_replicas_per_node: 1
-      labels:
-        - traefik.enable=false
-      update_config:
-        parallelism: 1
-        order: stop-first
-        monitor: 30s
-        failure_action: rollback
-      rollback_config:
-        parallelism: 1
-        order: stop-first
-      restart_policy:
-        condition: any
-        delay: 5s
-        window: 60s
-      resources:
-        reservations: { cpus: "0.30", memory: 512M }
-        limits: { cpus: "0.90", memory: 1792M }
+        reservations: { cpus: "0.20", memory: 384M }
+        limits: { cpus: "0.85", memory: 1280M }
 
   dropicture-saas-pgbouncer:
     image: edoburu/pgbouncer:v1.24.1-p1
@@ -391,53 +350,6 @@ services:
       resources:
         reservations: { cpus: "0.10", memory: 96M }
         limits: { cpus: "0.50", memory: 896M }
-
-  dropicture-saas-redis-queue:
-    image: redis:8.8.0-alpine
-    command:
-      - "redis-server"
-      - "--port"
-      - "6380"
-      - "--protected-mode"
-      - "no"
-      - "--maxmemory"
-      - "256mb"
-      - "--maxmemory-policy"
-      - "noeviction"
-      - "--appendonly"
-      - "yes"
-      - "--appendfsync"
-      - "everysec"
-      - "--save"
-      - "900"
-      - "1"
-      - "--dir"
-      - "/data"
-    networks:
-      - backend
-    volumes:
-      - /opt/dropicture/data/redis-queue:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "-p", "6380", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.labels.dropicture.role == proxy
-      update_config:
-        parallelism: 1
-        order: stop-first
-        monitor: 30s
-      restart_policy:
-        condition: any
-        delay: 5s
-        window: 60s
-      resources:
-        reservations: { cpus: "0.10", memory: 64M }
-        limits: { cpus: "0.50", memory: 448M }
 
   prometheus:
     image: prom/prometheus:v3.13.1

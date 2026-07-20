@@ -280,23 +280,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "cdn" {
       newer_noncurrent_versions = 2
     }
   }
-  rule {
-    id     = "originals-to-infrequent-access"
-    status = "Enabled"
-    filter {
-      prefix = "originals/"
-    }
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
-  }
 }
 
 resource "aws_s3_bucket_cors_configuration" "cdn" {
   bucket = aws_s3_bucket.cdn.id
   cors_rule {
-    allowed_methods = ["PUT", "POST", "GET", "HEAD"]
+    allowed_methods = ["GET", "HEAD"]
     allowed_origins = concat(var.cdn_upload_origins, var.cdn_dev_origins)
     allowed_headers = ["*"]
     expose_headers  = ["ETag", "Content-Length", "Content-Range", "Accept-Ranges"]

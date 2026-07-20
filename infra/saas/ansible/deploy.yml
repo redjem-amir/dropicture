@@ -133,7 +133,7 @@
         fail_msg: >-
           The Swarm objects created by playbook.yml are missing on the manager
           (dropicture_traefik_dynamic_v1, dropicture_origin_cert, dropicture_origin_key)
-          — or the node is not part of a Swarm at all. Run the provision stage
+          or the node is not part of a Swarm at all. Run the provision stage
           first: workflow_dispatch with force_provision=true, or push an infra
           change.
         quiet: true
@@ -246,10 +246,10 @@
               pg_isready -h dropicture-saas-postgres -p 5432 -t 3 >/dev/null 2>&1; do
           i=$((i + 1))
           if [ "$i" -ge "$attempts" ]; then
-            echo "Postgres still unreachable after $attempts probes — check 'docker service ps dropicture_dropicture-saas-postgres'" >&2
+            echo "Postgres still unreachable after $attempts probes check 'docker service ps dropicture_dropicture-saas-postgres'" >&2
             exit 1
           fi
-          echo "postgres not ready yet (probe $i/$attempts) — retrying in ${delay}s" >&2
+          echo "postgres not ready yet (probe $i/$attempts) retrying in ${delay}s" >&2
           sleep "$delay"
         done
       changed_when: false

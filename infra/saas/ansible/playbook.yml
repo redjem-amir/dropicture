@@ -59,11 +59,10 @@
           - "(_public_ipv4.keys() | select('match', '^db-') | list | length) == 1"
           - "(_public_ipv4.keys() | select('match', '^backend-') | list | length) >= 1"
           - "(_public_ipv4.keys() | select('match', '^frontend-') | list | length) >= 1"
-          - "(_public_ipv4.keys() | select('match', '^jobs-') | list | length) >= 1"
           - "(_public_ipv4 | length) == (_private_ip | length)"
         fail_msg: >-
           Terraform outputs must contain exactly one proxy node, exactly one db
-          node, and at least one backend, frontend and jobs node — and the
+          node, and at least one backend, frontend and the
           public/private maps must agree. Every role the compose file constrains
           on must exist, otherwise its services stay Pending silently.
         quiet: true
@@ -295,7 +294,7 @@
         group: root
         mode: "0700"
 
-    - name: Create the Alloy data directory (all nodes — Alloy is a global service)
+    - name: Create the Alloy data directory (all nodes Alloy is a global service)
       ansible.builtin.file:
         path: /opt/dropicture/data/alloy
         state: directory
@@ -394,7 +393,7 @@
         fail_msg: >-
           The Swarm advertises {{ _manager_node_addr.stdout | trim }} but Terraform
           says the manager's private IP is {{ node_private_ip }}. The private IP
-          changed under a live Swarm — dockerd still listens on the old address, so
+          changed under a live Swarm dockerd still listens on the old address, so
           no worker can reach 2377. Recover on the manager with
           'docker swarm init --force-new-cluster --advertise-addr {{ node_private_ip }}'
           (this preserves services, configs and secrets), then 'docker node rm' the
@@ -423,7 +422,7 @@
         that:
           - "(_known_node_ids | length) > 0"
         fail_msg: >-
-          The manager reported an empty node list — it has probably re-initialised a
+          The manager reported an empty node list it has probably re-initialised a
           brand new Swarm. Refusing to continue: the stale-membership check below
           would make every healthy worker leave the cluster.
         quiet: true
@@ -475,7 +474,7 @@
       ansible.builtin.debug:
         msg: >-
           WARNING: 'docker swarm join' hit the client timeout on this node; the
-          join continues in the background — waiting for LocalNodeState == active.
+          join continues in the background waiting for LocalNodeState == active.
       when: "'Timeout was reached before node joined' in (_swarm_join.msg | default(''))"
 
     - name: Wait until this node actually reports LocalNodeState == active
@@ -698,7 +697,7 @@
           config dropicture_origin_cert. Swarm configs are immutable and this one is
           mounted by Traefik, so it cannot be replaced in place. Rotate it
           explicitly: bump the config names (dropicture_origin_cert -> _v2, same for
-          dropicture_origin_key and the compose file), then re-run — or remove the
+          dropicture_origin_key and the compose file), then re-run or remove the
           stack, drop the objects, and redeploy.
         quiet: true
 

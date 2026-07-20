@@ -16,9 +16,8 @@ db_backup_daily_retention_days   = 35
 db_backup_monthly_retention_days = 365
 
 nodes = {
-  proxy    = { server_type = "cpx32", private_ip = "10.0.0.10" }               # 4vcpu + 8go — mono-nœud
-  db       = { server_type = "cpx32", private_ip = "10.0.0.20" }               # 4vcpu + 8go — mono-nœud
-  backend  = { server_type = "cpx12", private_ip = "10.0.0.30", replicas = 1 } # 1vcpu + 2go — scalable
-  frontend = { server_type = "cpx12", private_ip = "10.0.0.40", replicas = 1 } # 1vcpu + 2go — scalable
-  jobs     = { server_type = "cpx12", private_ip = "10.0.0.50" }               # 1vcpu + 2go — mono-nœud
+  proxy    = { server_type = "cpx32", private_ip = "10.0.0.10" }               # 4vcpu + 8go mono-nœud
+  db       = { server_type = "cpx32", private_ip = "10.0.0.20" }               # 4vcpu + 8go mono-nœud
+  backend  = { server_type = "cpx12", private_ip = "10.0.0.30", replicas = 1 } # 1vcpu + 2go scalable
+  frontend = { server_type = "cpx12", private_ip = "10.0.0.40", replicas = 1 } # 1vcpu + 2go scalable
 }

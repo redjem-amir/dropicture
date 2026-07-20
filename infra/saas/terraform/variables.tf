@@ -124,15 +124,15 @@ variable "nodes" {
     replicas    = optional(number, 1)
   }))
   validation {
-    condition     = alltrue([for r in ["proxy", "db", "jobs", "backend", "frontend"] : contains(keys(var.nodes), r)])
-    error_message = "Roles proxy, db, jobs, backend and frontend are all required."
+    condition     = alltrue([for r in ["proxy", "db", "backend", "frontend"] : contains(keys(var.nodes), r)])
+    error_message = "Roles proxy, db, backend and frontend are all required."
   }
   validation {
     condition = alltrue([
       for role, cfg in var.nodes :
-      cfg.replicas >= 1 && (contains(["proxy", "db", "jobs"], role) ? cfg.replicas == 1 : true)
+      cfg.replicas >= 1 && (contains(["proxy", "db"], role) ? cfg.replicas == 1 : true)
     ])
-    error_message = "Every role needs at least 1 node; proxy, db and jobs must have exactly 1. Only backend and frontend scale out."
+    error_message = "Every role needs at least 1 node; proxy and db must have exactly 1. Only backend and frontend scale out."
   }
   validation {
     condition     = alltrue([for role, cfg in var.nodes : can(cidrhost("${cfg.private_ip}/32", 0))])

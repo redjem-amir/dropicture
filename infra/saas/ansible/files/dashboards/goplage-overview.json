@@ -1,6 +1,6 @@
 {
   "uid": "dropicture-overview",
-  "title": "dropicture — Swarm overview",
+  "title": "dropicture Swarm overview",
   "tags": ["dropicture"],
   "timezone": "browser",
   "editable": true,
@@ -147,7 +147,7 @@
     {
       "id": 11,
       "type": "timeseries",
-      "title": "Traefik — requêtes/s par service",
+      "title": "Traefik requêtes/s par service",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
@@ -162,7 +162,7 @@
     {
       "id": 12,
       "type": "timeseries",
-      "title": "Traefik — latence p95",
+      "title": "Traefik latence p95",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
