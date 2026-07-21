@@ -18,3 +18,12 @@ datasources:
     editable: false
     jsonData:
       maxLines: 2000
+  - name: Alertmanager
+    uid: alertmanager
+    type: alertmanager
+    access: proxy
+    url: http://alertmanager:9093
+    editable: false
+    jsonData:
+      implementation: prometheus
+      handleGrafanaManagedAlerts: false

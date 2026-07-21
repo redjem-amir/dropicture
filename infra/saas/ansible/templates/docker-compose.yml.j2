@@ -363,6 +363,7 @@ services:
       - --web.enable-lifecycle
     configs:
       - { source: prometheus_config, target: /etc/prometheus/prometheus.yml }
+      - { source: prometheus_rules, target: /etc/prometheus/rules/rules.yml }
     volumes:
       - /opt/dropicture/data/prometheus:/prometheus
     deploy:
@@ -381,6 +382,40 @@ services:
       resources:
         reservations: { cpus: "0.20", memory: 256M }
         limits: { cpus: "1.00", memory: 1G }
+
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    networks:
+      - monitoring
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    configs:
+      - { source: alertmanager_config, target: /etc/alertmanager/alertmanager.yml }
+    volumes:
+      - /opt/dropicture/data/alertmanager:/alertmanager
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:9093/-/healthy"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.dropicture.role == proxy
+      update_config:
+        parallelism: 1
+        order: stop-first
+        monitor: 30s
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 60s
+      resources:
+        reservations: { cpus: "0.02", memory: 32M }
+        limits: { cpus: "0.20", memory: 128M }
 
   loki:
     image: grafana/loki:3.7.3
@@ -427,6 +462,7 @@ services:
       - { source: grafana_dashboards_provider, target: /etc/grafana/provisioning/dashboards/dashboards.yml }
       - { source: dashboard_overview, target: /etc/grafana/dashboards/dropicture-overview.json }
       - { source: dashboard_logs, target: /etc/grafana/dashboards/dropicture-logs.json }
+      - { source: dashboard_energy, target: /etc/grafana/dashboards/dropicture-energy.json }
     volumes:
       - /opt/dropicture/data/grafana:/var/lib/grafana
     deploy:
@@ -565,6 +601,12 @@ configs:
   prometheus_config:
     name: dropicture_prometheus_{{ cfg_hash.prometheus }}
     file: /opt/dropicture/stacks/prometheus.yml
+  prometheus_rules:
+    name: dropicture_prometheus_rules_{{ cfg_hash.prometheus_rules }}
+    file: /opt/dropicture/stacks/prometheus-rules.yml
+  alertmanager_config:
+    name: dropicture_alertmanager_{{ cfg_hash.alertmanager }}
+    file: /opt/dropicture/stacks/alertmanager.yml
   loki_config:
     name: dropicture_loki_{{ cfg_hash.loki }}
     file: /opt/dropicture/stacks/loki.yml
@@ -583,6 +625,9 @@ configs:
   dashboard_logs:
     name: dropicture_dash_logs_{{ cfg_hash.dash_logs }}
     file: /opt/dropicture/stacks/dashboards/dropicture-logs.json
+  dashboard_energy:
+    name: dropicture_dash_energy_{{ cfg_hash.dash_energy }}
+    file: /opt/dropicture/stacks/dashboards/dropicture-energy.json
 
 secrets:
   origin_key:

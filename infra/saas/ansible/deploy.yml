@@ -181,6 +181,8 @@
       loop:
         - { src: loki.yml, dest: /opt/dropicture/stacks/loki.yml }
         - { src: alloy.alloy, dest: /opt/dropicture/stacks/alloy.alloy }
+        - { src: prometheus-rules.yml, dest: /opt/dropicture/stacks/prometheus-rules.yml }
+        - { src: alertmanager.yml, dest: /opt/dropicture/stacks/alertmanager.yml }
         - {
             src: grafana-datasources.yml,
             dest: /opt/dropicture/stacks/grafana-datasources.yml,
@@ -197,6 +199,10 @@
             src: dashboards/dropicture-logs.json,
             dest: /opt/dropicture/stacks/dashboards/dropicture-logs.json,
           }
+        - {
+            src: dashboards/dropicture-energy.json,
+            dest: /opt/dropicture/stacks/dashboards/dropicture-energy.json,
+          }
       loop_control:
         label: "{{ item.src }}"
 
@@ -204,12 +210,15 @@
       ansible.builtin.set_fact:
         cfg_hash:
           prometheus: "{{ (lookup('template', 'prometheus.yml.j2') | hash('sha1'))[:10] }}"
+          prometheus_rules: "{{ (lookup('file', 'files/prometheus-rules.yml') | hash('sha1'))[:10] }}"
+          alertmanager: "{{ (lookup('file', 'files/alertmanager.yml') | hash('sha1'))[:10] }}"
           loki: "{{ (lookup('file', 'files/loki.yml') | hash('sha1'))[:10] }}"
           alloy: "{{ (lookup('file', 'files/alloy.alloy') | hash('sha1'))[:10] }}"
           grafana_ds: "{{ (lookup('file', 'files/grafana-datasources.yml') | hash('sha1'))[:10] }}"
           grafana_dash_provider: "{{ (lookup('file', 'files/grafana-dashboards.yml') | hash('sha1'))[:10] }}"
           dash_overview: "{{ (lookup('file', 'files/dashboards/dropicture-overview.json') | hash('sha1'))[:10] }}"
           dash_logs: "{{ (lookup('file', 'files/dashboards/dropicture-logs.json') | hash('sha1'))[:10] }}"
+          dash_energy: "{{ (lookup('file', 'files/dashboards/dropicture-energy.json') | hash('sha1'))[:10] }}"
 
     - name: Render the compose file from the template
       ansible.builtin.template:

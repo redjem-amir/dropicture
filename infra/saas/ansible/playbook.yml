@@ -338,6 +338,15 @@
         mode: "0755"
       when: swarm_role == 'proxy'
 
+    - name: Create the Alertmanager data directory on the proxy node
+      ansible.builtin.file:
+        path: /opt/dropicture/data/alertmanager
+        state: directory
+        owner: "65534"
+        group: "65534"
+        mode: "0755"
+      when: swarm_role == 'proxy'
+
     - name: Create the Loki data directory on the proxy node
       ansible.builtin.file:
         path: /opt/dropicture/data/loki
