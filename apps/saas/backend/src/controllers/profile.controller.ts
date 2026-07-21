@@ -2,6 +2,7 @@
 import { BadRequestException, Body, Controller, Delete, Get, Headers, HttpCode, HttpStatus, NotFoundException, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, IsNull, Not, Repository } from 'typeorm';
 import { ArrayMaxSize, ArrayNotEmpty, IsArray, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
@@ -37,6 +38,8 @@ class BulkIdsDto {
   ids!: string[];
 }
 
+@ApiTags('Profil')
+@ApiCookieAuth('session')
 @Controller('/api/profile')
 @UseGuards(AuthGuard('access-token'))
 export class ProfileController {
@@ -49,6 +52,7 @@ export class ProfileController {
   ) {}
 
   @Throttle({ default: { limit: 120, ttl: 60000 } })
+  @ApiOperation({ summary: 'Afficher mon profil (compteurs, avatar, URL publique)' })
   @Get('/')
   async show(@Req() req: Request) {
     const { sub } = req.user as AuthenticatedUser;
@@ -84,6 +88,7 @@ export class ProfileController {
   }
 
   @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @ApiOperation({ summary: 'Modifier ma bio' })
   @Patch('/')
   async updateBio(@Req() req: Request, @Body() dto: UpdateBioDto) {
     const { sub } = req.user as AuthenticatedUser;
@@ -94,6 +99,7 @@ export class ProfileController {
   }
 
   @Throttle({ default: { limit: 240, ttl: 60000 } })
+  @ApiOperation({ summary: 'Lister mes médias publiés (pagination par curseur)' })
   @Get('/media')
   async listMedia(@Req() req: Request, @Query('cursor') cursor?: string, @Query('limit') limit?: string) {
     const { sub } = req.user as AuthenticatedUser;
@@ -135,6 +141,7 @@ export class ProfileController {
   }
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @ApiOperation({ summary: 'Dépublier des médias' })
   @Patch('/media/unpublish')
   @HttpCode(HttpStatus.OK)
   async unpublish(@Req() req: Request, @Body() dto: BulkIdsDto) {
@@ -161,6 +168,7 @@ export class ProfileController {
   }
 
   @Throttle({ default: { limit: 20, ttl: 60000 } })
+  @ApiOperation({ summary: 'Téléverser une photo de profil (remplace la précédente)' })
   @Post('/avatar')
   async uploadAvatar(@Req() req: Request, @Headers('content-type') contentType?: string, @Headers('content-length') contentLength?: string) {
     const { sub } = req.user as AuthenticatedUser;
@@ -185,6 +193,7 @@ export class ProfileController {
   }
 
   @Throttle({ default: { limit: 20, ttl: 60000 } })
+  @ApiOperation({ summary: 'Supprimer la photo de profil' })
   @Delete('/avatar')
   @HttpCode(HttpStatus.OK)
   async removeAvatar(@Req() req: Request) {

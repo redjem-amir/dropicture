@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { hash as argon2Hash, verify as argon2Verify } from '@node-rs/argon2';
 import { Throttle } from '@nestjs/throttler';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { ACCESS_TOKEN_TTL_SECONDS, ARGON2_OPTIONS, AUTH_COOKIES, AuthService, SESSION_COOKIE_OPTIONS, generateApiKey, type AuthenticatedUser } from '../services/auth.service';
@@ -141,6 +142,7 @@ export class SignupDto {
   password: string;
 }
 
+@ApiTags('Authentification')
 @Controller('/api/auth')
 export class AuthController {
   constructor(
@@ -150,6 +152,8 @@ export class AuthController {
   ) {}
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @ApiOperation({ summary: 'Profil du compte authentifié' })
+  @ApiCookieAuth('session')
   @Get('/me')
   @UseGuards(AuthGuard('access-token'))
   async me(@Req() req: Request) {
@@ -165,6 +169,7 @@ export class AuthController {
   }
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @ApiOperation({ summary: "Vérifier la disponibilité d'un nom d'utilisateur" })
   @Get('/username/:username')
   @HttpCode(HttpStatus.OK)
   async checkUsername(@Param('username') raw: string) {
@@ -180,6 +185,7 @@ export class AuthController {
   }
 
   @Throttle({ default: { limit: 120, ttl: 60000 } })
+  @ApiOperation({ summary: 'Résoudre la session courante (cookie vers identité)' })
   @Post('/resolve')
   @HttpCode(HttpStatus.OK)
   async resolve(@Req() req: Request) {
@@ -191,6 +197,7 @@ export class AuthController {
   }
 
   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @ApiOperation({ summary: 'Connexion (création de session)' })
   @Post('/signin')
   async signin(@Body() body: SigninDto, @Req() req: Request, @Res() res: Response) {
     const account = await this.accountRepository.createQueryBuilder('a').addSelect('a.passwordHash').where('a.email = :email', { email: body.email }).getOne();
@@ -214,6 +221,7 @@ export class AuthController {
   }
 
   @Throttle({ default: { limit: 5, ttl: 3600000 } })
+  @ApiOperation({ summary: "Inscription d'un nouveau compte" })
   @Post('/signup')
   async signup(@Body() body: SignupDto) {
     const firstname = normalizeName(body.firstname);
@@ -256,6 +264,7 @@ export class AuthController {
   }
 
   @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @ApiOperation({ summary: 'Rotation de la session (refresh)' })
   @Post('/session')
   async session(@Req() req: Request, @Res() res: Response) {
     const currentCookie = req.cookies?.[AUTH_COOKIES.SESSION] as string | undefined;
@@ -272,6 +281,7 @@ export class AuthController {
   }
 
   @Throttle({ default: { limit: 20, ttl: 60000 } })
+  @ApiOperation({ summary: 'Déconnexion (révocation de session)' })
   @Post('/signout')
   @HttpCode(HttpStatus.OK)
   async signout(@Req() req: Request, @Res() res: Response) {

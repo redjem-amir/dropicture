@@ -2,6 +2,7 @@
 import { BadRequestException, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, IsNull, Not, Repository } from 'typeorm';
 import type { Request } from 'express';
@@ -13,6 +14,8 @@ import { Follow } from '../models/follow.entity';
 
 export const FEED_LIMITS = { PAGE_MAX: 80, PAGE_DEFAULT: 40 } as const;
 
+@ApiTags('Découverte')
+@ApiCookieAuth('session')
 @Controller('/api/discover')
 @UseGuards(AuthGuard('access-token'))
 export class DiscoverController {
@@ -27,6 +30,7 @@ export class DiscoverController {
   ) {}
 
   @Throttle({ default: { limit: 240, ttl: 60000 } })
+  @ApiOperation({ summary: "Fil d'actualité (tout public ou abonnements)" })
   @Get('/feed')
   async feed(@Req() req: Request, @Query('scope') scope?: string, @Query('cursor') cursor?: string, @Query('limit') limit?: string) {
     const { sub } = req.user as AuthenticatedUser;
@@ -102,6 +106,7 @@ export class DiscoverController {
   }
 
   @Throttle({ default: { limit: 120, ttl: 60000 } })
+  @ApiOperation({ summary: 'Mes statistiques sociales (abonnés, abonnements)' })
   @Get('/me')
   async me(@Req() req: Request) {
     const { sub } = req.user as AuthenticatedUser;
@@ -131,6 +136,7 @@ export class DiscoverController {
   }
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @ApiOperation({ summary: 'Suivre un utilisateur' })
   @Post('/follows/:username')
   @HttpCode(HttpStatus.OK)
   async follow(@Req() req: Request, @Param('username') username: string) {
@@ -144,6 +150,7 @@ export class DiscoverController {
   }
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @ApiOperation({ summary: 'Ne plus suivre un utilisateur' })
   @Delete('/follows/:username')
   @HttpCode(HttpStatus.OK)
   async unfollow(@Req() req: Request, @Param('username') username: string) {

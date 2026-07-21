@@ -1,6 +1,7 @@
 // dropicture/apps/saas/backend/src/controllers/public.controller.ts
 import { BadRequestException, Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, IsNull, Not, Repository } from 'typeorm';
 import { MediaService } from '../services/media.service';
@@ -22,6 +23,7 @@ export const PUBLIC_LIMITS = {
   SEARCH_TERM_MAX: 30,
 } as const;
 
+@ApiTags('API publique')
 @Controller('/api/public')
 export class PublicController {
   constructor(
@@ -35,6 +37,7 @@ export class PublicController {
   ) {}
 
   @Throttle({ default: { limit: 120, ttl: 60000 } })
+  @ApiOperation({ summary: 'Statistiques publiques de la plateforme' })
   @Get('/stats')
   async stats() {
     const row = await this.mediaRepository
@@ -48,6 +51,7 @@ export class PublicController {
   }
 
   @Throttle({ default: { limit: 240, ttl: 60000 } })
+  @ApiOperation({ summary: 'Rechercher des profils publics' })
   @Get('/search')
   async search(@Query('q') q?: string, @Query('limit') limit?: string) {
     const term = (q ?? '').trim().toLowerCase().replace(/^@/, '').slice(0, PUBLIC_LIMITS.SEARCH_TERM_MAX);
@@ -115,6 +119,7 @@ export class PublicController {
   }
 
   @Throttle({ default: { limit: 120, ttl: 60000 } })
+  @ApiOperation({ summary: 'Profils en vedette (avec aperçus)' })
   @Get('/profiles')
   async profiles(@Query('limit') limit?: string) {
     const take = Math.min(PUBLIC_LIMITS.PROFILES_MAX, Math.max(1, Number(limit) || PUBLIC_LIMITS.PROFILES_DEFAULT));
@@ -193,6 +198,7 @@ export class PublicController {
   }
 
   @Throttle({ default: { limit: 240, ttl: 60000 } })
+  @ApiOperation({ summary: 'Galerie publique (fil global)' })
   @Get('/feed')
   async feed(@Query('cursor') cursor?: string, @Query('limit') limit?: string) {
     const take = Math.min(PUBLIC_LIMITS.PAGE_MAX, Math.max(1, Number(limit) || PUBLIC_LIMITS.FEED_DEFAULT));
@@ -243,6 +249,7 @@ export class PublicController {
   }
 
   @Throttle({ default: { limit: 120, ttl: 60000 } })
+  @ApiOperation({ summary: "Profil public d'un utilisateur" })
   @Get('/:username')
   async profile(@Param('username') username: string) {
     if (!USERNAME.test(username)) throw new NotFoundException({ code: 'ACCOUNT_NOT_FOUND' });
@@ -274,6 +281,7 @@ export class PublicController {
   }
 
   @Throttle({ default: { limit: 240, ttl: 60000 } })
+  @ApiOperation({ summary: "Médias publiés d'un utilisateur (pagination curseur)" })
   @Get('/:username/media')
   async media_(@Param('username') username: string, @Query('cursor') cursor?: string, @Query('limit') limit?: string) {
     if (!USERNAME.test(username)) throw new NotFoundException({ code: 'ACCOUNT_NOT_FOUND' });

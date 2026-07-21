@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { hash as argon2Hash, verify as argon2Verify } from '@node-rs/argon2';
 import { Throttle } from '@nestjs/throttler';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { Account } from '../models/account.entity';
@@ -72,6 +73,8 @@ export class DeleteAccountDto {
   password: string;
 }
 
+@ApiTags('Paramètres')
+@ApiCookieAuth('session')
 @Controller('/api/settings')
 @UseGuards(AuthGuard('access-token'))
 export class SettingsController {
@@ -85,6 +88,7 @@ export class SettingsController {
   ) {}
 
   @Throttle({ default: { limit: 120, ttl: 60000 } })
+  @ApiOperation({ summary: "Afficher les paramètres et l'usage du stockage" })
   @Get('/')
   async show(@Req() req: Request) {
     const { sub } = req.user as AuthenticatedUser;
@@ -127,6 +131,7 @@ export class SettingsController {
   }
 
   @Throttle({ default: { limit: 20, ttl: 60000 } })
+  @ApiOperation({ summary: 'Modifier nom et prénom' })
   @Patch('/me')
   @HttpCode(HttpStatus.OK)
   async updateProfile(@Body() body: UpdateProfileDto, @Req() req: Request) {
@@ -142,6 +147,7 @@ export class SettingsController {
   }
 
   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @ApiOperation({ summary: "Changer de nom d'utilisateur" })
   @Patch('/username')
   @HttpCode(HttpStatus.OK)
   async updateUsername(@Body() body: UpdateUsernameDto, @Req() req: Request) {
@@ -165,6 +171,7 @@ export class SettingsController {
   }
 
   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @ApiOperation({ summary: "Changer d'adresse e-mail" })
   @Patch('/email')
   @HttpCode(HttpStatus.OK)
   async updateEmail(@Body() body: UpdateEmailDto, @Req() req: Request) {
@@ -184,6 +191,7 @@ export class SettingsController {
   }
 
   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @ApiOperation({ summary: 'Changer de mot de passe (révoque toutes les sessions)' })
   @Patch('/password')
   async updatePassword(@Body() body: UpdatePasswordDto, @Req() req: Request, @Res() res: Response) {
     const { sub } = req.user as AuthenticatedUser;
@@ -215,6 +223,7 @@ export class SettingsController {
   }
 
   @Throttle({ default: { limit: 20, ttl: 60000 } })
+  @ApiOperation({ summary: "Récupérer la clé d'API" })
   @Get('/apikey')
   @HttpCode(HttpStatus.OK)
   async getApiKey(@Req() req: Request) {
@@ -225,6 +234,7 @@ export class SettingsController {
   }
 
   @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @ApiOperation({ summary: "Régénérer la clé d'API" })
   @Post('/apikey')
   @HttpCode(HttpStatus.OK)
   async rotateApiKey(@Req() req: Request) {
@@ -237,6 +247,7 @@ export class SettingsController {
   }
 
   @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @ApiOperation({ summary: "Révoquer la clé d'API" })
   @Delete('/apikey')
   @HttpCode(HttpStatus.OK)
   async revokeApiKey(@Req() req: Request) {
@@ -247,6 +258,7 @@ export class SettingsController {
   }
 
   @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @ApiOperation({ summary: 'Supprimer le compte et tous les médias' })
   @Delete('/account')
   async deleteAccount(@Body() body: DeleteAccountDto, @Req() req: Request, @Res() res: Response) {
     const { sub } = req.user as AuthenticatedUser;

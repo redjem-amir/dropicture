@@ -2,6 +2,7 @@
 import { BadRequestException, Body, Controller, Delete, Get, Headers, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, IsNull, Not, Repository } from 'typeorm';
 import { ArrayMaxSize, ArrayNotEmpty, IsArray, IsOptional, IsString, IsUUID, MaxLength, MinLength } from 'class-validator';
@@ -44,6 +45,8 @@ class AlbumTitleDto {
 
 type LibraryItem = MediaView & { bytes: string; takenAt: string; published: boolean };
 
+@ApiTags('Bibliothèque')
+@ApiCookieAuth('session')
 @Controller('/api/library')
 @UseGuards(AuthGuard('access-token'))
 export class LibraryController {
@@ -58,6 +61,7 @@ export class LibraryController {
   ) {}
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @ApiOperation({ summary: 'Téléverser un média (photo/vidéo) en streaming' })
   @Post('/uploads')
   async upload(
     @Req() req: Request,
@@ -118,6 +122,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 120, ttl: 60000 } })
+  @ApiOperation({ summary: 'Statistiques de la bibliothèque privée' })
   @Get('/summary')
   async summary(@Req() req: Request) {
     const { sub } = req.user as AuthenticatedUser;
@@ -158,6 +163,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 240, ttl: 60000 } })
+  @ApiOperation({ summary: 'Lister les médias privés (pagination par curseur)' })
   @Get('/')
   async list(@Req() req: Request, @Query('album') albumId?: string, @Query('cursor') cursor?: string, @Query('limit') limit?: string) {
     const { sub } = req.user as AuthenticatedUser;
@@ -214,6 +220,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @ApiOperation({ summary: "URLs de téléchargement d'un lot de médias" })
   @Post('/download')
   @HttpCode(HttpStatus.OK)
   async download(@Req() req: Request, @Body() dto: BulkIdsDto) {
@@ -232,6 +239,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @ApiOperation({ summary: 'Publier des médias (les rendre publics)' })
   @Patch('/publish')
   @HttpCode(HttpStatus.OK)
   async publish(@Req() req: Request, @Body() dto: BulkIdsDto) {
@@ -259,6 +267,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @ApiOperation({ summary: 'Dépublier des médias (retour en privé)' })
   @Patch('/unpublish')
   @HttpCode(HttpStatus.OK)
   async unpublish(@Req() req: Request, @Body() dto: BulkIdsDto) {
@@ -286,6 +295,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @ApiOperation({ summary: 'Supprimer des médias (stockage + base)' })
   @Delete('/media')
   @HttpCode(HttpStatus.OK)
   async destroy(@Req() req: Request, @Body() dto: BulkIdsDto) {
@@ -312,6 +322,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 120, ttl: 60000 } })
+  @ApiOperation({ summary: 'Lister les albums (avec couverture et compteurs)' })
   @Get('/albums')
   async albums(@Req() req: Request) {
     const { sub } = req.user as AuthenticatedUser;
@@ -367,6 +378,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @ApiOperation({ summary: 'Créer un album (optionnellement avec des médias)' })
   @Post('/albums')
   async createAlbum(@Req() req: Request, @Body() dto: AlbumTitleDto) {
     const { sub } = req.user as AuthenticatedUser;
@@ -418,6 +430,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @ApiOperation({ summary: 'Renommer un album' })
   @Patch('/albums/:albumId')
   @HttpCode(HttpStatus.OK)
   async renameAlbum(@Req() req: Request, @Param('albumId', new ParseUUIDPipe({ version: '4' })) albumId: string, @Body() dto: AlbumTitleDto) {
@@ -437,6 +450,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @ApiOperation({ summary: 'Ajouter des médias à un album' })
   @Post('/albums/:albumId/media')
   @HttpCode(HttpStatus.OK)
   async addToAlbum(@Req() req: Request, @Param('albumId', new ParseUUIDPipe({ version: '4' })) albumId: string, @Body() dto: BulkIdsDto) {
@@ -475,6 +489,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @ApiOperation({ summary: "Retirer des médias d'un album" })
   @Delete('/albums/:albumId/media')
   @HttpCode(HttpStatus.OK)
   async removeFromAlbum(@Req() req: Request, @Param('albumId', new ParseUUIDPipe({ version: '4' })) albumId: string, @Body() dto: BulkIdsDto) {
@@ -489,6 +504,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @ApiOperation({ summary: "Définir la couverture d'un album" })
   @Patch('/albums/:albumId/cover/:mediaId')
   @HttpCode(HttpStatus.OK)
   async setCover(@Req() req: Request, @Param('albumId', new ParseUUIDPipe({ version: '4' })) albumId: string, @Param('mediaId', new ParseUUIDPipe({ version: '4' })) mediaId: string) {
@@ -502,6 +518,7 @@ export class LibraryController {
   }
 
   @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @ApiOperation({ summary: 'Supprimer un album (les médias restent en bibliothèque)' })
   @Delete('/albums/:albumId')
   @HttpCode(HttpStatus.OK)
   async deleteAlbum(@Req() req: Request, @Param('albumId', new ParseUUIDPipe({ version: '4' })) albumId: string) {
