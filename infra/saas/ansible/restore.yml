@@ -1,0 +1,326 @@
+---
+# dropicture/infra/saas/ansible/restore.yml
+- name: Locate the nodes and the backup to restore
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    tfstate_bucket: dropicture-tfstate-prod
+    tfstate_object: terraform.tfstate
+    tfstate_region: eu-west-3
+  tasks:
+    - name: Pin the controller connection to local
+      ansible.builtin.set_fact:
+        ansible_connection: local
+
+    - name: Ensure required environment variables are set
+      ansible.builtin.assert:
+        that:
+          - "lookup('env', 'AWS_ACCESS_KEY_ID') | length > 0"
+          - "lookup('env', 'AWS_SECRET_ACCESS_KEY') | length > 0"
+          - "lookup('env', 'SSH_PRIVATE_KEY_B64') | length > 0"
+          - "lookup('env', 'POSTGRES_DB_DROPICTURE_SAAS') | length > 0"
+          - "lookup('env', 'POSTGRES_USER_DROPICTURE_SAAS') | length > 0"
+          - "lookup('env', 'POSTGRES_PASSWORD_DROPICTURE_SAAS') | length > 0"
+        fail_msg: >-
+          Missing env vars. Export AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
+          SSH_PRIVATE_KEY_B64 and the POSTGRES_* credentials before running
+          this playbook.
+        quiet: true
+
+    - name: Create a temporary file for the state
+      ansible.builtin.tempfile:
+        state: file
+        suffix: tfstate
+      register: tf_state_file
+      changed_when: false
+
+    - name: Download the Terraform state from S3
+      amazon.aws.s3_object:
+        bucket: "{{ tfstate_bucket }}"
+        object: "{{ tfstate_object }}"
+        region: "{{ tfstate_region }}"
+        mode: get
+        dest: "{{ tf_state_file.path }}"
+        overwrite: always
+      changed_when: false
+
+    - name: Parse the state
+      ansible.builtin.set_fact:
+        _tfstate: "{{ lookup('file', tf_state_file.path) | from_json }}"
+
+    - name: Remove the local state copy (it can contain sensitive outputs)
+      ansible.builtin.file:
+        path: "{{ tf_state_file.path }}"
+        state: absent
+      changed_when: false
+
+    - name: Extract the node map and the backup bucket from the outputs
+      ansible.builtin.set_fact:
+        _public_ipv4: "{{ _tfstate.outputs.nodes_public_ipv4.value | default({}, true) }}"
+        _backup_bucket: "{{ _tfstate.outputs.db_backup_bucket.value | default('', true) }}"
+        _backup_region: "{{ lookup('env', 'AWS_REGION') | default('eu-west-3', true) }}"
+
+    - name: Sanity check (exactly one db node, exactly one proxy/manager, a bucket)
+      ansible.builtin.assert:
+        that:
+          - "(_public_ipv4.keys() | select('match', '^db-') | list | length) == 1"
+          - "(_public_ipv4.keys() | select('match', '^proxy-') | list | length) == 1"
+          - "_backup_bucket | length > 0"
+        fail_msg: >-
+          The Terraform outputs must expose exactly one db node, one proxy node
+          (the Swarm manager) and the db backup bucket. Apply the infrastructure
+          before attempting a restore.
+        quiet: true
+
+    - name: List the available dumps
+      amazon.aws.s3_object:
+        bucket: "{{ _backup_bucket }}"
+        region: "{{ _backup_region }}"
+        mode: list
+        prefix: "{{ lookup('env', 'RESTORE_PREFIX') | default('daily/', true) }}"
+      register: _objects
+      changed_when: false
+
+    - name: Keep only the archives, newest last (the key embeds a UTC timestamp)
+      ansible.builtin.set_fact:
+        _candidates: "{{ _objects.s3_keys | default([]) | select('match', '.*\\.dump$') | list | sort }}"
+
+    - name: Pick the backup to restore
+      ansible.builtin.set_fact:
+        _restore_key: >-
+          {{ lookup('env', 'RESTORE_BACKUP_KEY') | default('', true)
+             if (lookup('env', 'RESTORE_BACKUP_KEY') | default('', true) | length) > 0
+             else (_candidates | last if (_candidates | length) > 0 else '') }}
+
+    - name: Nothing to restore when the bucket holds no dump
+      ansible.builtin.debug:
+        msg: >-
+          No dump found under
+          s3://{{ _backup_bucket }}/{{ lookup('env', 'RESTORE_PREFIX') | default('daily/', true) }}
+          Nothing to restore, this run is a no-op.
+      when: (_restore_key | length) == 0
+
+    - name: End the run when there is nothing to restore
+      ansible.builtin.meta: end_play
+      when: (_restore_key | length) == 0
+
+    - name: Announce the selected backup
+      ansible.builtin.debug:
+        msg: "Restoring s3://{{ _backup_bucket }}/{{ _restore_key }}"
+
+    - name: Materialise the SSH private key
+      ansible.builtin.tempfile:
+        state: file
+        suffix: ssh_key
+      register: ssh_key
+      changed_when: false
+
+    - name: Write the SSH private key (0600)
+      ansible.builtin.copy:
+        dest: "{{ ssh_key.path }}"
+        content: "{{ lookup('env', 'SSH_PRIVATE_KEY_B64') | b64decode }}"
+        mode: "0600"
+      changed_when: false
+      no_log: true
+
+    - name: Register the manager (proxy) and the db node
+      ansible.builtin.add_host:
+        name: "{{ item.value }}"
+        groups: "{{ ['swarm_managers'] if item.key is match('^proxy-') else ['db_nodes'] }}"
+        ansible_host: "{{ item.value }}"
+        ansible_user: root
+        ansible_ssh_private_key_file: "{{ ssh_key.path }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=accept-new"
+        node_name: "{{ item.key }}"
+      loop: >-
+        {{ _public_ipv4 | dict2items
+           | selectattr('key', 'match', '^(proxy|db)-') | list }}
+      loop_control:
+        label: "{{ item.key }} ({{ item.value }})"
+      changed_when: false
+
+- name: Restore the dump into the db node
+  hosts: swarm_managers
+  gather_facts: false
+  any_errors_fatal: true
+  vars:
+    db_host: "{{ groups['db_nodes'] | first }}"
+    pg_service: dropicture_dropicture-saas-postgres
+    backend_service: dropicture_dropicture-saas-backend
+    aws_cli_image: amazon/aws-cli:2
+    backup_dir: /opt/dropicture/backups
+    # Le repertoire est dans le bind mount du conteneur Postgres, donc visible
+    # sous /var/lib/postgresql/_restore cote conteneur : pas de docker cp, pas
+    # de copie supplementaire dans /var/lib/docker.
+    stage_dir_host: /opt/dropicture/data/postgres/_restore
+    stage_dir_container: /var/lib/postgresql/_restore
+    backup_bucket: "{{ hostvars['localhost']._backup_bucket }}"
+    backup_region: "{{ hostvars['localhost']._backup_region }}"
+    restore_key: "{{ hostvars['localhost']._restore_key }}"
+    restore_file: "{{ hostvars['localhost']._restore_key | basename }}"
+    stop_backend: "{{ (lookup('env', 'RESTORE_STOP_BACKEND') | default('true', true)) | bool }}"
+  tasks:
+    - name: Read the current number of backend replicas
+      ansible.builtin.command: >-
+        docker service inspect {{ backend_service }}
+        --format '{% raw %}{{ .Spec.Mode.Replicated.Replicas }}{% endraw %}'
+      register: _backend_replicas
+      changed_when: false
+      failed_when: false
+
+    - name: Stage, verify and restore the dump
+      block:
+        - name: Scale the backend down to 0 (no application writes during the restore)
+          ansible.builtin.command: "docker service scale --detach=false {{ backend_service }}=0"
+          when:
+            - stop_backend | bool
+            - (_backend_replicas.rc | default(1)) == 0
+          changed_when: true
+
+        - name: Create the staging directory inside the Postgres bind mount
+          ansible.builtin.file:
+            path: "{{ stage_dir_host }}"
+            state: directory
+            owner: "999"
+            group: "999"
+            mode: "0700"
+          delegate_to: "{{ db_host }}"
+
+        - name: Download the dump and its checksum on the db node
+          environment:
+            AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+            AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+            AWS_DEFAULT_REGION: "{{ backup_region }}"
+          ansible.builtin.shell: |
+            set -euo pipefail
+            aws() {
+              docker run --rm \
+                -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e AWS_DEFAULT_REGION \
+                -v "{{ stage_dir_host }}:/stage" \
+                "{{ aws_cli_image }}" "$@"
+            }
+            aws s3 cp "s3://{{ backup_bucket }}/{{ restore_key }}" \
+              "/stage/{{ restore_file }}" --only-show-errors
+            if aws s3api head-object --bucket "{{ backup_bucket }}" \
+                 --key "{{ restore_key }}.sha256" >/dev/null 2>&1; then
+              aws s3 cp "s3://{{ backup_bucket }}/{{ restore_key }}.sha256" \
+                "/stage/{{ restore_file }}.sha256" --only-show-errors
+              expected=$(tr -d '[:space:]' < "{{ stage_dir_host }}/{{ restore_file }}.sha256")
+              actual=$(sha256sum "{{ stage_dir_host }}/{{ restore_file }}" | awk '{ print $1 }')
+              if [ "$expected" != "$actual" ]; then
+                echo "Checksum mismatch: expected $expected, got $actual" >&2
+                exit 1
+              fi
+              echo "checksum ok ($actual)"
+            else
+              echo "WARNING: no .sha256 sidecar for {{ restore_key }}, skipping verification" >&2
+            fi
+            chown 999:999 "{{ stage_dir_host }}/{{ restore_file }}"
+            chmod 0600 "{{ stage_dir_host }}/{{ restore_file }}"
+            stat -c %s "{{ stage_dir_host }}/{{ restore_file }}"
+          args:
+            executable: /bin/bash
+          delegate_to: "{{ db_host }}"
+          register: _download
+          changed_when: true
+
+        - name: Take a safety dump of the current database before overwriting it
+          environment:
+            PGUSER: "{{ lookup('env', 'POSTGRES_USER_DROPICTURE_SAAS') }}"
+            PGDATABASE: "{{ lookup('env', 'POSTGRES_DB_DROPICTURE_SAAS') }}"
+            PGPASSWORD: "{{ lookup('env', 'POSTGRES_PASSWORD_DROPICTURE_SAAS') }}"
+          ansible.builtin.shell: |
+            set -euo pipefail
+            mkdir -p "{{ backup_dir }}"
+            chmod 0700 "{{ backup_dir }}"
+            cid=$(docker ps -q \
+              --filter "label=com.docker.swarm.service.name={{ pg_service }}" \
+              --filter status=running | head -n1)
+            if [ -z "$cid" ]; then
+              echo "No running container for {{ pg_service }} on this node." >&2
+              exit 1
+            fi
+            echo "$cid" > /tmp/.dropicture_pg_cid
+            umask 077
+            out="{{ backup_dir }}/pre-restore-{{ now(true, '%Y%m%dT%H%M%SZ') }}.dump"
+            docker exec -i -e PGUSER -e PGDATABASE -e PGPASSWORD "$cid" \
+              pg_dump --format=custom --compress=6 --no-owner --no-privileges > "$out"
+            echo "$out"
+          args:
+            executable: /bin/bash
+          delegate_to: "{{ db_host }}"
+          register: _safety_dump
+          changed_when: true
+
+        - name: Show where the safety dump landed
+          ansible.builtin.debug:
+            msg: >-
+              Pre-restore state saved on {{ db_host }} at
+              {{ _safety_dump.stdout_lines | last }}
+
+        - name: Restore the dump (single transaction, rolls back entirely on error)
+          environment:
+            PGUSER: "{{ lookup('env', 'POSTGRES_USER_DROPICTURE_SAAS') }}"
+            PGDATABASE: "{{ lookup('env', 'POSTGRES_DB_DROPICTURE_SAAS') }}"
+            PGPASSWORD: "{{ lookup('env', 'POSTGRES_PASSWORD_DROPICTURE_SAAS') }}"
+          ansible.builtin.shell: |
+            set -euo pipefail
+            cid=$(cat /tmp/.dropicture_pg_cid)
+            docker exec -i -e PGUSER -e PGDATABASE -e PGPASSWORD "$cid" \
+              pg_restore --clean --if-exists --no-owner --no-privileges \
+                --single-transaction --exit-on-error \
+                --dbname "$PGDATABASE" \
+                "{{ stage_dir_container }}/{{ restore_file }}"
+            docker exec -i -e PGUSER -e PGDATABASE -e PGPASSWORD "$cid" \
+              psql --quiet --no-align --tuples-only --dbname "$PGDATABASE" \
+              -c "select count(*) from information_schema.tables where table_schema = 'public'"
+          args:
+            executable: /bin/bash
+          delegate_to: "{{ db_host }}"
+          register: _restore
+          changed_when: true
+
+        - name: Report the restored schema
+          ansible.builtin.debug:
+            msg: >-
+              Restore complete: {{ _restore.stdout_lines | last | trim }} tables
+              in the public schema of
+              {{ lookup('env', 'POSTGRES_DB_DROPICTURE_SAAS') }}.
+
+      always:
+        - name: Remove the staged dump from the Postgres bind mount
+          ansible.builtin.file:
+            path: "{{ stage_dir_host }}"
+            state: absent
+          delegate_to: "{{ db_host }}"
+          changed_when: false
+
+        - name: Drop the container id scratch file
+          ansible.builtin.file:
+            path: /tmp/.dropicture_pg_cid
+            state: absent
+          delegate_to: "{{ db_host }}"
+          changed_when: false
+
+        - name: Scale the backend back to its original replica count
+          ansible.builtin.command: >-
+            docker service scale --detach=false
+            {{ backend_service }}={{ _backend_replicas.stdout | trim }}
+          when:
+            - stop_backend | bool
+            - (_backend_replicas.rc | default(1)) == 0
+            - (_backend_replicas.stdout | trim | int) > 0
+          changed_when: true
+
+- name: Clean up
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove the temporary SSH key
+      ansible.builtin.file:
+        path: "{{ hostvars['localhost'].ssh_key.path }}"
+        state: absent
+      when: hostvars['localhost'].ssh_key is defined
+      changed_when: false

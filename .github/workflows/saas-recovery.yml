@@ -1,0 +1,93 @@
+name: SaaS Recovery
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Tapez RESTORE pour confirmer (la base de production sera ecrasee)'
+        required: true
+        default: ""
+      backup_key:
+        description: "Cle S3 precise a restaurer (vide = le dernier dump du prefixe)"
+        required: false
+        default: ""
+      prefix:
+        description: "Prefixe ou chercher le dernier dump"
+        required: false
+        default: "daily/"
+        type: choice
+        options:
+          - "daily/"
+          - "monthly/"
+      stop_backend:
+        description: "Descendre le backend a 0 replica pendant la restauration"
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: saas-backup
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-west-3
+  ANSIBLE_DIR: infra/saas/ansible
+
+jobs:
+  recovery:
+    name: Restore Postgres from S3
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 60
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SSH_PRIVATE_KEY_B64: ${{ secrets.SSH_PRIVATE_KEY_B64 }}
+      POSTGRES_DB_DROPICTURE_SAAS: ${{ secrets.POSTGRES_DB_DROPICTURE_SAAS }}
+      POSTGRES_USER_DROPICTURE_SAAS: ${{ secrets.POSTGRES_USER_DROPICTURE_SAAS }}
+      POSTGRES_PASSWORD_DROPICTURE_SAAS: ${{ secrets.POSTGRES_PASSWORD_DROPICTURE_SAAS }}
+      RESTORE_BACKUP_KEY: ${{ inputs.backup_key }}
+      RESTORE_PREFIX: ${{ inputs.prefix }}
+      RESTORE_STOP_BACKEND: ${{ inputs.stop_backend }}
+      ANSIBLE_HOST_KEY_CHECKING: "false"
+    steps:
+      - name: Refuse to run without an explicit confirmation
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          set -euo pipefail
+          if [ "$CONFIRM" != "RESTORE" ]; then
+            echo "::error::Type RESTORE dans le champ 'confirm' pour lancer la restauration."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Ansible and boto3
+        run: pip install --no-cache-dir "ansible-core>=2.16" boto3
+      - name: Install Ansible collections
+        working-directory: ${{ env.ANSIBLE_DIR }}
+        run: ansible-galaxy collection install -r requirements.yml
+
+      - name: Restore the latest backup (no-op when the bucket is empty)
+        working-directory: ${{ env.ANSIBLE_DIR }}
+        run: ansible-playbook -i localhost, restore.yml
+
+      - name: Recap
+        if: always()
+        run: |
+          {
+            echo "### SaaS Recovery"
+            echo ""
+            echo "| Champ | Valeur |"
+            echo "|---|---|"
+            echo "| Prefixe | \`${RESTORE_PREFIX}\` |"
+            echo "| Cle demandee | \`${RESTORE_BACKUP_KEY:-<derniere>}\` |"
+            echo "| Backend arrete | \`${RESTORE_STOP_BACKEND}\` |"
+            echo "| Resultat | \`${{ job.status }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"

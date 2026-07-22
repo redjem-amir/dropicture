@@ -1,0 +1,46 @@
+name: SaaS Backup
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: saas-backup
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-west-3
+  ANSIBLE_DIR: infra/saas/ansible
+
+jobs:
+  backup:
+    name: Dump Postgres to S3
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 45
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SSH_PRIVATE_KEY_B64: ${{ secrets.SSH_PRIVATE_KEY_B64 }}
+      POSTGRES_DB_DROPICTURE_SAAS: ${{ secrets.POSTGRES_DB_DROPICTURE_SAAS }}
+      POSTGRES_USER_DROPICTURE_SAAS: ${{ secrets.POSTGRES_USER_DROPICTURE_SAAS }}
+      POSTGRES_PASSWORD_DROPICTURE_SAAS: ${{ secrets.POSTGRES_PASSWORD_DROPICTURE_SAAS }}
+      ANSIBLE_HOST_KEY_CHECKING: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Ansible and boto3
+        run: pip install --no-cache-dir "ansible-core>=2.16" boto3
+      - name: Install Ansible collections
+        working-directory: ${{ env.ANSIBLE_DIR }}
+        run: ansible-galaxy collection install -r requirements.yml
+
+      - name: Back up the database (no-op when no db node exists)
+        working-directory: ${{ env.ANSIBLE_DIR }}
+        run: ansible-playbook -i localhost, backup.yml

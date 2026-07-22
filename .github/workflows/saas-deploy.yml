@@ -18,12 +18,17 @@ env:
   IMAGE_NAMESPACE: ghcr.io/redjem-amir/dropicture/saas
   TF_IN_AUTOMATION: "true"
   TF_INPUT: "false"
+  TRIVY_VERSION: v0.58.2
+  TRIVY_BLOCKING_SEVERITY: CRITICAL,HIGH
 
 jobs:
   checks:
     name: Validate & test
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@v4
 
@@ -57,6 +62,64 @@ jobs:
       - name: Run Jest
         working-directory: apps/saas/backend
         run: bun run test --ci
+
+      - name: Install Trivy
+        run: |
+          set -euo pipefail
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sh -s -- -b /usr/local/bin "${TRIVY_VERSION}"
+          trivy --version
+      - name: Cache the Trivy vulnerability database
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: ${{ runner.os }}-trivy-db-${{ env.TRIVY_VERSION }}-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-trivy-db-${{ env.TRIVY_VERSION }}-
+
+      - name: Trivy - dependances et secrets (bloquant)
+        run: |
+          set -euo pipefail
+          trivy fs . \
+            --scanners vuln,secret \
+            --severity "${TRIVY_BLOCKING_SEVERITY}" \
+            --ignore-unfixed \
+            --exit-code 1 \
+            --format table \
+            --skip-dirs node_modules --skip-dirs dist --skip-dirs .git \
+            --cache-dir ~/.cache/trivy
+      - name: Trivy - configuration IaC Terraform / Ansible / Dockerfile (bloquant)
+        run: |
+          set -euo pipefail
+          trivy config . \
+            --severity "${TRIVY_BLOCKING_SEVERITY}" \
+            --exit-code 1 \
+            --format table \
+            --skip-dirs node_modules --skip-dirs .git \
+            --cache-dir ~/.cache/trivy
+
+      - name: Trivy - rapports SARIF du depot
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          trivy fs . --scanners vuln,secret --format sarif --output reports/trivy-repo.sarif \
+            --skip-dirs node_modules --skip-dirs dist --skip-dirs .git --cache-dir ~/.cache/trivy
+          trivy config . --format sarif --output reports/trivy-config.sarif \
+            --skip-dirs node_modules --skip-dirs .git --cache-dir ~/.cache/trivy
+      - name: Publier les resultats dans GitHub Code Scanning
+        if: always()
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: reports
+          category: trivy-repo
+      - name: Archiver les rapports Trivy du depot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-repo-reports
+          path: reports/
+          retention-days: 90
 
   versions:
     name: Resolve image tags
@@ -228,6 +291,110 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to: type=gha,mode=max,scope=${{ matrix.service }}
 
+  scan:
+    name: Scan images & SBOM
+    needs: [versions, build]
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [frontend, backend]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve the image reference for this service
+        id: img
+        run: |
+          set -euo pipefail
+          echo "ref=${IMAGE_NAMESPACE}/${{ matrix.service }}:${{ fromJSON(needs.versions.outputs.tags)[matrix.service] }}" >> "$GITHUB_OUTPUT"
+
+      - name: Install Trivy
+        run: |
+          set -euo pipefail
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sh -s -- -b /usr/local/bin "${TRIVY_VERSION}"
+          trivy --version
+      - name: Cache the Trivy vulnerability database
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: ${{ runner.os }}-trivy-db-${{ env.TRIVY_VERSION }}-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-trivy-db-${{ env.TRIVY_VERSION }}-
+
+      - name: Generer le SBOM CycloneDX de l'image
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          trivy image "${{ steps.img.outputs.ref }}" \
+            --format cyclonedx \
+            --output "reports/sbom-${{ matrix.service }}.cdx.json" \
+            --cache-dir ~/.cache/trivy
+
+      - name: Trivy - analyse de l'image (bloquant)
+        id: image_scan
+        run: |
+          set -euo pipefail
+          trivy image "${{ steps.img.outputs.ref }}" \
+            --scanners vuln,secret \
+            --severity "${TRIVY_BLOCKING_SEVERITY}" \
+            --ignore-unfixed \
+            --exit-code 1 \
+            --format table \
+            --cache-dir ~/.cache/trivy
+
+      - name: Rapports de l'image (SARIF + JSON) et synthese
+        if: always()
+        run: |
+          set -euo pipefail
+          trivy image "${{ steps.img.outputs.ref }}" --scanners vuln,secret \
+            --format sarif --output "reports/trivy-image-${{ matrix.service }}.sarif" \
+            --cache-dir ~/.cache/trivy
+          trivy image "${{ steps.img.outputs.ref }}" --scanners vuln,secret \
+            --format json --output "reports/trivy-image-${{ matrix.service }}.json" \
+            --cache-dir ~/.cache/trivy
+          {
+            echo "### Trivy - ${{ matrix.service }}"
+            echo ""
+            echo "Image analysee : \`${{ steps.img.outputs.ref }}\`"
+            echo ""
+            echo "| Severite | Vulnerabilites |"
+            echo "|---|---|"
+            for sev in CRITICAL HIGH MEDIUM LOW; do
+              n=$(jq --arg s "$sev" '[.Results[]?.Vulnerabilities[]? | select(.Severity == $s)] | length' \
+                "reports/trivy-image-${{ matrix.service }}.json")
+              echo "| $sev | $n |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publier les resultats dans GitHub Code Scanning
+        if: always()
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: reports/trivy-image-${{ matrix.service }}.sarif
+          category: trivy-image-${{ matrix.service }}
+
+      - name: Archiver le SBOM et les rapports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-image-${{ matrix.service }}
+          path: reports/
+          retention-days: 90
+
   provision:
     name: Provision ansible
     needs: terraform
@@ -257,11 +424,12 @@ jobs:
 
   deploy:
     name: Deploy ansible
-    needs: [versions, build, provision]
+    needs: [versions, build, scan, provision]
     if: >-
       !cancelled()
       && needs.versions.result == 'success'
       && needs.build.result == 'success'
+      && needs.scan.result == 'success'
       && (needs.provision.result == 'success' || needs.provision.result == 'skipped')
     runs-on: ubuntu-latest
     environment: production

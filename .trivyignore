@@ -1,0 +1,7 @@
+# Exceptions de securite acceptees (DevSecOps - dropicture)
+#
+# Toute ligne ajoutee ici doit porter : l'identifiant, la justification et la date de revue.
+# Format : <CVE ou ID de regle>  # motif - revoir avant AAAA-MM-JJ
+#
+# Exemple :
+# CVE-0000-00000  # faux positif : le paquet n'est pas embarque dans l'image finale - revoir avant 2026-12-31

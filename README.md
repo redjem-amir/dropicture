@@ -120,6 +120,8 @@ Stack Prometheus / Loki / Grafana déployée sur le nœud proxy, avec **dashboar
 
 Durcissement SSH, WAF Cloudflare + AWS, TLS strict, socket-proxy, secrets Swarm, Argon2, sessions opaques Redis avec rotation et détection de rejeu, RGPD. Cartographie ISO/IEC 27001 : **[docs/securite-conformite.md](docs/securite-conformite.md)**.
 
+Le pipeline de déploiement embarque une **analyse de sécurité bloquante avec Trivy** (dépendances, secrets, IaC, images Docker) et produit un **SBOM CycloneDX** par image : **[docs/devsecops-trivy.md](docs/devsecops-trivy.md)**.
+
 ## Éco-conception (green IT)
 
 Right-sizing (reservations/limits), cycle de vie S3 (Glacier), cache immuable, compression, région EU, et **monitoring de la consommation énergétique estimée** (dashboard + alerte). Voir **[docs/devops/strategie-devops.md](docs/devops/strategie-devops.md#éco-conception--green-it)**.

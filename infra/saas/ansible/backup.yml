@@ -1,0 +1,277 @@
+---
+# dropicture/infra/saas/ansible/backup.yml
+- name: Locate the db node from the Terraform state (no-op when it does not exist)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    tfstate_bucket: dropicture-tfstate-prod
+    tfstate_object: terraform.tfstate
+    tfstate_region: eu-west-3
+  tasks:
+    - name: Pin the controller connection to local
+      ansible.builtin.set_fact:
+        ansible_connection: local
+
+    - name: Ensure required environment variables are set
+      ansible.builtin.assert:
+        that:
+          - "lookup('env', 'AWS_ACCESS_KEY_ID') | length > 0"
+          - "lookup('env', 'AWS_SECRET_ACCESS_KEY') | length > 0"
+          - "lookup('env', 'SSH_PRIVATE_KEY_B64') | length > 0"
+          - "lookup('env', 'POSTGRES_DB_DROPICTURE_SAAS') | length > 0"
+          - "lookup('env', 'POSTGRES_USER_DROPICTURE_SAAS') | length > 0"
+          - "lookup('env', 'POSTGRES_PASSWORD_DROPICTURE_SAAS') | length > 0"
+        fail_msg: >-
+          Missing env vars. Export AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
+          SSH_PRIVATE_KEY_B64 and the POSTGRES_* credentials before running
+          this playbook. In CI they come from GitHub Secrets.
+        quiet: true
+
+    - name: Create a temporary file for the state
+      ansible.builtin.tempfile:
+        state: file
+        suffix: tfstate
+      register: tf_state_file
+      changed_when: false
+
+    - name: Download the Terraform state from S3 (a missing state is not an error here)
+      amazon.aws.s3_object:
+        bucket: "{{ tfstate_bucket }}"
+        object: "{{ tfstate_object }}"
+        region: "{{ tfstate_region }}"
+        mode: get
+        dest: "{{ tf_state_file.path }}"
+        overwrite: always
+      register: _state_dl
+      ignore_errors: true
+      changed_when: false
+
+    - name: Nothing to back up when the infrastructure has no state at all
+      ansible.builtin.debug:
+        msg: >-
+          No Terraform state at s3://{{ tfstate_bucket }}/{{ tfstate_object }}
+          (the infrastructure has probably never been applied, or was destroyed).
+          Nothing to back up.
+      when: _state_dl is failed
+
+    - name: End the run when there is no state
+      ansible.builtin.meta: end_play
+      when: _state_dl is failed
+
+    - name: Parse the state
+      ansible.builtin.set_fact:
+        _tfstate: "{{ lookup('file', tf_state_file.path) | from_json }}"
+
+    - name: Remove the local state copy (it can contain sensitive outputs)
+      ansible.builtin.file:
+        path: "{{ tf_state_file.path }}"
+        state: absent
+      changed_when: false
+
+    - name: Extract the node map and the backup bucket from the outputs
+      ansible.builtin.set_fact:
+        _public_ipv4: "{{ _tfstate.outputs.nodes_public_ipv4.value | default({}, true) }}"
+        _backup_bucket: "{{ _tfstate.outputs.db_backup_bucket.value | default('', true) }}"
+        _backup_region: "{{ lookup('env', 'AWS_REGION') | default('eu-west-3', true) }}"
+        _backup_ts: "{{ now(true, '%Y%m%dT%H%M%SZ') }}"
+
+    - name: Find the db node (there is exactly one by construction)
+      ansible.builtin.set_fact:
+        _db_keys: "{{ _public_ipv4.keys() | select('match', '^db-') | list | sort }}"
+
+    - name: Nothing to back up when Terraform manages no db node
+      ansible.builtin.debug:
+        msg: >-
+          No 'db-*' node in the Terraform outputs (or no db backup bucket):
+          skipping the backup, this run is a no-op.
+      when: (_db_keys | length) == 0 or (_backup_bucket | length) == 0
+
+    - name: End the run when there is no db node
+      ansible.builtin.meta: end_play
+      when: (_db_keys | length) == 0 or (_backup_bucket | length) == 0
+
+    - name: Materialise the SSH private key
+      ansible.builtin.tempfile:
+        state: file
+        suffix: ssh_key
+      register: ssh_key
+      changed_when: false
+
+    - name: Write the SSH private key (0600)
+      ansible.builtin.copy:
+        dest: "{{ ssh_key.path }}"
+        content: "{{ lookup('env', 'SSH_PRIVATE_KEY_B64') | b64decode }}"
+        mode: "0600"
+      changed_when: false
+      no_log: true
+
+    - name: Register the db node as the only backup target
+      ansible.builtin.add_host:
+        name: "{{ _public_ipv4[_db_keys | first] }}"
+        groups: ["db_nodes"]
+        ansible_host: "{{ _public_ipv4[_db_keys | first] }}"
+        ansible_user: root
+        ansible_ssh_private_key_file: "{{ ssh_key.path }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=accept-new"
+        node_name: "{{ _db_keys | first }}"
+      changed_when: false
+
+- name: Dump Postgres and ship the dump to S3
+  hosts: db_nodes
+  gather_facts: false
+  vars:
+    pg_service: dropicture_dropicture-saas-postgres
+    aws_cli_image: amazon/aws-cli:2
+    backup_dir: /opt/dropicture/backups
+    keep_local_dumps: 3
+    backup_bucket: "{{ hostvars['localhost']._backup_bucket }}"
+    backup_region: "{{ hostvars['localhost']._backup_region }}"
+    backup_name: "dropicture-saas-{{ hostvars['localhost']._backup_ts }}.dump"
+    backup_key: "daily/{{ backup_name }}"
+    dump_path: "{{ backup_dir }}/{{ backup_name }}"
+  tasks:
+    - name: Wait for SSH on the db node
+      ansible.builtin.wait_for_connection:
+        timeout: 120
+        sleep: 5
+
+    - name: Ensure the local backup directory exists
+      ansible.builtin.file:
+        path: "{{ backup_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0700"
+
+    - name: Dump the database from the running Postgres container (custom format)
+      environment:
+        PGUSER: "{{ lookup('env', 'POSTGRES_USER_DROPICTURE_SAAS') }}"
+        PGDATABASE: "{{ lookup('env', 'POSTGRES_DB_DROPICTURE_SAAS') }}"
+        PGPASSWORD: "{{ lookup('env', 'POSTGRES_PASSWORD_DROPICTURE_SAAS') }}"
+      ansible.builtin.shell: |
+        set -euo pipefail
+        cid=$(docker ps -q \
+          --filter "label=com.docker.swarm.service.name={{ pg_service }}" \
+          --filter status=running | head -n1)
+        if [ -z "$cid" ]; then
+          echo "No running container for {{ pg_service }} on this node." >&2
+          echo "Check 'docker service ps {{ pg_service }}' on the manager." >&2
+          exit 1
+        fi
+        umask 077
+        # -e VAR without a value forwards the value from this shell's environment,
+        # so the password never appears in the container's argv.
+        docker exec -i -e PGUSER -e PGDATABASE -e PGPASSWORD "$cid" \
+          pg_dump --format=custom --compress=6 --no-owner --no-privileges \
+          > "{{ dump_path }}.part"
+        mv "{{ dump_path }}.part" "{{ dump_path }}"
+        sha256sum "{{ dump_path }}" | awk '{ print $1 }' > "{{ dump_path }}.sha256"
+        stat -c %s "{{ dump_path }}"
+      args:
+        executable: /bin/bash
+      register: _pg_dump
+      changed_when: true
+
+    - name: Refuse to upload an implausibly small dump
+      ansible.builtin.assert:
+        that:
+          - "(_pg_dump.stdout | trim | int) > 1024"
+        fail_msg: >-
+          The dump is only {{ _pg_dump.stdout | trim }} bytes, which cannot be a
+          valid custom-format archive. Not uploading it, so the last good backup
+          in S3 stays the newest one.
+        quiet: true
+
+    - name: Upload the dump and its checksum to S3, then verify the object size
+      environment:
+        AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+        AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+        AWS_DEFAULT_REGION: "{{ backup_region }}"
+      ansible.builtin.shell: |
+        set -euo pipefail
+        aws() {
+          docker run --rm \
+            -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e AWS_DEFAULT_REGION \
+            -v "{{ backup_dir }}:/backups:ro" \
+            "{{ aws_cli_image }}" "$@"
+        }
+        aws s3 cp "/backups/{{ backup_name }}" \
+          "s3://{{ backup_bucket }}/{{ backup_key }}" --only-show-errors
+        aws s3 cp "/backups/{{ backup_name }}.sha256" \
+          "s3://{{ backup_bucket }}/{{ backup_key }}.sha256" \
+          --content-type text/plain --only-show-errors
+        remote=$(aws s3api head-object \
+          --bucket "{{ backup_bucket }}" --key "{{ backup_key }}" \
+          --query ContentLength --output text | tr -d '\r')
+        local_size=$(stat -c %s "{{ dump_path }}")
+        if [ "$remote" != "$local_size" ]; then
+          echo "Size mismatch after upload: S3=$remote local=$local_size" >&2
+          exit 1
+        fi
+        echo "uploaded s3://{{ backup_bucket }}/{{ backup_key }} ($local_size bytes)"
+      args:
+        executable: /bin/bash
+      register: _upload
+      changed_when: true
+
+    - name: Show what was uploaded
+      ansible.builtin.debug:
+        msg: "{{ _upload.stdout_lines | last }}"
+
+    - name: Keep only the {{ keep_local_dumps }} most recent dumps on the node
+      ansible.builtin.shell: |
+        set -euo pipefail
+        cd "{{ backup_dir }}"
+        ls -1t dropicture-saas-*.dump 2>/dev/null \
+          | tail -n +{{ keep_local_dumps | int + 1 }} \
+          | while read -r f; do rm -f -- "$f" "$f.sha256"; done
+      args:
+        executable: /bin/bash
+      changed_when: false
+
+- name: Promote the first backup of the month under the monthly/ prefix
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    _month: "{{ _backup_ts[0:6] }}"
+    _daily_key: "daily/dropicture-saas-{{ _backup_ts }}.dump"
+    _monthly_key: "monthly/dropicture-saas-{{ _backup_ts }}.dump"
+  tasks:
+    - name: List the objects already archived for this month
+      amazon.aws.s3_object:
+        bucket: "{{ _backup_bucket }}"
+        region: "{{ _backup_region }}"
+        mode: list
+        prefix: "monthly/dropicture-saas-{{ _month }}"
+      register: _monthly
+      changed_when: false
+
+    - name: Copy this dump under monthly/ when the month has no archive yet
+      amazon.aws.s3_object:
+        bucket: "{{ _backup_bucket }}"
+        region: "{{ _backup_region }}"
+        mode: copy
+        object: "{{ item.dest }}"
+        copy_src:
+          bucket: "{{ _backup_bucket }}"
+          object: "{{ item.src }}"
+      loop:
+        - { src: "{{ _daily_key }}", dest: "{{ _monthly_key }}" }
+        - { src: "{{ _daily_key }}.sha256", dest: "{{ _monthly_key }}.sha256" }
+      loop_control:
+        label: "{{ item.dest }}"
+      when: (_monthly.s3_keys | default([]) | length) == 0
+
+- name: Clean up
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Remove the temporary SSH key
+      ansible.builtin.file:
+        path: "{{ hostvars['localhost'].ssh_key.path }}"
+        state: absent
+      when: hostvars['localhost'].ssh_key is defined
+      changed_when: false

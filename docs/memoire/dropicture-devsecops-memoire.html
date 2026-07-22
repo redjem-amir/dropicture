@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: 'X'; src: local('Inter'), local('Helvetica Neue'); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    width:1334px; height:auto; background:#fff; zoom:1.24;
+    font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;
+    color:#212529; padding:56px 56px 40px; display:flex; flex-direction:column;
+  }
+  h1 { font-size:40px; font-weight:800; letter-spacing:-1px; color:#212529; }
+  .sub { font-size:17px; color:#495057; margin-top:10px; line-height:1.5; max-width:1080px; }
+  .sub b { color:#212529; font-weight:700; }
+  header { display:flex; justify-content:space-between; align-items:flex-start; gap:28px; }
+  .kpis { display:flex; gap:12px; flex-shrink:0; }
+  .kpi { border:1px solid #dee2e6; border-radius:10px; padding:12px 16px; text-align:center; min-width:104px; background:#f8f9fa; }
+  .kpi .n { font-size:26px; font-weight:800; color:#1971c2; line-height:1.1; }
+  .kpi .l { font-size:9.5px; font-weight:700; color:#868e96; letter-spacing:.6px; margin-top:5px; text-transform:uppercase; }
+  .kpi.amber { background:#fff9db; border-color:#ffe066; }
+  .kpi.amber .n { color:#e67700; font-size:19px; padding-top:4px; }
+
+  .band { border:1px solid #dee2e6; border-radius:14px; padding:20px 22px 22px; margin-top:22px; background:#fbfcfd; }
+  .band > .bh { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .tag { font-size:12px; font-weight:800; color:#fff; padding:4px 11px; border-radius:6px; letter-spacing:.3px; }
+  .t-b { background:#1971c2; } .t-g { background:#2f9e44; } .t-r { background:#c2255c; }
+  .bh .ctx { font-size:13px; color:#868e96; font-weight:600; }
+
+  .flow { display:flex; align-items:stretch; gap:10px; }
+  .step { flex:1; border:1px solid #dee2e6; border-left:4px solid #1971c2; border-radius:8px; background:#fff; padding:13px 14px; }
+  .step.g { border-left-color:#2f9e44; } .step.r { border-left-color:#c2255c; }
+  .step .n { font-size:9.5px; font-weight:800; color:#adb5bd; letter-spacing:.7px; }
+  .step .t { font-size:14.5px; font-weight:700; margin-top:4px; line-height:1.35; }
+  .step .d { font-size:12.5px; color:#495057; margin-top:6px; line-height:1.45; }
+  .step .d code { font-family:'SF Mono',Menlo,monospace; font-size:11.5px; background:#f1f3f5; padding:1px 4px; border-radius:3px; color:#1864ab; }
+  .arrow { align-self:center; color:#ced4da; font-size:19px; flex-shrink:0; }
+
+  .gate { display:inline-block; font-size:10px; font-weight:800; letter-spacing:.4px; padding:2px 7px; border-radius:4px; margin-top:8px; }
+  .gate.block { background:#ffe3e3; color:#c92a2a; }
+  .gate.info  { background:#e7f5ff; color:#1864ab; }
+
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .card { border:1px solid #dee2e6; border-radius:10px; background:#fff; padding:15px 17px; }
+  .card h3 { font-size:13px; font-weight:800; letter-spacing:.5px; color:#212529; text-transform:uppercase; margin-bottom:10px; }
+  ul { list-style:none; }
+  li { font-size:13px; color:#343a40; line-height:1.55; padding-left:15px; position:relative; margin-bottom:5px; }
+  li::before { content:'▪'; position:absolute; left:0; color:#adb5bd; }
+  li b { font-weight:700; color:#212529; }
+  code { font-family:'SF Mono',Menlo,monospace; font-size:11.5px; background:#f1f3f5; padding:1px 4px; border-radius:3px; color:#1864ab; }
+
+  .note { border:1px solid #ffe066; background:#fff9db; border-radius:10px; padding:14px 17px; margin-top:14px; }
+  .note h3 { color:#e67700; }
+  footer { margin-top:auto; padding-top:18px; font-size:11.5px; color:#adb5bd; border-top:1px solid #e9ecef; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Chaîne DevSecOps et plan de reprise d'activité</h1>
+    <div class="sub">Portes de sécurité automatiques du pipeline de livraison, de l'analyse du dépôt à l'analyse de
+      l'artefact publié, et dispositif de <b>sauvegarde automatisée</b> et de <b>restauration outillée</b> de la base de
+      production. Toutes les étapes sont décrites en code et versionnées avec le projet.</div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="n">3</div><div class="l">niveaux<br>de scan</div></div>
+    <div class="kpi"><div class="n">4</div><div class="l">sauvegardes<br>par jour</div></div>
+    <div class="kpi amber"><div class="n">CRITICAL<br>HIGH</div><div class="l">seuil<br>bloquant</div></div>
+  </div>
+</header>
+
+<!-- ============================ DEVSECOPS ============================ -->
+<div class="band">
+  <div class="bh"><span class="tag t-b">1 · Chaîne DevSecOps</span>
+    <span class="ctx">GitHub Actions · <code>saas-deploy.yml</code> · Trivy v0.58.2</span></div>
+
+  <div class="flow">
+    <div class="step">
+      <div class="n">ÉTAPE CHECKS</div>
+      <div class="t">Tests &amp; validation IaC</div>
+      <div class="d">218 tests Jest via <code>bun run test --ci</code>, puis <code>terraform fmt -check</code> et
+        <code>terraform validate</code>.</div>
+      <span class="gate block">BLOQUANT</span>
+    </div>
+    <div class="arrow">▶</div>
+    <div class="step">
+      <div class="n">ÉTAPE CHECKS</div>
+      <div class="t">Dépendances &amp; secrets</div>
+      <div class="d"><code>trivy fs</code> — vulnérabilités des dépendances et détection de secrets versionnés,
+        <code>--ignore-unfixed</code>.</div>
+      <span class="gate block">BLOQUANT</span>
+    </div>
+    <div class="arrow">▶</div>
+    <div class="step">
+      <div class="n">ÉTAPE CHECKS</div>
+      <div class="t">Plans d'infrastructure</div>
+      <div class="d"><code>trivy config</code> — analyse statique des fichiers Terraform, des playbooks Ansible et des
+        Dockerfile.</div>
+      <span class="gate block">BLOQUANT</span>
+    </div>
+    <div class="arrow">▶</div>
+    <div class="step g">
+      <div class="n">ÉTAPE BUILD</div>
+      <div class="t">Image de conteneur</div>
+      <div class="d"><code>trivy image</code> sur l'artefact étiqueté par SHA, avant toute publication effective.</div>
+      <span class="gate block">BLOQUANT</span>
+    </div>
+    <div class="arrow">▶</div>
+    <div class="step g">
+      <div class="n">ÉTAPE BUILD</div>
+      <div class="t">SBOM CycloneDX</div>
+      <div class="d">Nomenclature logicielle par image : analyse de composition et inventaire des composants
+        embarqués.</div>
+      <span class="gate info">TRAÇABILITÉ</span>
+    </div>
+  </div>
+
+  <div class="two" style="margin-top:16px;">
+    <div class="card">
+      <h3>Restitution et traçabilité</h3>
+      <ul>
+        <li>Rapports convertis au format <b>SARIF</b> et publiés dans <b>GitHub Code Scanning</b> — historisés et
+          rattachés aux lignes de code concernées.</li>
+        <li>Rapports détaillés <b>JSON</b> et SARIF archivés en artefacts pendant <b>90 jours</b>.</li>
+        <li>Synthèse du nombre de vulnérabilités <b>par niveau de sévérité</b> portée dans le compte rendu
+          d'exécution du pipeline.</li>
+        <li>Base de vulnérabilités mise en cache entre exécutions (sobriété réseau et durée de pipeline).</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Gestion des exceptions — <code>.trivyignore</code></h3>
+      <ul>
+        <li>Toute dérogation est <b>centralisée dans un fichier versionné</b>, revue en même temps que le code.</li>
+        <li>Chaque ligne porte obligatoirement <b>l'identifiant</b> (CVE ou règle), <b>la justification</b> et
+          <b>la date de revue</b>.</li>
+        <li>Une acceptation de risque demeure ainsi <b>explicite, tracée et temporaire</b>, jamais silencieuse.</li>
+        <li>Permissions des jobs au moindre privilège : lecture seule par défaut, écriture sur les paquets et les
+          événements de sécurité limitée aux seules étapes concernées.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ SAUVEGARDE ============================ -->
+<div class="band">
+  <div class="bh"><span class="tag t-g">2 · Sauvegarde automatisée</span>
+    <span class="ctx"><code>saas-backup.yml</code> — cron <code>0 */6 * * *</code> · Ansible <code>backup.yml</code></span></div>
+
+  <div class="flow">
+    <div class="step g"><div class="n">01</div><div class="t">Découverte de la cible</div>
+      <div class="d">Lecture de l'état Terraform distant pour localiser le nœud <code>db</code>. Sans état ni nœud, la
+        chaîne se termine sans erreur.</div></div>
+    <div class="arrow">▶</div>
+    <div class="step g"><div class="n">02</div><div class="t">Cliché de la base</div>
+      <div class="d"><code>pg_dump</code> format custom, <code>--compress=6</code>, sans propriétaire ni privilèges,
+        depuis le conteneur en fonctionnement.</div></div>
+    <div class="arrow">▶</div>
+    <div class="step g"><div class="n">03</div><div class="t">Gardes d'intégrité</div>
+      <div class="d">Empreinte <b>SHA-256</b> calculée et refus explicite de tout cliché de taille invraisemblable
+        (&lt; 1 Ko).</div></div>
+    <div class="arrow">▶</div>
+    <div class="step g"><div class="n">04</div><div class="t">Dépôt sur S3</div>
+      <div class="d">Téléversement du cliché et de son empreinte sous le préfixe <code>daily/</code>, puis
+        <b>vérification de la taille de l'objet déposé</b>.</div></div>
+    <div class="arrow">▶</div>
+    <div class="step g"><div class="n">05</div><div class="t">Durcissement du stockage</div>
+      <div class="d">Versioning, <b>Object Lock GOVERNANCE</b>, chiffrement AES-256, cycle de vie
+        STANDARD_IA puis Glacier.</div></div>
+  </div>
+</div>
+
+<!-- ============================ RESTAURATION ============================ -->
+<div class="band">
+  <div class="bh"><span class="tag t-r">3 · Restauration outillée (PRA)</span>
+    <span class="ctx"><code>saas-recovery.yml</code> — déclenchement manuel · Ansible <code>restore.yml</code></span></div>
+
+  <div class="flow">
+    <div class="step r"><div class="n">01</div><div class="t">Confirmation explicite</div>
+      <div class="d">Saisie obligatoire de <code>RESTORE</code>. Choix du préfixe <code>daily/</code> ou
+        <code>monthly/</code>, ou d'une clé S3 précise.</div></div>
+    <div class="arrow">▶</div>
+    <div class="step r"><div class="n">02</div><div class="t">Gel des écritures</div>
+      <div class="d">Backend descendu à <b>0 réplica</b> le temps de l'opération, afin qu'aucune écriture concurrente
+        ne survienne.</div></div>
+    <div class="arrow">▶</div>
+    <div class="step r"><div class="n">03</div><div class="t">Vérification</div>
+      <div class="d">Téléchargement du cliché et de son empreinte, puis <b>contrôle SHA-256</b> avant toute action
+        destructrice.</div></div>
+    <div class="arrow">▶</div>
+    <div class="step r"><div class="n">04</div><div class="t">Cliché de sécurité</div>
+      <div class="d">Sauvegarde de la base <b>courante</b> avant écrasement — la restauration elle-même est
+        réversible.</div></div>
+    <div class="arrow">▶</div>
+    <div class="step r"><div class="n">05</div><div class="t">Restauration &amp; reprise</div>
+      <div class="d"><b>Transaction unique</b> (annulation intégrale sur erreur), contrôle du schéma restauré, puis
+        rétablissement du nombre initial de répliques.</div></div>
+  </div>
+
+  <div class="note">
+    <h3>Objectifs de reprise et amélioration continue</h3>
+    <ul>
+      <li><b>RPO</b> — la planification toutes les six heures borne la perte de données maximale à <b>6 heures</b>.</li>
+      <li><b>RTO</b> — reconstruction complète de l'infrastructure par le code (Terraform puis Ansible), suivie de la
+        restauration de la base ; les médias restent disponibles depuis le stockage objet, qui n'est jamais détruit.</li>
+      <li><b>Prochain palier</b> — formalisation d'un exercice de reprise périodique conduit en conditions réelles et
+        suivi documenté de l'objectif de point de reprise, inscrits au plan d'amélioration continue.</li>
+    </ul>
+  </div>
+</div>
+
+<footer>Annexe S · Chaîne DevSecOps et plan de reprise d'activité (BC4C) — production originale de l'auteur</footer>
+
+</body>
+</html>
