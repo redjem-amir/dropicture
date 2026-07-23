@@ -1,0 +1,208 @@
+<mxfile host="65bd71144e">
+    <diagram id="page-1" name="Plan de reprise">
+        <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="n1" value="Annexe U Plan de reprise d&#39;activité (PRA)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n2" value="Deux protections distinctes : les données par un stockage objet durci, l&#39;infrastructure par le code" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+                    <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+                </mxCell>
+                <mxCell id="n3" value="PRINCIPE FONDATEUR" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#1c7ed6" parent="1" vertex="1">
+                    <mxGeometry x="60" y="110" width="1540" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="n4" value="&lt;b&gt;Sauvegarder ce qu&#39;on ne sait pas recréer, savoir recréer le reste.&lt;/b&gt; L&#39;infrastructure étant intégralement décrite en code, sa reconstruction n&#39;est pas une opération exceptionnelle mais l&#39;exécution ordonnée de la même chaîne qui la produit au quotidien. Seules les données qui n&#39;existent nulle part ailleurs, la base PostgreSQL, sont sauvegardées." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="82" y="146" width="1496" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n5" value="S1 · Perte d&#39;un nœud applicatif" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="60" y="250" width="296" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n6" value="backend ou frontend" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#868e96" parent="1" vertex="1">
+                    <mxGeometry x="66" y="288" width="284" height="18" as="geometry"/>
+                </mxCell>
+                <mxCell id="n7" value="Swarm reprogramme les tâches sur les nœuds restants" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="310" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n8" value="terraform apply recrée la machine" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="372" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n9" value="ansible-playbook playbook.yml la réintègre" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="434" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n10" value="Aucune donnée perdue : les nœuds sont sans état" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="496" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n11" value="&lt;b&gt;RTO ≈ 20 min&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="60" y="566" width="146" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n12" value="&lt;b&gt;RPO nul&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="210" y="566" width="146" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n13" value="S2 · Perte du nœud de données" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="372" y="250" width="296" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n14" value="db-1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#868e96" parent="1" vertex="1">
+                    <mxGeometry x="378" y="288" width="284" height="18" as="geometry"/>
+                </mxCell>
+                <mxCell id="n15" value="terraform apply recrée le serveur" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="372" y="310" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n16" value="playbook.yml recrée les répertoires et réintègre le nœud" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="372" y="372" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n17" value="deploy.yml redéploie Postgres et PgBouncer" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="372" y="434" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n18" value="restore.yml restaure la dernière sauvegarde S3" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="372" y="496" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n19" value="&lt;b&gt;RTO ≈ 1 h&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="372" y="566" width="146" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n20" value="&lt;b&gt;RPO ≤ 6 h&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="522" y="566" width="146" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n21" value="S3 · Perte du nœud de périphérie" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="684" y="250" width="296" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n22" value="proxy-1, manager Swarm" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#868e96" parent="1" vertex="1">
+                    <mxGeometry x="690" y="288" width="284" height="18" as="geometry"/>
+                </mxCell>
+                <mxCell id="n23" value="Risque majeur du registre (R1) : Traefik, Redis et&lt;br/&gt;toute la pile d&#39;observabilité y résident" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="684" y="310" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n24" value="Reconstruction complète par le code" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="684" y="372" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n25" value="Perte des séries Prometheus et des journaux Loki&lt;br/&gt;non encore compactés" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="684" y="434" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n26" value="Traitement de fond : haute disponibilité (plan d&#39;amélioration)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="684" y="496" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n27" value="&lt;b&gt;RTO ≈ 1 h&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="684" y="566" width="146" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n28" value="&lt;b&gt;RPO nul sur les données métier&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="834" y="566" width="146" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n29" value="S4 · Perte du cluster ou de la région" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="996" y="250" width="296" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n30" value="sinistre majeur" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#868e96" parent="1" vertex="1">
+                    <mxGeometry x="1002" y="288" width="284" height="18" as="geometry"/>
+                </mxCell>
+                <mxCell id="n31" value="terraform apply recrée réseau, pare-feu, nœuds,&lt;br/&gt;buckets, distribution CDN et réglages Cloudflare" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="996" y="310" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n32" value="ansible-playbook playbook.yml puis deploy.yml" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="996" y="372" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n33" value="restore.yml restaure la base" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="996" y="434" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n34" value="Les médias restent disponibles : ils vivent dans S3" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="996" y="496" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n35" value="&lt;b&gt;RTO ≈ 2 h&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="996" y="566" width="146" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n36" value="&lt;b&gt;RPO ≤ 6 h&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="1146" y="566" width="146" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n37" value="S5 · Corruption logique ou rançongiciel" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1308" y="250" width="296" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n38" value="altération volontaire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#868e96" parent="1" vertex="1">
+                    <mxGeometry x="1314" y="288" width="284" height="18" as="geometry"/>
+                </mxCell>
+                <mxCell id="n39" value="Versioning S3 : aucune écriture n&#39;écrase définitivement" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1308" y="310" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n40" value="Object Lock GOVERNANCE : une sauvegarde ne peut être&lt;br/&gt;ni altérée ni supprimée avant l&#39;échéance" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1308" y="372" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n41" value="Restauration d&#39;une version antérieure au préfixe monthly/" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1308" y="434" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n42" value="Cliché de sécurité pris avant tout écrasement" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1308" y="496" width="296" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n43" value="&lt;b&gt;RTO ≈ 2 h&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="1308" y="566" width="146" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n44" value="&lt;b&gt;RPO ≤ 6 h à 1 mois&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="1458" y="566" width="146" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n45" value="CHAÎNE DE SAUVEGARDE saas-backup.yml, toutes les 6 h" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#c3fae8;strokeColor=#099268;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#099268" parent="1" vertex="1">
+                    <mxGeometry x="60" y="630" width="760" height="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="n46" value="&lt;b&gt;1.&lt;/b&gt; Inventaire dérivé de l&#39;état Terraform, absence de nœud db ⟶ le run est un &lt;i&gt;no-op&lt;/i&gt; assumé." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="82" y="666" width="716" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="n47" value="&lt;b&gt;2.&lt;/b&gt; &lt;i&gt;pg_dump --format=custom --compress=6 --no-owner --no-privileges&lt;/i&gt; depuis le conteneur Postgres en fonctionnement. Le mot de passe n&#39;apparaît jamais dans la ligne de commande du conteneur." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="82" y="708" width="716" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="n48" value="&lt;b&gt;3.&lt;/b&gt; Empreinte SHA-256 calculée et déposée à côté du cliché." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="82" y="750" width="716" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="n49" value="&lt;b&gt;4.&lt;/b&gt; Garde-fou : tout cliché de moins de 1 024 octets est refusé, c&#39;est le scénario le plus redouté, l&#39;archivage silencieux d&#39;une sauvegarde vide." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="82" y="792" width="716" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="n50" value="&lt;b&gt;5.&lt;/b&gt; Téléversement vers &lt;i&gt;daily/&lt;/i&gt; puis &lt;b&gt;vérification de la taille de l&#39;objet réellement déposé&lt;/b&gt; (head-object), l&#39;écriture est confirmée, pas supposée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="82" y="834" width="716" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="n51" value="&lt;b&gt;6.&lt;/b&gt; Le premier cliché du mois est promu sous &lt;i&gt;monthly/&lt;/i&gt;. Trois clichés au plus sont conservés localement sur le nœud." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="82" y="876" width="716" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="n52" value="CHAÎNE DE RESTAURATION saas-recovery.yml, manuel" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#e03131" parent="1" vertex="1">
+                    <mxGeometry x="850" y="630" width="750" height="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="n53" value="&lt;b&gt;1.&lt;/b&gt; Confirmation explicite : il faut saisir « RESTORE ». Sans cela, le workflow échoue d&#39;emblée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="666" width="706" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="n54" value="&lt;b&gt;2.&lt;/b&gt; Sélection du dernier cliché d&#39;un préfixe (&lt;i&gt;daily/&lt;/i&gt; ou &lt;i&gt;monthly/&lt;/i&gt;) ou d&#39;une clé S3 précise." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="708" width="706" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="n55" value="&lt;b&gt;3.&lt;/b&gt; Le backend est descendu à &lt;b&gt;0 réplica,&lt;/b&gt;&amp;nbsp;aucune écriture concurrente pendant l&#39;opération." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="750" width="706" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="n56" value="&lt;b&gt;4.&lt;/b&gt; Vérification de l&#39;empreinte SHA-256 du fichier téléchargé." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="792" width="706" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="n57" value="&lt;b&gt;5.&lt;/b&gt; &lt;b&gt;Cliché de sécurité&lt;/b&gt; de la base courante avant tout écrasement." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="834" width="706" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="n58" value="&lt;b&gt;6.&lt;/b&gt; &lt;i&gt;pg_restore --single-transaction,&lt;/i&gt;&amp;nbsp;la moindre erreur annule intégralement l&#39;opération. Le schéma restauré est contrôlé, puis le backend revient à son nombre initial de réplicas." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="876" width="706" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="n59" value="CE QUI RESTE À FRANCHIR" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#fff3bf;strokeColor=#f59f00;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#f59f00" parent="1" vertex="1">
+                    <mxGeometry x="60" y="950" width="760" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="n60" value="Le dispositif est &lt;b&gt;outillé et rejouable&lt;/b&gt;, mais l&#39;exercice de reprise périodique en conditions réelles n&#39;est pas encore formalisé. Tant qu&#39;il ne l&#39;est pas, le plan reste une capacité démontrée et non éprouvée dans la durée. Cette nuance est assumée : elle figure au plan d&#39;amélioration continue (3 j-h, 1 500 €, priorité moyenne)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="82" y="986" width="716" height="62" as="geometry"/>
+                </mxCell>
+                <mxCell id="n61" value="DONNÉES PROTÉGÉES ET LEUR MÉCANISME" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#2f9e44" parent="1" vertex="1">
+                    <mxGeometry x="850" y="950" width="750" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="n62" value="&lt;b&gt;Base PostgreSQL&lt;/b&gt; — sauvegarde 6 h · versioning · Object Lock · cycle de vie" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="872" y="984" width="706" height="18" as="geometry"/>
+                </mxCell>
+                <mxCell id="n63" value="&lt;b&gt;Médias (S3)&lt;/b&gt; — bucket versionné, chiffré AES-256, transport chiffré imposé" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="872" y="1004" width="706" height="18" as="geometry"/>
+                </mxCell>
+                <mxCell id="n64" value="&lt;b&gt;État Terraform (S3)&lt;/b&gt; — versionné, chiffré, verrou de concurrence — point de vérité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="872" y="1024" width="706" height="18" as="geometry"/>
+                </mxCell>
+                <mxCell id="n65" value="&lt;b&gt;Configs et secrets Swarm&lt;/b&gt; — recréés par le playbook ; la clé d&#39;origine reste sur le manager" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="872" y="1044" width="706" height="18" as="geometry"/>
+                </mxCell>
+                <mxCell id="n66" value="Sources : infra/saas/ansible/{backup,restore}.yml · .github/workflows/saas-{backup,recovery}.yml · infra/saas/terraform/main.tf (cycle de vie et Object Lock)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+                    <mxGeometry x="60" y="1080" width="1300" height="18" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
