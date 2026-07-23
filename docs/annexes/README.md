@@ -26,7 +26,7 @@ mémoire, et le fichier.
 | 12 | K | Pipeline CI/CD | [`12-pipeline-cicd.drawio`](12-pipeline-cicd.drawio) |
 | 13 | L | Work Breakdown Structure (WBS) | [`13-wbs.drawio`](13-wbs.drawio) |
 | 14 | M | Diagramme PERT et chemin critique | [`14-pert-chemin-critique.drawio`](14-pert-chemin-critique.drawio) |
-| 15 | N | Planning (diagramme de Gantt) | [`15-planning-gantt.gan`](15-planning-gantt.gan) |
+| 15 | N | Planning (diagramme de Gantt) | [`15-planning-gantt.drawio`](15-planning-gantt.drawio) + [`15-planning-gantt.gan`](15-planning-gantt.gan) |
 | 16 | O | Matrice des risques (probabilité / impact) | [`16-matrice-risques.xlsx`](16-matrice-risques.xlsx) — 3 feuilles |
 | 17 | P | Architecture de la supervision et de l'observabilité | [`17-observabilite-supervision.drawio`](17-observabilite-supervision.drawio) |
 | 18 | Q | Contrat d'interface (OpenAPI / Swagger) | [`18-openapi.yaml`](18-openapi.yaml) + [`18-openapi-redoc.pdf`](18-openapi-redoc.pdf) — 81 pages |
@@ -43,7 +43,7 @@ mémoire, et le fichier.
 | Extension | Outil | Remarque |
 |---|---|---|
 | `.drawio` | [draw.io](https://app.diagrams.net) (web ou application), extension VS Code | XML non compressé, lisible et versionnable. Les fichiers à plusieurs pages ouvrent leurs onglets automatiquement. |
-| `.gan` | [GanttProject](https://www.ganttproject.biz) 3.x | Calendrier français, semaine de cinq jours ouvrés. |
+| `.gan` | [GanttProject](https://www.ganttproject.biz) 3.x | Fichier source du planning, conservé pour le replanifier. Le livrable de l'annexe N est le `.drawio`. |
 | `.sql` | [Looping](https://www.looping-mcd.fr) 4.1+, menu « Rétroconception » | Reconstruit le MCD, puis génère le MLD et permet l'enregistrement en `.loo`. |
 | `.yaml` | Swagger Editor, Redocly, VS Code | Spécification OpenAPI 3.0.3, 39 chemins et 47 opérations. |
 | `.docx` / `.xlsx` | Word, Excel, LibreOffice | Tableaux à en-têtes figés et filtres pour les classeurs. |
@@ -52,18 +52,20 @@ mémoire, et le fichier.
 
 Les annexes de pilotage se recoupent volontairement, et les chiffres sont alignés :
 
-- la **WBS** (13) découpe le projet en 8 lots pour **69 jours-homme** et **34 500 €** au TJM de 500 € ;
+- la **WBS** (13) découpe le projet en 8 lots pour **207 jours-homme** et **103 500 €** au TJM de 500 € ;
 - le **PERT** (14) traduit ces lots en durées et calcule un chemin critique **A → C → D → F → H de
-  40 jours ouvrés**, avec des marges de 2, 8 et 11 jours sur les trois lots hors chemin critique ;
-- le **Gantt** (15) transcrit exactement ce séquencement à partir d'un démarrage au **3 février 2025**,
-  avec cinq jalons M1 à M5 ;
+  122 jours ouvrés**, avec des marges de 6, 25 et 34 jours sur les trois lots hors chemin critique ;
+- le **Gantt** (15) transcrit exactement ce séquencement sur la fenêtre du **1er janvier au 30 juin 2026**,
+  soit **123 jours ouvrés** une fois retirés les week-ends et les 6 jours fériés français, avec cinq jalons
+  M1 à M5 ; chaque tâche y porte la lettre de son lot PERT, sa marge totale, sa charge et son coût ;
 - la **matrice des risques** (16) hiérarchise 8 risques ; les deux plus critiques (R1 perte du nœud de
   périphérie, R5 perte de données) correspondent aux deux actions prioritaires du plan d'amélioration
   continue ;
 - la **RACI** (24) attribue à chacun des 8 lots un décideur redevable unique.
 
-L'écart entre les 69 jours-homme de charge et les 40 jours ouvrés de durée est assumé et documenté dans
-l'annexe 14 : il tient à l'intervention de deux développeurs en parallèle sur les lots applicatifs.
+L'écart entre les 207 jours-homme de charge et les 122 jours ouvrés du chemin critique est assumé et
+documenté dans l'annexe 14. Il tient à deux effets cumulés : les lots B, E et G se déroulent en parallèle
+du chemin critique, et les lots C, E, G et H mobilisent plus d'un intervenant à la fois.
 
 ## Génération
 
