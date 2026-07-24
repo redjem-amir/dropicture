@@ -30,4 +30,5 @@ Documents de pilotage, note de cadrage, planning (Gantt), structure de découpag
 
 **Fichiers sources**
 
-- Note de cadrage, mémoire (contexte, objectifs, périmètre, contraintes)
+- Note de cadrage formelle, [`note-de-cadrage.md`](note-de-cadrage.md) (contexte, objectifs, périmètre, budget, ressources, contraintes, risques, jalons)
+- Étude d'opportunité, [`etude-opportunite.md`](etude-opportunite.md)

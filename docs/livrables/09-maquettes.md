@@ -9,9 +9,14 @@
 
 ## Livrable
 
-Maquettes haute-fidélité des écrans principaux et design system (couleurs, typographie, composants) issu des jetons réels du produit.
+Maquettes haute-fidélité des six écrans principaux (connexion, inscription, bibliothèque, profil, réglages, profil public) et design system (couleurs, typographie, composants), calqués sur le code frontend réel (Next.js, Roboto Flex, jetons extraits de `globals.css` et des composants).
+
+![Annexe F.1 · Maquettes des interfaces et design system](../previews/Annexe%20F.1%20Maquettes%20des%20interfaces%20et%20design%20system.png)
+
+*Annexe F.1 · Maquettes des interfaces et design system*
 
 **Fichiers sources**
 
-- Planches de maquettes, `docs/drafts/22-maquettes-interfaces.pdf` (Annexe F.1)
+- Maquettes vectorielles importables dans Figma, `docs/drafts/maquettes/Annexe F.1 Maquettes des interfaces et design system.svg`
+- Planches complémentaires, `docs/drafts/22-maquettes-interfaces.pdf`
 - Design system, jetons réels de `apps/saas/frontend` et `apps/website`

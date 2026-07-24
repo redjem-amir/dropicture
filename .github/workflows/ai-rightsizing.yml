@@ -1,0 +1,82 @@
+name: AI Rightsizing
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "infra/saas/ansible/templates/docker-compose.yml.j2"
+      - "infra/saas/ansible/files/prometheus-rules.yml"
+      - "infra/saas/terraform/terraform.tfvars"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ai-rightsizing-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Guard, clé IA présente ?
+        id: guard
+        run: |
+          if [ -n "${{ secrets.ANTHROPIC_API_KEY }}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "ANTHROPIC_API_KEY absent, analyse IA ignorée." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Checkout
+        if: steps.guard.outputs.enabled == 'true'
+        uses: actions/checkout@v4
+
+      - name: Extraire le contexte de ressources
+        if: steps.guard.outputs.enabled == 'true'
+        run: |
+          {
+            echo "## Ressources déclarées (docker-compose.yml.j2)"
+            grep -nE "reservations|limits|cpus|memory|replicas|placement" \
+              infra/saas/ansible/templates/docker-compose.yml.j2 || true
+            echo "## Règles green IT (prometheus-rules.yml)"
+            grep -nE "watts|kwh|carbon|power|energy" \
+              infra/saas/ansible/files/prometheus-rules.yml || true
+            echo "## Dimensionnement des nœuds (terraform.tfvars)"
+            grep -nE "type|replicas|cpx|role" infra/saas/terraform/terraform.tfvars || true
+          } > context.txt
+          wc -l context.txt
+
+      - name: Analyse IA du right-sizing
+        if: steps.guard.outputs.enabled == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          CTX=$(jq -Rs . < context.txt)
+          PROMPT="Tu es ingénieur SRE. Voici les réservations, limites et règles d'énergie d'une stack Docker Swarm ainsi que le dimensionnement des noeuds. Propose au plus cinq optimisations concrètes de right-sizing et d'eco-conception, avec l'impact attendu sur le cout et la consommation. Reponds en francais, en liste courte. Contexte : "
+          BODY=$(jq -n --arg p "$PROMPT" --argjson c "$CTX" \
+            '{model:"claude-sonnet-5", max_tokens:1200, messages:[{role:"user", content:($p + $c)}]}')
+          RESP=$(curl -sS https://api.anthropic.com/v1/messages \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "content-type: application/json" \
+            -d "$BODY")
+          echo "## Recommandations de right-sizing assistées par IA" >> "$GITHUB_STEP_SUMMARY"
+          echo "$RESP" | jq -r '.content[0].text // (.error.message | "Erreur API, " + .)' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publier en commentaire de PR
+        if: steps.guard.outputs.enabled == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync(process.env.GITHUB_STEP_SUMMARY, 'utf8');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body.slice(0, 60000),
+            });
