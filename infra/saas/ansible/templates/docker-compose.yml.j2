@@ -392,6 +392,9 @@ services:
       - --storage.path=/alertmanager
     configs:
       - { source: alertmanager_config, target: /etc/alertmanager/alertmanager.yml }
+    secrets:
+      - alertmanager_smtp_password
+      - alertmanager_slack_webhook
     volumes:
       - /opt/dropicture/data/alertmanager:/alertmanager
     healthcheck:
@@ -633,3 +636,9 @@ secrets:
   origin_key:
     external: true
     name: dropicture_origin_key
+  alertmanager_smtp_password:
+    external: true
+    name: dropicture_alertmanager_smtp_password
+  alertmanager_slack_webhook:
+    external: true
+    name: dropicture_alertmanager_slack_webhook
