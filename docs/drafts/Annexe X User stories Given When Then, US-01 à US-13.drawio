@@ -1,0 +1,322 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-1" name="X user stories 1">
+    <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="c1" value="Annexe X, Personas, user stories et priorisation MoSCoW (BC2, C11 à C13)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="User stories US-01 à US-13, inscription, bibliothèque et compte" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+          <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="RNCP40573 · Expert en informatique et systèmes d'information, option DevOps · Amir Redjem · appelée en §11.2 du mémoire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="78" width="1574" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="c4" value="Le format Given When Then décrit un comportement observable. Les points suivent une suite de Fibonacci et mesurent la complexité. La traçabilité relie chaque story au cas d'utilisation et au point d'accès." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#495057" parent="1" vertex="1">
+          <mxGeometry x="40" y="116" width="1574" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c5" value="2.  User stories, critères d'acceptation, priorité et estimation" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="146" width="1574" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c6" value="Réf." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="170" width="62" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c7" value="P" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="102" y="170" width="42" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c8" value="En tant que membre, je veux" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="144" y="170" width="300" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c9" value="Critère d'acceptation, Given When Then" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="444" y="170" width="620" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c10" value="MoSCoW" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1064" y="170" width="80" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c11" value="Pts" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1144" y="170" width="45" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c12" value="Traçabilité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1189" y="170" width="425" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c13" value="US-01" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="198" width="62" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c14" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="198" width="42" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c15" value="S'inscrire avec un pseudonyme disponible" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="198" width="300" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c16" value="Un visiteur soumet un pseudonyme déjà pris, le formulaire signale l'indisponibilité avant l'envoi et l'inscription est refusée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="198" width="620" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c17" value="Must" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="198" width="80" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c18" value="3" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="198" width="45" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c19" value="UC-01 · POST /api/auth/signup" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="198" width="425" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c20" value="US-02" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="238" width="62" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c21" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="238" width="42" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c22" value="Se connecter et rester connecté" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="238" width="300" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c23" value="Un membre valide se connecte, un cookie de session opaque httpOnly est posé, valide 30 min glissantes, 8 h au maximum." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="238" width="620" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c24" value="Must" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="238" width="80" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c25" value="5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="238" width="45" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c26" value="UC-02 · POST /api/auth/signin" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="238" width="425" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c27" value="US-03" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="264" width="62" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c28" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="264" width="42" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c29" value="Être protégé contre l'énumération de comptes" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="264" width="300" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c30" value="Sur une adresse inconnue, la réponse et le temps de réponse sont identiques à ceux d'un mot de passe erroné." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="264" width="620" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c31" value="Must" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="264" width="80" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c32" value="3" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="264" width="45" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c33" value="UC-02 · POST /api/auth/signin" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="264" width="425" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c34" value="US-04" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="290" width="62" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c35" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="290" width="42" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c36" value="Téléverser sans saturer la mémoire du serveur" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="290" width="300" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c37" value="Sur un fichier de 90 Mo, le corps est traité en flux vers le stockage objet et le média est créé en visibilité privée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="290" width="620" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c38" value="Must" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="290" width="80" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c39" value="8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="290" width="45" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c40" value="UC-05 · POST /api/library/uploads" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="290" width="425" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c41" value="US-05" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="316" width="62" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c42" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="316" width="42" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c43" value="Voir un envoi trop volumineux refusé proprement" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="316" width="300" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c44" value="Limite 8 Mo pour une image, un fichier de 12 Mo rompt le flux, l'objet partiel est supprimé, code FILE_TOO_LARGE." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="316" width="620" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c45" value="Must" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="316" width="80" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c46" value="5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="316" width="45" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c47" value="UC-05 · POST /api/library/uploads" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="316" width="425" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c48" value="US-06" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="342" width="62" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c49" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="342" width="42" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c50" value="Retrouver sa bibliothèque en ordre chronologique" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="342" width="300" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c51" value="Un membre de 4 000 médias ouvre sa bibliothèque, éléments paginés par curseur, triés par date décroissante." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="342" width="620" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c52" value="Must" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="342" width="80" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c53" value="5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="342" width="45" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c54" value="UC-06 · GET /api/library" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="342" width="425" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c55" value="US-07" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="368" width="62" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c56" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="368" width="42" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c57" value="Constituer un album et définir sa couverture" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="368" width="300" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c58" value="Un média placé puis désigné couverture, la position est enregistrée et la couverture s'affiche sur la vignette." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="368" width="620" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c59" value="Should" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d0ebff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#1c7ed6;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="368" width="80" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c60" value="5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="368" width="45" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c61" value="UC-07 à 09 · POST /api/library/albums" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="368" width="425" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c62" value="US-08" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="394" width="62" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c63" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="394" width="42" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c64" value="Publier plusieurs médias en une seule action" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="394" width="300" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c65" value="Sur six médias privés, chacun bascule à l'état publié, la réponse liste les succès et qualifie chaque échec." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="394" width="620" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c66" value="Must" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="394" width="80" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c67" value="8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="394" width="45" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c68" value="UC-11 · PATCH /api/library/publish" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="394" width="425" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c69" value="US-09" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="420" width="62" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c70" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="420" width="42" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c71" value="Annuler une publication sans perdre le média" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="420" width="300" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c72" value="Deux médias publiés, la dépublication les retire du profil public, ils restent dans la bibliothèque privée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="420" width="620" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c73" value="Must" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="420" width="80" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c74" value="5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="420" width="45" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c75" value="UC-12 · PATCH /api/library/unpublish" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="420" width="425" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c76" value="US-10" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="446" width="62" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c77" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="446" width="42" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c78" value="Supprimer définitivement un média" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="446" width="300" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c79" value="Sur confirmation, la ligne est supprimée, l'objet effacé du stockage et le cache du CDN invalidé." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="446" width="620" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c80" value="Must" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="446" width="80" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c81" value="5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="446" width="45" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c82" value="UC-13 · DELETE /api/library/media" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="446" width="425" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c83" value="US-11" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="472" width="62" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c84" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="472" width="42" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c85" value="Ne jamais publier un avatar par mégarde" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="472" width="300" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c86" value="Un média de rôle avatar, sa publication est refusée avec le code AVATAR_NOT_ALLOWED." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="472" width="620" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c87" value="Must" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="472" width="80" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c88" value="2" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="472" width="45" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c89" value="UC-11 · PATCH /api/library/publish" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="472" width="425" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c90" value="US-12" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="498" width="62" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c91" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="498" width="42" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c92" value="Modifier sa biographie et son avatar" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="498" width="300" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c93" value="Un membre modifie sa biographie de 160 caractères et remplace son avatar, le profil reflète le changement à la publication suivante." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="498" width="620" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c94" value="Should" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d0ebff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#1c7ed6;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="498" width="80" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c95" value="3" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="498" width="45" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c96" value="UC-15 et 16 · PATCH /api/profile" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="498" width="425" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c97" value="US-13" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="538" width="62" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c98" value="P1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="102" y="538" width="42" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c99" value="Changer son mot de passe et invalider les sessions" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="144" y="538" width="300" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c100" value="Connecté sur deux navigateurs, le changement de mot de passe incrémente la version de jeton et invalide toutes les sessions." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="444" y="538" width="620" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c101" value="Must" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1064" y="538" width="80" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c102" value="5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1144" y="538" width="45" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c103" value="UC-21 · PATCH /api/settings/password" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1189" y="538" width="425" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c104" value="Sources, mémoire §11.2.1 et §11.2.2 · Annexe G, Annexe Q, Annexe Z · page 2 sur 4" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="1139" width="1574" height="18" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

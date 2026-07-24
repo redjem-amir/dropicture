@@ -1,0 +1,85 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-1" name="X1 personas">
+    <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="c1" value="Annexe X, Personas, user stories et priorisation MoSCoW (BC2, C11 à C13)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="Quatre personas alignés sur les acteurs du diagramme de cas d'utilisation, profil, objectifs, frustrations et scénario d'usage" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+          <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="RNCP40573 · Expert en informatique et systèmes d'information, option DevOps · Amir Redjem · appelée en §11.2 du mémoire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="78" width="1574" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="c4" value="Une exigence formulée hors contexte se prête à toutes les interprétations. Ces quatre personas fixent ce contexte, chacun correspondant à un acteur du diagramme de cas d'utilisation (Annexe G)." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#495057" parent="1" vertex="1">
+          <mxGeometry x="40" y="112" width="1574" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="c5" value="&lt;b&gt;P1  Léa Marchand, 29 ans, photographe amatrice&lt;/b&gt;   &lt;font color=&quot;#1c7ed6&quot;&gt;(acteur Membre)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="146" width="777" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c6" value="&lt;b&gt;&lt;font color=&quot;#495057&quot;&gt;Profil et comportement technologique&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Chargée de communication à Lyon. Photographie en argentique, numérise ses planches. 4 000 clichés sur trois disques. Équipement mixte, aucune compétence système, prudente sur ce qu'elle publie." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="184" width="777" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c7" value="&lt;b&gt;&lt;font color=&quot;#2f9e44&quot;&gt;Objectifs&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Rassembler ses clichés en un seul endroit. Choisir précisément ce qui est vu et par qui. Montrer une sélection sans imposer de compte." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="248" width="777" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="c8" value="&lt;b&gt;&lt;font color=&quot;#e03131&quot;&gt;Frustrations&lt;/font&gt;&lt;/b&gt;&lt;br&gt;A déjà publié un album entier au lieu d'une photo. Ne sait pas quels partages restent actifs. Redoute qu'une photo privée devienne publique sans action." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="298" width="777" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c9" value="&lt;b&gt;&lt;font color=&quot;#212529&quot;&gt;Scénario d'usage&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Dépose trente clichés, tout reste privé. Constitue un album, choisit une couverture, publie six photos en une action. Envoie l'adresse de son profil, puis dépublie deux clichés et vérifie leur disparition." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#f8f9fa;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="362" width="777" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c10" value="&lt;b&gt;P2  Thomas Bertin, 45 ans, directeur artistique&lt;/b&gt;   &lt;font color=&quot;#099268&quot;&gt;(acteur Visiteur)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#c3fae8;strokeColor=#099268;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="837" y="146" width="777" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c11" value="&lt;b&gt;&lt;font color=&quot;#495057&quot;&gt;Profil et comportement technologique&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Directeur artistique en agence parisienne. Consulte des portfolios plusieurs fois par semaine. Poste verrouillé sans droit d'installation, refuse de créer un compte, attentif au temps de chargement." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="837" y="184" width="777" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c12" value="&lt;b&gt;&lt;font color=&quot;#2f9e44&quot;&gt;Objectifs&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Voir un travail immédiatement, sans friction. Retrouver un profil par son nom. Partager une adresse à ses associés." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="837" y="248" width="777" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="c13" value="&lt;b&gt;&lt;font color=&quot;#e03131&quot;&gt;Frustrations&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Les services imposent une inscription ou une application. Les liens de partage expirent sans prévenir. Les galeries lourdes s'affichent mal." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="837" y="298" width="777" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="c14" value="&lt;b&gt;&lt;font color=&quot;#212529&quot;&gt;Scénario d'usage&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Reçoit une adresse de profil. La page s'affiche sans inscription ni script lourd. Parcourt la galerie, consulte la biographie, transmet l'adresse. Revient une semaine plus tard, la page est à jour." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#f8f9fa;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="837" y="348" width="777" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c15" value="&lt;b&gt;P3  Sofia Nadir, 34 ans, développeuse indépendante&lt;/b&gt;   &lt;font color=&quot;#7048e8&quot;&gt;(acteur Client API)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="616" width="777" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c16" value="&lt;b&gt;&lt;font color=&quot;#495057&quot;&gt;Profil et comportement technologique&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Réalise des sites vitrines pour des artistes, veut automatiser l'alimentation des galeries. Très à l'aise techniquement, lit une spécification OpenAPI avant intégration, exige de pouvoir révoquer un accès." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="654" width="777" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c17" value="&lt;b&gt;&lt;font color=&quot;#2f9e44&quot;&gt;Objectifs&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Accéder par programme à une bibliothèque avec l'accord du propriétaire. Un contrat d'interface stable et documenté. Révoquer un accès instantanément." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="718" width="777" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="c18" value="&lt;b&gt;&lt;font color=&quot;#e03131&quot;&gt;Frustrations&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Les API grand public sont fermées ou sous validation commerciale. Les clés ne sont pas rotatives. La documentation est incomplète sur les cas d'erreur." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="768" width="777" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c19" value="&lt;b&gt;&lt;font color=&quot;#212529&quot;&gt;Scénario d'usage&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Obtient une clé d'API de sa cliente. Lit la spécification, appelle les points d'accès, construit une galerie synchronisée. Sa cliente fait tourner la clé, l'accès est invalidé sans toucher au reste." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#f8f9fa;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="832" width="777" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c20" value="&lt;b&gt;P4  Karim Boussaïd, 38 ans, ingénieur d'exploitation&lt;/b&gt;   &lt;font color=&quot;#f76707&quot;&gt;(acteur Exploitant DevOps)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="837" y="616" width="777" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c21" value="&lt;b&gt;&lt;font color=&quot;#495057&quot;&gt;Profil et comportement technologique&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Seul sur l'astreinte de la plateforme, intervient depuis un poste distant hors heures de bureau. Expert infrastructure et conteneurisation, travaille en ligne de commande, refuse toute action non reproductible." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="837" y="654" width="777" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c22" value="&lt;b&gt;&lt;font color=&quot;#2f9e44&quot;&gt;Objectifs&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Savoir en moins d'une minute si la plateforme est saine. Reconstruire un nœud perdu par le code. Restaurer une base sans improviser." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="837" y="718" width="777" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="c23" value="&lt;b&gt;&lt;font color=&quot;#e03131&quot;&gt;Frustrations&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Les alertes trop nombreuses finissent ignorées. Les procédures de reprise ne sont vérifiées qu'à l'incident. La documentation d'exploitation est souvent périmée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="837" y="768" width="777" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c24" value="&lt;b&gt;&lt;font color=&quot;#212529&quot;&gt;Scénario d'usage&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Reçoit une alerte de cible injoignable. Ouvre le tableau de bord, identifie le nœud, relance le provisionnement par le code, vérifie le retour à la normale. Le mois suivant, déclenche une restauration de test." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#f8f9fa;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="837" y="832" width="777" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c25" value="Sources, mémoire §11.2.2 · Annexe G (cas d'utilisation) · page 1 sur 4" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="1139" width="1574" height="18" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

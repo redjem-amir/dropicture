@@ -1,0 +1,367 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-1" name="R2 technologiques">
+    <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="c1" value="Annexe R, Cartographie ISO/IEC 27001 version 2022 et RGPD (BC3 C25, BC4C C29)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="Contrôles technologiques (A.8), du contrôle d'accès privilégié à la séparation des environnements" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+          <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="RNCP40573 · Expert en informatique et systèmes d'information, option DevOps · Amir Redjem · appelée en §11.3.4, §12.1.2, §12.4.1 et §13 du mémoire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="78" width="1574" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="c4" value="&lt;b&gt;Statuts&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#212529" parent="1" vertex="1">
+          <mxGeometry x="40" y="116" width="300" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="c5" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1.2;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="110" y="114" width="86.2" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c6" value="Partiellement couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.2;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="208.2" y="114" width="178.6" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c7" value="Délégué" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=1.2;fontFamily=Helvetica;fontSize=9;fontColor=#1c7ed6;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="398.8" y="114" width="86.2" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c8" value="Hors périmètre" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#f1f3f5;strokeColor=#495057;strokeWidth=1.2;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="497" y="114" width="132.4" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c9" value="A.8  Contrôles technologiques (première partie)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="144" width="1574" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c10" value="Réf." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="168" width="95" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c11" value="Contrôle" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="135" y="168" width="320" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c12" value="Statut" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="455" y="168" width="150" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c13" value="Mise en œuvre dans dropicture" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="605" y="168" width="1009" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c14" value="8.2" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="196" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c15" value="Droits d'accès privilégiés" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="196" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c16" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="196" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c17" value="Accès SSH par clé uniquement (mot de passe et interactif désactivés). API Docker médiée par un mandataire en lecture seule sur réseau interne." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="196" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c18" value="8.3" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="222" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c19" value="Restriction d'accès à l'information" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="222" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c20" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="222" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c21" value="Clause d'appartenance sur chaque opération. Empreinte de mot de passe et clé d'API exclues des lectures par défaut au niveau du modèle." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="222" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c22" value="8.5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="248" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c23" value="Authentification sécurisée" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="248" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c24" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="248" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c25" value="Argon2id, session opaque Redis, expirations glissante et absolue, rotation par nonce sous verrou, détection de rejeu et révocation globale (Annexe I.3)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="248" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c26" value="8.6" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="274" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c27" value="Dimensionnement" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="274" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c28" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="274" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c29" value="Réservations et limites déclarées service par service (right-sizing). Alertes saturation processeur, mémoire, disque dont prédictive à 24 heures." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="274" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c30" value="8.7" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="300" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c31" value="Protection contre les programmes malveillants" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="300" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c32" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="300" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c33" value="Images de base minimales (Alpine), exécution sous utilisateur non privilégié, analyse Trivy des dépendances et des images en portes bloquantes." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="300" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c34" value="8.8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="326" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c35" value="Gestion des vulnérabilités techniques" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="326" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c36" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="326" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c37" value="Trois analyses bloquantes (dépendances et secrets, configuration, image), seuils CRITICAL et HIGH, rapports SARIF historisés, exceptions datées." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="326" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c38" value="8.9" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="352" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c39" value="Gestion des configurations" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="352" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c40" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="352" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c41" value="Toute configuration décrite en code et versionnée. Configs Swarm nommées par empreinte, une modification crée un objet neuf et met à jour le service." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="352" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c42" value="8.10" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="378" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c43" value="Suppression des informations" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="378" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c44" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="378" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c45" value="Suppression du compte, effacement des objets du stockage par lots, suppression en base propagée en cascade, puis invalidation du cache." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="378" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c46" value="8.11" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="404" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c47" value="Masquage des données" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="404" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c48" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="404" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c49" value="Journaux d'accès avec identifiant technique de compte (UUID) seulement, jamais d'identité en clair. Secrets applicatifs jamais journalisés." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="404" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c50" value="8.12" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="430" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c51" value="Prévention de la fuite de données" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="430" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c52" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="430" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c53" value="Privé par défaut. Bucket des médias entièrement privé, lecture restreinte au préfixe public par contrôle d'accès d'origine. Origines en liste blanche." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="430" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c54" value="8.13" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="456" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c55" value="Sauvegarde des informations" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="456" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c56" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="456" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c57" value="Sauvegarde toutes les six heures, vérifiée par empreinte SHA-256 et par la taille de l'objet déposé, versionnée, verrouillée et soumise à cycle de vie (Annexe U)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="456" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c58" value="8.15" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="482" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c59" value="Journalisation" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="482" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c60" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="482" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c61" value="Journal d'accès HTTP structuré en JSON (méthode, route, statut, adresse IP, compte, quota, durée), centralisé dans Loki, rétention trente jours." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="482" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c62" value="8.16" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="508" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c63" value="Activités de surveillance" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="508" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c64" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="508" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c65" value="Prometheus scrute cinq familles de cibles toutes les quinze secondes, dix règles d'alerte couvrent disponibilité, saturation, erreur, latence, énergie (Annexe P)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="508" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c66" value="A.8  Contrôles technologiques (seconde partie)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="550" width="1574" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c67" value="Réf." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="574" width="95" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c68" value="Contrôle" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="135" y="574" width="320" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c69" value="Statut" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="455" y="574" width="150" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c70" value="Mise en œuvre dans dropicture" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="605" y="574" width="1009" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c71" value="8.17" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="602" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c72" value="Synchronisation des horloges" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="602" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c73" value="Partiellement couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe8cc;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="602" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c74" value="Assurée par le service de synchronisation par défaut du système. Écart assumé, la source de temps n'est pas pilotée explicitement par le code." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="602" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c75" value="8.18" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="628" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c76" value="Programmes utilitaires à privilèges" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="628" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c77" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="628" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c78" value="Le mandataire de socket n'autorise qu'un ensemble restreint de lectures. Aucune écriture sur l'API Docker exposée à un conteneur joignable depuis Internet." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="628" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c79" value="8.19" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="654" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c80" value="Installation de logiciels en exploitation" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="654" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c81" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="654" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c82" value="Images immuables étiquetées par empreinte de commit. Aucune installation manuelle sur les nœuds, toute évolution passe par le pipeline." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="654" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c83" value="8.20 / 8.21" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="680" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c84" value="Sécurité des réseaux et des services réseau" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="680" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c85" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="680" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c86" value="Pare-feu n'ouvrant 80 et 443 qu'aux plages Cloudflare, lues dynamiquement. Plan de contrôle confiné au privé. TLS et routage Traefik, sondes de santé." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="680" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c87" value="8.22" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="706" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c88" value="Cloisonnement des réseaux" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="706" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c89" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="706" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c90" value="Cinq réseaux overlay aux rôles distincts, deux internes sans route par défaut. La base n'est joignable que depuis le réseau applicatif (Annexe C)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="706" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c91" value="8.23" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="732" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c92" value="Filtrage web" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="732" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c93" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="732" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c94" value="Pare-feu applicatif Cloudflare en périphérie et pare-feu AWS devant la diffusion (limitation par adresse, liste de réputation, règles communes)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="732" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c95" value="8.24" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="758" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c96" value="Utilisation de la cryptographie" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="758" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c97" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="758" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c98" value="Argon2id pour les mots de passe, AES-256 au repos sur tous les buckets, TLS 1.2 minimum, certificat d'origine RSA 2048, secrets Swarm chiffrés." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="758" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c99" value="8.25 à 8.28" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="784" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c100" value="Cycle de développement et codage sécurisés" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="784" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c101" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="784" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c102" value="Contrôles au plus tôt (pre-commit, tests, analyses). Validation en liste blanche avec rejet des propriétés non déclarées. Recommandations OWASP appliquées." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="784" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c103" value="8.29" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="810" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c104" value="Tests de sécurité en développement et recette" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="810" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c105" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="810" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c106" value="218 tests automatisés, dont une suite dédiée à la limitation de débit et des cas couvrant rotation de session, détection de rejeu et appartenance." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="810" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c107" value="8.31" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="836" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c108" value="Séparation des environnements" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="836" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c109" value="Partiellement couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe8cc;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="836" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c110" value="Développement local isolé, production pilotée par le code. Écart assumé, pas de préproduction distincte, choix cohérent avec la maîtrise des coûts." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="836" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c111" value="8.32" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="862" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c112" value="Gestion des changements" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="862" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c113" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="862" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c114" value="Toute modification passe par le dépôt, revue, tests, plan Terraform inspecté avant application, déploiement progressif avec retour arrière automatique." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="862" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c115" value="8.33" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="888" width="95" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c116" value="Informations de test" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="135" y="888" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c117" value="Couvert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="455" y="888" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c118" value="Suite de tests autonome, Redis remplacé par une implémentation en mémoire, persistance par dépôts factices, service de médias doublé. Aucune donnée réelle." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="605" y="888" width="1009" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c119" value="Sources, apps/saas/backend/src (main, services, guards, middleware, models) · .trivyignore · référentiel ISO/IEC 27001 version 2022, annexe A · page 2 sur 3" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="1139" width="1574" height="18" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

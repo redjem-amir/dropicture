@@ -1,0 +1,145 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-1" name="W2 killer features et SWOT">
+    <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="c1" value="Annexe W, Benchmark concurrentiel et matrice de décision pondérée (BC1 C3, BC2 C11)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="Trois killer features candidates, faisabilité et effort, puis analyse SWOT de chacune" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+          <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="RNCP40573 · Expert en informatique et systèmes d'information, option DevOps · Amir Redjem · appelée en §10.1, §11.1.3 et §11.2 du mémoire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="78" width="1574" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="c4" value="4.  Trois killer features candidates" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="116" width="1574" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c5" value="Réf." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="140" width="55" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c6" value="Fonctionnalité proposée" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="95" y="140" width="470" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c7" value="Gaps couverts" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="565" y="140" width="130" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c8" value="Faisabilité (0 à 10)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="695" y="140" width="150" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c9" value="Effort estimé" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="845" y="140" width="170" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c10" value="Dépendances" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1015" y="140" width="599" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="c11" value="KF1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="40" y="168" width="55" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c12" value="Privé par défaut, publication explicite et réversible par lot" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="95" y="168" width="470" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c13" value="G1, G2" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="565" y="168" width="130" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c14" value="9" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="695" y="168" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c15" value="12 j-h · 6 000 €" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="845" y="168" width="170" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c16" value="Modèle de données (E), API bibliothèque (Q), séquence de publication (I.2)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1015" y="168" width="599" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c17" value="KF2" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="40" y="194" width="55" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c18" value="Profil public en page statique servie par CDN" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="95" y="194" width="470" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c19" value="G3, G5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="565" y="194" width="130" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c20" value="7" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="695" y="194" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c21" value="9 j-h · 4 500 €" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="845" y="194" width="170" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c22" value="Export statique Next.js, distribution CloudFront, adressage /u/?u=pseudo" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1015" y="194" width="599" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c23" value="KF3" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="40" y="220" width="55" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c24" value="Clé d'API personnelle, rotative et révocable" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="95" y="220" width="470" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c25" value="G4, G5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="565" y="220" width="130" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c26" value="8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="695" y="220" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c27" value="6 j-h · 3 000 €" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="845" y="220" width="170" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c28" value="Stratégie d'authentification (H), contrat d'interface (Q)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1015" y="220" width="599" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c29" value="5.  Analyse SWOT de chaque killer feature" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="264" width="1574" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c30" value="KF1  Privé par défaut, publication réversible par lot" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#f1f3f5;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="288" width="511.333" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c31" value="&lt;b&gt;&lt;font color=&quot;#2f9e44&quot;&gt;Forces&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Répond à une inquiétude réelle sur la maîtrise de la visibilité. Règle simple, énonçable en une phrase. Coût faible, la visibilité étant un horodatage sur la ligne." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1.6;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="318" width="250.667" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="c32" value="&lt;b&gt;&lt;font color=&quot;#e03131&quot;&gt;Faiblesses&lt;/font&gt;&lt;/b&gt;&lt;br&gt;N'apporte rien de visible tant que rien n'est déposé. Difficile à démontrer en capture, l'absence de fuite ne se voit pas." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="300.667" y="318" width="250.667" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="c33" value="&lt;b&gt;&lt;font color=&quot;#1c7ed6&quot;&gt;Opportunités&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Aligne le produit sur le RGPD et la minimisation. Discours produit clair face à des modèles de visibilité confus." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="422" width="250.667" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="c34" value="&lt;b&gt;&lt;font color=&quot;#f76707&quot;&gt;Menaces&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Un concurrent peut annoncer la promesse sans la tenir. Une seule fuite la détruit." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="300.667" y="422" width="250.667" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="c35" value="KF2  Profil public en page statique servie par CDN" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#f1f3f5;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="571.333" y="288" width="511.333" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c36" value="&lt;b&gt;&lt;font color=&quot;#2f9e44&quot;&gt;Forces&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Coût de diffusion quasi nul, indépendant du trafic. Affichage très court. Aucune surface d'exécution exposée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1.6;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="571.333" y="318" width="250.667" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="c37" value="&lt;b&gt;&lt;font color=&quot;#e03131&quot;&gt;Faiblesses&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Contraint l'adressage à /u/?u=pseudo, moins lisible. Fraîcheur dépendante de l'invalidation du cache." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="318" width="250.667" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="c38" value="&lt;b&gt;&lt;font color=&quot;#1c7ed6&quot;&gt;Opportunités&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Ouvre l'indexation par les moteurs, acquisition sans coût publicitaire. Compétence d'architecture rare à cette échelle." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="571.333" y="422" width="250.667" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="c39" value="&lt;b&gt;&lt;font color=&quot;#f76707&quot;&gt;Menaces&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Une évolution de l'export statique peut casser la chaîne. Le compromis d'adressage peut être jugé sévèrement." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="422" width="250.667" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="c40" value="KF3  Clé d'API personnelle, rotative et révocable" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#f1f3f5;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1102.67" y="288" width="511.333" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c41" value="&lt;b&gt;&lt;font color=&quot;#2f9e44&quot;&gt;Forces&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Réversibilité démontrable, l'utilisateur sort ses données lui-même. Faible coût, l'ossature d'authentification existant déjà." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1.6;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1102.67" y="318" width="250.667" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="c42" value="&lt;b&gt;&lt;font color=&quot;#e03131&quot;&gt;Faiblesses&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Concerne une minorité d'utilisateurs. Élargit la surface d'attaque avec un second chemin d'authentification." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1363.33" y="318" width="250.667" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="c43" value="&lt;b&gt;&lt;font color=&quot;#1c7ed6&quot;&gt;Opportunités&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Répond au règlement sur les données et à la portabilité. Ouvre un usage automatisé et des intégrations tierces." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1102.67" y="422" width="250.667" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="c44" value="&lt;b&gt;&lt;font color=&quot;#f76707&quot;&gt;Menaces&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Une clé fuitée donne un accès durable sans révocation immédiate. Impose une limitation de débit dédiée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1363.33" y="422" width="250.667" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="c45" value="Sources, mémoire §11.2.1 (fonctionnalités requises) · Annexe E, Annexe Q, Annexe I.2 · page 2 sur 3" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="1139" width="1574" height="18" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
