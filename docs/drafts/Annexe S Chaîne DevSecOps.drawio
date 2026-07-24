@@ -1,0 +1,286 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-1" name="Chaîne DevSecOps">
+        <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="n1" value="Annexe S Chaîne DevSecOps" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n2" value="Sécurité déplacée au plus tôt (shift-left), portes bloquantes et nomenclature logicielle par artefact" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+                    <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+                </mxCell>
+                <mxCell id="n3" value="PLAN" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=14;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="60" y="120" width="375" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n4" value="Modèle de menaces implicite, privé par défaut" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="60" y="160" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n5" value="Choix d&#39;architecture tracés en ADR" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="60" y="200" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n6" value="Veille réglementaire (RGPD, NIS 2, IA Act)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="60" y="240" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n7" value="Exigences de sécurité dans le cahier des charges" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="60" y="280" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#495057;labelBackgroundColor=#ffffff;endArrow=classic;endFill=1;exitDx=0;exitDy=0" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="435" y="138" as="sourcePoint"/>
+                        <mxPoint x="460" y="138" as="targetPoint"/>
+                        <Array as="points"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n9" value="CODE" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dbe4ff;strokeColor=#4263eb;strokeWidth=1.6;fontFamily=Helvetica;fontSize=14;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="460" y="120" width="375" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n10" value="Husky + lint-staged en pre-commit" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="460" y="160" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n11" value="ESLint + Prettier · TypeScript strict" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="460" y="200" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n12" value="Secrets hors du dépôt (GitHub Secrets, SSM)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="460" y="240" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n13" value="DTO validés en liste blanche" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="460" y="280" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="p14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#495057;labelBackgroundColor=#ffffff;endArrow=classic;endFill=1;exitDx=0;exitDy=0" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="835" y="138" as="sourcePoint"/>
+                        <mxPoint x="860" y="138" as="targetPoint"/>
+                        <Array as="points"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n15" value="BUILD" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=1.6;fontFamily=Helvetica;fontSize=14;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="860" y="120" width="375" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n16" value="Images multi-étapes, utilisateur non root" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="860" y="160" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n17" value="Versions d&#39;images épinglées (pas de :latest en prod)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="860" y="200" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n18" value="Étiquetage par SHA de commit, image immuable" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="860" y="240" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n19" value="Cache de construction isolé par service" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="860" y="280" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="p20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#495057;labelBackgroundColor=#ffffff;endArrow=classic;endFill=1;exitDx=0;exitDy=0" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1235" y="138" as="sourcePoint"/>
+                        <mxPoint x="1260" y="138" as="targetPoint"/>
+                        <Array as="points"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n21" value="TEST" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=14;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1260" y="120" width="375" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n22" value="218 tests Jest + supertest" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="1260" y="160" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n23" value="Couverture explicite des propriétés de sécurité," style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="1260" y="200" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n24" value="quotas, appartenance, rotation et rejeu de session" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="1260" y="240" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n25" value="Porte bloquante, un test rouge arrête tout" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="1260" y="280" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n26" value="RELEASE" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=14;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="60" y="370" width="375" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n27" value="trivy fs, dépendances et secrets (bloquant)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="60" y="410" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n28" value="trivy config, Terraform, Ansible, Dockerfile (bloquant)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="60" y="450" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n29" value="trivy image, image publiée (bloquant)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="60" y="490" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n30" value="SBOM CycloneDX par image, conservée 90 jours" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="60" y="530" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="p31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#495057;labelBackgroundColor=#ffffff;endArrow=classic;endFill=1;exitDx=0;exitDy=0" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="435" y="388" as="sourcePoint"/>
+                        <mxPoint x="460" y="388" as="targetPoint"/>
+                        <Array as="points"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n32" value="DEPLOY" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1.6;fontFamily=Helvetica;fontSize=14;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="460" y="370" width="375" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n33" value="Ansible refuse d&#39;agir sur un Swarm non provisionné" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="460" y="410" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n34" value="Secrets Swarm chiffrés au repos, montés en tmpfs" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="460" y="450" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n35" value="Socket Docker médié par socket-proxy en lecture seule" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="460" y="490" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n36" value="Rolling update surveillé, rollback automatique" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="460" y="530" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="p37" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#495057;labelBackgroundColor=#ffffff;endArrow=classic;endFill=1;exitDx=0;exitDy=0" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="835" y="388" as="sourcePoint"/>
+                        <mxPoint x="860" y="388" as="targetPoint"/>
+                        <Array as="points"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n38" value="OPERATE" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#c3fae8;strokeColor=#099268;strokeWidth=1.6;fontFamily=Helvetica;fontSize=14;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="860" y="370" width="375" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n39" value="WAF Cloudflare (périphérie) + WAF AWS (CDN)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="860" y="410" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n40" value="Pare-feu Hetzner restreint aux plages Cloudflare" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="860" y="450" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n41" value="SSH par clé seule, MaxAuthTries 3" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="860" y="490" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n42" value="Sessions révocables globalement (tokenVersion)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="860" y="530" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="p43" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#495057;labelBackgroundColor=#ffffff;endArrow=classic;endFill=1;exitDx=0;exitDy=0" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1235" y="388" as="sourcePoint"/>
+                        <mxPoint x="1260" y="388" as="targetPoint"/>
+                        <Array as="points"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n44" value="MONITOR" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=14;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1260" y="370" width="375" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="n45" value="Journal d&#39;accès HTTP structuré → Loki" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="1260" y="410" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n46" value="Dix règles d&#39;alerte, dont erreurs 5xx et crash-loop" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="1260" y="450" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n47" value="SARIF publiés dans GitHub Code Scanning" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="1260" y="490" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n48" value="Registre des risques revu périodiquement" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="1260" y="530" width="375" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="p49" value="boucle de retour, chaque incident et chaque vulnérabilité alimentent le plan et le registre des risques" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#e03131;labelBackgroundColor=#ffffff;endArrow=classic;endFill=1;exitDx=0;exitDy=0;dashed=1;dashPattern=6 4" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1235" y="138" as="sourcePoint"/>
+                        <mxPoint x="58" y="388" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1620" y="138"/>
+                            <mxPoint x="1620" y="620"/>
+                            <mxPoint x="30" y="620"/>
+                            <mxPoint x="30" y="388"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n50" value="PORTES BLOQUANTES ce qui arrête réellement la chaîne" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#e03131" parent="1" vertex="1">
+                    <mxGeometry x="60" y="660" width="760" height="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="n51" value="Porte" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="82" y="696" width="204" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="n52" value="Périmètre" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="292" y="696" width="134" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="n53" value="Seuil" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="432" y="696" width="244" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="n54" value="Effet" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="682" y="696" width="154" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="n55" value="checks · trivy fs" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="82" y="726" width="204" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n56" value="vuln + secret" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="292" y="726" width="134" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n57" value="CRITICAL, HIGH, --ignore-unfixed" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="432" y="726" width="244" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n58" value="arrêt du pipeline" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="682" y="726" width="154" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n59" value="checks · trivy config" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="82" y="758" width="204" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n60" value="IaC" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="292" y="758" width="134" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n61" value="CRITICAL, HIGH" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="432" y="758" width="244" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n62" value="arrêt du pipeline" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="682" y="758" width="154" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n63" value="checks · Jest" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="82" y="790" width="204" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n64" value="218 tests" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="292" y="790" width="134" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n65" value="un seul échec" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="432" y="790" width="244" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n66" value="arrêt du pipeline" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="682" y="790" width="154" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n67" value="scan · trivy image" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="82" y="822" width="204" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n68" value="image publiée" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="292" y="822" width="134" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n69" value="CRITICAL, HIGH, --ignore-unfixed" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="432" y="822" width="244" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n70" value="deploy ne démarre pas" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="682" y="822" width="154" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n71" value="deploy · assertions Ansible" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="82" y="854" width="204" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n72" value="état du Swarm" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="292" y="854" width="134" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n73" value="config / secret / sortie manquante" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="432" y="854" width="244" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n74" value="aucune modification" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="682" y="854" width="154" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="n75" value="Les exceptions vivent dans &lt;b&gt;.trivyignore&lt;/b&gt; et doivent porter identifiant, motif et date de revue. Le fichier est aujourd&#39;hui vide de toute exception active." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#fff3bf;strokeColor=#f59f00;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+                    <mxGeometry x="82" y="890" width="716" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n76" value="TRAÇABILITÉ DE LA CHAÎNE D&#39;APPROVISIONNEMENT" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#7048e8" parent="1" vertex="1">
+                    <mxGeometry x="850" y="660" width="750" height="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="n77" value="&lt;b&gt;SBOM CycloneDX,&lt;/b&gt;&amp;nbsp;une nomenclature complète par image publiée, archivée 90 jours en artefact de run. Elle permet de répondre en minutes à « suis-je exposé à cette CVE ? » sans reconstruire l&#39;image." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="696" width="706" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="n78" value="&lt;b&gt;Rapports SARIF,&lt;/b&gt;&amp;nbsp;dépôt et images, publiés dans GitHub Code Scanning, l&#39;historique des vulnérabilités devient consultable et comparable dans le temps." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="752" width="706" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="n79" value="&lt;b&gt;Image immuable,&lt;/b&gt;&amp;nbsp;l&#39;étiquette est le SHA du dernier commit touchant le service. Ce qui tourne en production est donc rattachable à une ligne de code, sans ambiguïté." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="808" width="706" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="n80" value="&lt;b&gt;Perspective,&lt;/b&gt;&amp;nbsp;exploiter les SBOM déjà produites pour une veille continue au-delà de l&#39;instant de construction (inscrit au plan d&#39;amélioration continue)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="864" width="706" height="42" as="geometry"/>
+                </mxCell>
+                <mxCell id="n81" value="Sources, .github/workflows/saas-deploy.yml · .trivyignore · .husky/pre-commit · apps/saas/*/Dockerfile · infra/saas/ansible/*.yml" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+                    <mxGeometry x="60" y="930" width="1200" height="18" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

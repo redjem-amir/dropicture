@@ -1,0 +1,460 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-3" name="Échelles et plan de traitement">
+    <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="c1" value="Annexe O, Échelles de cotation, options de traitement et plan d'action complémentaire (BC1 C4, BC2 C17)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="dropicture · les deux échelles sont à cinq niveaux et définies littéralement, la criticité est leur produit" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+          <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="RNCP40573 · Expert en informatique et systèmes d'information, option DevOps · Amir Redjem · appelée en §11.3.3 et §13.2.2 du mémoire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="78" width="1574" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="c4" value="1.  Échelle de probabilité (vraisemblance)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="112" width="800" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c5" value="Niveau" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="138" width="70" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c6" value="Probabilité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="110" y="138" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c7" value="Description retenue pour dropicture" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="260" y="138" width="380" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c8" value="Fréquence indicative" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="640" y="138" width="180" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c9" value="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="40" y="164" width="70" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c10" value="Très improbable" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="110" y="164" width="150" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c11" value="Scénario théorique, jamais observé sur ce type de plateforme, exigeant une conjonction de circonstances exceptionnelles." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="260" y="164" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c12" value="Moins d'une fois en 10 ans" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="164" width="180" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c13" value="2" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="40" y="198" width="70" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c14" value="Improbable" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="110" y="198" width="150" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c15" value="Scénario connu du secteur mais rendu peu vraisemblable par les mesures en place." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="260" y="198" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c16" value="Une fois en 5 à 10 ans" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="198" width="180" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c17" value="3" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="40" y="232" width="70" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c18" value="Possible" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="110" y="232" width="150" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c19" value="Scénario plausible à l'échelle du projet, déjà observé sur des plateformes comparables." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="260" y="232" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c20" value="Une fois en 1 à 5 ans" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="232" width="180" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c21" value="4" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="40" y="266" width="70" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c22" value="Probable" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="110" y="266" width="150" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c23" value="Scénario attendu si aucune mesure spécifique n'est maintenue." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="260" y="266" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c24" value="Une fois par an" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="266" width="180" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c25" value="5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="40" y="300" width="70" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c26" value="Très probable" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="110" y="300" width="150" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c27" value="Scénario récurrent, quasi certain sur la durée de vie du projet." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="260" y="300" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c28" value="Plusieurs fois par an" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="300" width="180" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c29" value="2.  Échelle d'impact (gravité)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="834" y="112" width="800" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c30" value="Niveau" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="834" y="138" width="70" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c31" value="Impact" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="904" y="138" width="150" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c32" value="Description retenue pour dropicture" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1054" y="138" width="380" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c33" value="Conséquence type" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1434" y="138" width="180" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c34" value="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="834" y="164" width="70" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c35" value="Négligeable" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="904" y="164" width="150" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c36" value="Gêne perceptible sans effet sur le service rendu ni sur les données." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1054" y="164" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c37" value="Aucune interruption" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1434" y="164" width="180" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c38" value="2" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="834" y="198" width="70" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c39" value="Mineur" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="904" y="198" width="150" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c40" value="Dégradation temporaire d'une fonctionnalité, sans perte de donnée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1054" y="198" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c41" value="Quelques minutes d'indisponibilité partielle" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1434" y="198" width="180" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c42" value="3" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="834" y="232" width="70" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c43" value="Modéré" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="904" y="232" width="150" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c44" value="Interruption partielle du service ou dérive budgétaire contenue." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1054" y="232" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c45" value="Moins d'une heure d'indisponibilité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1434" y="232" width="180" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c46" value="4" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="834" y="266" width="70" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c47" value="Majeur" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="904" y="266" width="150" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c48" value="Interruption du service, perte de visibilité d'exploitation, ou non-conformité réglementaire avérée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1054" y="266" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c49" value="Plusieurs heures · exposition juridique" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1434" y="266" width="180" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c50" value="5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="834" y="300" width="70" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c51" value="Critique" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="904" y="300" width="150" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c52" value="Perte de données personnelles, compromission d'un accès privilégié, ou indisponibilité prolongée du service." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1054" y="300" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c53" value="Atteinte durable à la confiance" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1434" y="300" width="180" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c54" value="3.  Options de traitement (EBIOS Risk Manager)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="344" width="800" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c55" value="ÉVITER" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#e03131" parent="1" vertex="1">
+          <mxGeometry x="40" y="370" width="380" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c56" value="Supprimer la source du risque en renonçant à l'activité qui l'engendre." style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="52" y="400" width="356" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="c57" value="&lt;b&gt;Aucun risque&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#e03131;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="52" y="466" width="356" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c58" value="RÉDUIRE" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#1c7ed6" parent="1" vertex="1">
+          <mxGeometry x="438" y="370" width="380" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c59" value="Abaisser la vraisemblance ou la gravité par des mesures techniques ou organisationnelles." style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="450" y="400" width="356" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="c60" value="&lt;b&gt;Sept risques sur huit&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#1c7ed6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#1c7ed6;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="450" y="466" width="356" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c61" value="TRANSFÉRER" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#7048e8" parent="1" vertex="1">
+          <mxGeometry x="836" y="370" width="380" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c62" value="Reporter la charge du risque sur un tiers (assurance, contrat de service)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="848" y="400" width="356" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="c63" value="&lt;b&gt;Aucun risque&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#7048e8;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="848" y="466" width="356" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c64" value="ACCEPTER" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#2f9e44" parent="1" vertex="1">
+          <mxGeometry x="1234" y="370" width="380" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c65" value="Assumer le risque résiduel après traitement, en le documentant et en le surveillant." style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1246" y="400" width="356" height="62" as="geometry"/>
+        </mxCell>
+        <mxCell id="c66" value="&lt;b&gt;R4 et R6, après réduction&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="1246" y="466" width="356" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c67" value="4.  Plan d'action complémentaire, ce qui reste à faire et son coût" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="518" width="900" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c68" value="ID" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="544" width="46" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c69" value="Action complémentaire" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="86" y="544" width="640" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c70" value="Priorité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="726" y="544" width="116" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c71" value="Charge" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="842" y="544" width="104" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c72" value="Coût" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="946" y="544" width="104" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c73" value="Porteur" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1050" y="544" width="244" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c74" value="Indicateur de suivi" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1294" y="544" width="320" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c75" value="&lt;b&gt;R1&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="570" width="46" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c76" value="Mise en haute disponibilité du nœud de périphérie et de la pile d'observabilité, 8 j-h, 4 000 €, plus 24 € par mois. Priorité HAUTE, c'est le risque le plus critique du registre." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="570" width="640" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c77" value="&lt;b&gt;HAUTE&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="726" y="570" width="116" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c78" value="8 j-h" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="842" y="570" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c79" value="4 000 €" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="946" y="570" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c80" value="Chef de projet, ingénieur DevOps" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1050" y="570" width="244" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c81" value="Disponibilité mensuelle · délai moyen de rétablissement (MTTR)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1294" y="570" width="320" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c82" value="&lt;b&gt;R5&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="616" width="46" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c83" value="Exercice périodique de restauration de bout en bout et suivi d'un objectif de point de reprise documenté, 3 j-h, 1 500 €. Priorité MOYENNE, le dispositif est démontré mais non éprouvé dans la durée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="616" width="640" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c84" value="&lt;b&gt;MOYENNE&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="726" y="616" width="116" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c85" value="3 j-h" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="842" y="616" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c86" value="1 500 €" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="946" y="616" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c87" value="Chef de projet, ingénieur DevOps" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1050" y="616" width="244" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c88" value="Succès de la dernière restauration testée · âge de la dernière sauvegarde vérifiée" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1294" y="616" width="320" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c89" value="&lt;b&gt;R7&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="662" width="46" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c90" value="Instaurer une mesure de couverture de tests en intégration continue assortie d'un seuil bloquant, 2 j-h, 1 000 €. Priorité HAUTE, la suite est bloquante, le taux ne l'est pas encore." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="662" width="640" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c91" value="&lt;b&gt;HAUTE&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="726" y="662" width="116" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c92" value="2 j-h" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="842" y="662" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c93" value="1 000 €" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="946" y="662" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c94" value="Chef de projet, ingénieur DevOps" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1050" y="662" width="244" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c95" value="Taux d'échec des changements · taux de retour arrière automatique" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1294" y="662" width="320" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c96" value="&lt;b&gt;R2&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="708" width="46" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c97" value="Centraliser la gestion des secrets aujourd'hui répartie sur trois fournisseurs, en conservant le moindre privilège par périmètre. Charge à cadrer, priorité basse." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="708" width="640" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c98" value="&lt;b&gt;BASSE&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="726" y="708" width="116" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c99" value="à cadrer" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="842" y="708" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c100" value="à cadrer" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="946" y="708" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c101" value="Chef de projet, ingénieur DevOps" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1050" y="708" width="244" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c102" value="Nombre de secrets détectés par le pipeline (cible zéro)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1294" y="708" width="320" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c103" value="&lt;b&gt;R3&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="754" width="46" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c104" value="Couverture maintenue par une suite de tests dédiée. Surveillance des occurrences de rejeu dans les journaux, mot-clé d'alerte dédié." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="754" width="640" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c105" value="&lt;b&gt;Maintien&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d0ebff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="726" y="754" width="116" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c106" value="sans objet" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="842" y="754" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c107" value="sans objet" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="946" y="754" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c108" value="Référent sécurité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1050" y="754" width="244" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c109" value="Nombre de rejeux détectés · nombre de révocations globales déclenchées" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1294" y="754" width="320" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c110" value="&lt;b&gt;R4&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="800" width="46" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c111" value="Risque résiduel accepté. Surveillance mensuelle du réalisé par rapport au budget." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="800" width="640" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c112" value="&lt;b&gt;Acceptée&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="726" y="800" width="116" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c113" value="sans objet" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="842" y="800" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c114" value="sans objet" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="946" y="800" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c115" value="Sponsor" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1050" y="800" width="244" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c116" value="Coût mensuel réalisé rapporté au budget · nombre d'alertes budgétaires déclenchées" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1294" y="800" width="320" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c117" value="&lt;b&gt;R6&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="846" width="46" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c118" value="Risque résiduel accepté. Veille de licence maintenue, les deux épisodes observés (Terraform en 2023, Redis en 2024) sont tracés comme points de vigilance." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="846" width="640" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c119" value="&lt;b&gt;Acceptée&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="726" y="846" width="116" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c120" value="sans objet" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="842" y="846" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c121" value="sans objet" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="946" y="846" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c122" value="Chef de projet, ingénieur DevOps" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1050" y="846" width="244" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c123" value="Disponibilité annoncée par fournisseur · évolutions de licence détectées en veille" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1294" y="846" width="320" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c124" value="&lt;b&gt;R8&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="892" width="46" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c125" value="Veille réglementaire permanente (RGPD, NIS 2, IA Act). Écart identifié, la procédure de notification de violation relève de l'organisation exploitante et n'est pas outillée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="892" width="640" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c126" value="&lt;b&gt;Veille&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d0ebff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="726" y="892" width="116" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c127" value="sans objet" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="842" y="892" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c128" value="sans objet" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="946" y="892" width="104" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c129" value="Référent sécurité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1050" y="892" width="244" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c130" value="Écarts ouverts dans la cartographie de conformité · délai de traitement d'une demande de droit" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1294" y="892" width="320" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="c131" value="CRITÈRES DU RÉFÉRENTIEL COUVERTS" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ebfbee;strokeColor=#2f9e44;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#2f9e44" parent="1" vertex="1">
+          <mxGeometry x="40" y="954" width="1574" height="194" as="geometry"/>
+        </mxCell>
+        <mxCell id="c132" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="52" y="986" width="22" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c133" value="Une méthode d'analyse de risques (Méthode EBIOS, ISO 27005) est appliquée" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="76" y="986" width="720" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c134" value="Page 3, sections 1 à 3 · échelles à cinq niveaux et options de traitement EBIOS Risk Manager, cotation conforme à ISO/IEC 27005" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="798" y="986" width="804" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c135" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="52" y="1011" width="22" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c136" value="La matrice de risques contient des codes couleurs significatifs" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="76" y="1011" width="720" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c137" value="Page 2 · quatre bandes faible, modéré, élevé et critique, chaque case portant aussi le libellé, aucune information par la seule couleur" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="798" y="1011" width="804" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c138" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="52" y="1036" width="22" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c139" value="une échelle de probabilité et d'impact adaptée" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="76" y="1036" width="720" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c140" value="Page 3, sections 1 et 2 · les cinq niveaux de chaque échelle sont définis littéralement et rattachés à une fréquence ou une conséquence type" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="798" y="1036" width="804" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c141" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="52" y="1061" width="22" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c142" value="et une hiérarchisation des risques" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="76" y="1061" width="720" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c143" value="Page 1 · registre trié par criticité décroissante, de R1 (15) à R8 (8), avec criticité résiduelle et niveau après traitement" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="798" y="1061" width="804" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c144" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="52" y="1086" width="22" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c145" value="Développer et intégrer des stratégies de mitigation des risques en identifiant et évaluant les menaces potentielles" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="76" y="1086" width="720" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c146" value="Page 1, colonnes Traitement et Mesures en place · page 3, section 4, plan d'action complémentaire chiffré et priorisé" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="798" y="1086" width="804" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c147" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="52" y="1111" width="22" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c148" value="Les risques et les solutions de contournement sont envisagées" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="76" y="1111" width="720" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c149" value="Page 3, section 4 · une action par risque, avec porteur, charge, coût et indicateur de suivi · provision budgétaire en Annexe Y" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="798" y="1111" width="804" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c150" value="Sources, mémoire §11.3.3 et §13.2.2 · EBIOS Risk Manager (ANSSI) · ISO/IEC 27005 · Annexe Y (provision pour aléas) · Annexe U (plan de reprise) · Annexe Z (revue semestrielle du registre)." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="1139" width="1574" height="18" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

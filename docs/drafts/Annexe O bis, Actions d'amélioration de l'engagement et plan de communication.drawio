@@ -1,0 +1,181 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-2" name="Actions et canaux">
+    <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="c1" value="Annexe O bis, Actions d'amélioration de l'engagement et plan de communication (BC2 C18, C19)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="dropicture · pour chaque partie prenante, l'action qui traite la cause de l'écart, le canal mobilisé et son rythme" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+          <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="RNCP40573 · Expert en informatique et systèmes d'information, option DevOps · Amir Redjem · appelée en §13.4.2 du mémoire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="78" width="1574" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="c4" value="1.  Actions à entreprendre et canaux de communication" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="112" width="700" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c5" value="Réf." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="138" width="46" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c6" value="Partie prenante" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="86" y="138" width="232" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c7" value="Cible" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="318" y="138" width="92" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c8" value="Actions d'amélioration de la satisfaction et de l'implication" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="410" y="138" width="856" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c9" value="Canaux et rythme" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1266" y="138" width="348" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c10" value="&lt;b&gt;PP1&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="168" width="46" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c11" value="&lt;b&gt;Sponsor du projet&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="168" width="232" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c12" value="&lt;b&gt;Moteur&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="318" y="168" width="92" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c13" value="Reporting synthétique au franchissement de chaque jalon, adossé aux tableaux de bord plutôt qu'à des documents produits à la main. Association aux arbitrages de périmètre par l'impact sur le chemin critique et sur le budget." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="410" y="168" width="856" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c14" value="Comité de jalon (M1 à M5) · tableau de projet de la forge · tableaux de bord Grafana" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1266" y="168" width="348" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c15" value="&lt;b&gt;PP2&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="252" width="46" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c16" value="&lt;b&gt;Chef de projet, ingénieur DevOps référent&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="252" width="232" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c17" value="&lt;b&gt;Moteur&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="318" y="252" width="92" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c18" value="Rédaction systématique de décisions d'architecture documentées, revue de code et programmation en binôme sur les points délicats, runbooks d'exploitation. La capitalisation transforme l'expérience acquise en actif réutilisable." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="410" y="252" width="856" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c19" value="Revue d'itération · rétrospective · journal des décisions d'architecture" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1266" y="252" width="348" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c20" value="&lt;b&gt;PP3&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="336" width="46" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c21" value="&lt;b&gt;Développeurs applicatifs&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="336" width="232" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c22" value="&lt;b&gt;Moteur&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="318" y="336" width="92" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c23" value="Itérations courtes s'ouvrant sur des engagements clairs et se clôturant par une revue. Célébration explicite des jalons franchis. Les tests automatisés et le retour arrière automatique dédramatisent la prise d'initiative, une erreur se rattrape en minutes." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="410" y="336" width="856" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c24" value="Revue d'itération · revue de code · fil de discussion de la forge" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1266" y="336" width="348" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c25" value="&lt;b&gt;PP4&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="420" width="46" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c26" value="&lt;b&gt;Référent sécurité et protection des données&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="420" width="232" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c27" value="&lt;b&gt;Moteur&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="318" y="420" width="92" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c28" value="Consultation en amont de chaque décision structurante, tracée au journal d'architecture. Les portes de sécurité bloquantes du pipeline rendent l'exigence exécutable plutôt que déclarative, ce qui objective le dialogue." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="410" y="420" width="856" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c29" value="Revue de conformité · cartographie ISO/IEC 27001 (Annexe R) · rapports d'analyse du pipeline" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1266" y="420" width="348" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c30" value="&lt;b&gt;PP5&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="504" width="46" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c31" value="&lt;b&gt;Référent pédagogique ESI, Joris VERGULDEZOONE&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="504" width="232" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c32" value="&lt;b&gt;Moteur&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="318" y="504" width="92" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c33" value="Relectures intermédiaires programmées plutôt qu'une relecture finale unique. Traçabilité explicite entre chaque bloc de compétences et les annexes qui le documentent." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="410" y="504" width="856" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c34" value="Points de suivi programmés · dossier technique versionné · annexes numérotées" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1266" y="504" width="348" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c35" value="&lt;b&gt;PP6&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="588" width="46" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c36" value="&lt;b&gt;Référent en entreprise, Philippe AMERIO&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="588" width="232" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c37" value="&lt;b&gt;Favorable&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="318" y="588" width="92" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c38" value="Confrontation systématique des arbitrages aux contraintes observées en production réelle. Les limites d'échelle sont documentées plutôt que passées sous silence." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="410" y="588" width="856" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c39" value="Échanges en alternance · retour d'expérience consigné" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1266" y="588" width="348" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c40" value="&lt;b&gt;PP7&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="672" width="46" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c41" value="&lt;b&gt;Utilisateurs bêta&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="672" width="232" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c42" value="&lt;b&gt;Favorable&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="318" y="672" width="92" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c43" value="Validation des maquettes basse fidélité avant développement (cf. Annexe F.1). Discuter d'un agencement d'écran coûte quelques minutes sur une maquette et quelques jours sur du code. Formalisation d'un canal de retour et d'un rythme de restitution." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="410" y="672" width="856" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c44" value="Session de test guidée · formulaire de retour · comptes rendus écrits" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1266" y="672" width="348" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c45" value="&lt;b&gt;PP8&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="756" width="46" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c46" value="&lt;b&gt;Fournisseurs cloud (Hetzner, Cloudflare, AWS)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="86" y="756" width="232" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c47" value="&lt;b&gt;Neutre&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#adb5bd;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="318" y="756" width="92" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c48" value="Veille sur les conditions de service et les évolutions de licence, deux fois observées dans le secteur. Trajectoires de repli documentées et à syntaxe compatible pour limiter le verrouillage (cf. Annexe J, ADR-006 et ADR-007)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="410" y="756" width="856" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c49" value="Veille technologique · pages de statut des fournisseurs · alertes budgétaires" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1266" y="756" width="348" height="84" as="geometry"/>
+        </mxCell>
+        <mxCell id="c50" value="2.  Techniques de gestion de la motivation et capitalisation des compétences" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="858" width="700" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c51" value="RECONNAISSANCE DU TRAVAIL INVISIBLE" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#2f9e44" parent="1" vertex="1">
+          <mxGeometry x="40" y="884" width="508" height="116" as="geometry"/>
+        </mxCell>
+        <mxCell id="c52" value="La revue d'itération se clôture par une démonstration de ce qui a été terminé, y compris sur les lots non fonctionnels. Rendre visible une chaîne de livraison ou une règle d'alerte est la seule façon d'en faire reconnaître la valeur." style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="54" y="914" width="480" height="74" as="geometry"/>
+        </mxCell>
+        <mxCell id="c53" value="PASSATION DES COMPÉTENCES" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#7048e8" parent="1" vertex="1">
+          <mxGeometry x="573" y="884" width="508" height="116" as="geometry"/>
+        </mxCell>
+        <mxCell id="c54" value="Programmation en binôme sur les points délicats, journal des décisions d'architecture, runbooks d'exploitation écrits pour un lecteur qui découvre. Un changement de membre d'équipe ne suppose aucune transmission orale." style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="587" y="914" width="480" height="74" as="geometry"/>
+        </mxCell>
+        <mxCell id="c55" value="CÉLÉBRATION DES JALONS" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#f76707" parent="1" vertex="1">
+          <mxGeometry x="1106" y="884" width="508" height="116" as="geometry"/>
+        </mxCell>
+        <mxCell id="c56" value="Les cinq jalons M1 à M5 portent un critère de franchissement explicite. Le passage est annoncé et commenté, ce qui donne un rythme au projet et matérialise l'avancement autrement que par un pourcentage." style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1120" y="914" width="480" height="74" as="geometry"/>
+        </mxCell>
+        <mxCell id="c57" value="Sources, mémoire §13.4.2 (engagement), §13.3.1 (encadrement et motivation), §13.4.1 (plan de communication) · Annexe T (outils collaboratifs et tableau de bord) · Annexe N (jalons M1 à M5)." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="1139" width="1574" height="18" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,262 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-2" name="Fiches ADR-001 à ADR-008">
+    <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="c1" value="Annexe J, Fiches de décision ADR-001 à ADR-008 (BC1 C5 à C9)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="dropicture · format Contexte, Décision, Alternatives écartées avec le motif du rejet, Conséquences assumées y compris défavorables" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+          <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="RNCP40573 · Expert en informatique et systèmes d'information, option DevOps · Amir Redjem · appelée en §11.1.1, §11.1.2 et §13.3.2 du mémoire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="78" width="1574" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="c4" value="&lt;b&gt;ADR-001&lt;/b&gt;  ·  &lt;b&gt;Monorepo unique pour le code applicatif et l'infrastructure&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#dbe4ff;strokeColor=#4263eb;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="40" y="118" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c5" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/02/10&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#4263eb;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="122" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c6" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="156" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c7" value="Le projet réunit trois applications (API, application authentifiée, site vitrine) et deux périmètres d'infrastructure décrits en code. Une démarche GitOps suppose que l'état désiré du système soit décrit dans un dépôt qui fait autorité." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="156" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c8" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="208" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c9" value="Regrouper les trois applications, le code Terraform et Ansible, les pipelines et la documentation dans un dépôt unique organisé en apps/ et infra/." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="208" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c10" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="260" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c11" value="Dépôts séparés par application, avec synchronisation par sous-modules ou par un outil de release coordonné, écartés parce qu'ils dissocient le code livré de l'infrastructure qui l'exécute, et rendent impossible un commit décrivant à la fois « ce qui tourne » et « où cela tourne »." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="260" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c12" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="316" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c13" value="Un commit unique décrit l'ensemble du système. Le pipeline peut dériver mécaniquement quelle image reconstruire à partir des chemins modifiés. En contrepartie, les droits d'accès sont uniformes sur l'ensemble du dépôt et la taille de l'historique croît plus vite." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="316" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c14" value="&lt;b&gt;ADR-002&lt;/b&gt;  ·  &lt;b&gt;Pile TypeScript unifiée du backend au site vitrine&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#dbe4ff;strokeColor=#4263eb;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="832" y="118" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c15" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/02/10&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#4263eb;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="1432" y="122" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c16" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="156" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c17" value="Une équipe resserrée paie comptant toute fragmentation de compétences. Le produit exige à la fois une API transactionnelle, une application authentifiée rendue côté serveur et un site public statique." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="156" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c18" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="208" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c19" value="Retenir TypeScript de bout en bout, NestJS 11 pour l'API, Next.js 16 pour l'application authentifiée et pour le site vitrine (en export statique)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="208" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c20" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="260" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c21" value="Backend en Go ou en Java Spring Boot, écartés pour le coût cognitif d'un second écosystème d'outillage, de test et de qualité, sans bénéfice décisif à cette échelle. Socle Express nu ou Fastify seul, écartés au profit de l'ossature de NestJS (injection de dépendances, modularité par domaine, canaux de validation)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="260" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c22" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="316" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c23" value="Un seul outillage de qualité, une seule culture de test, des types partagés entre couches. En contrepartie, la plateforme reste liée à la trajectoire de l'écosystème Node/TypeScript." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="316" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c24" value="&lt;b&gt;ADR-003&lt;/b&gt;  ·  &lt;b&gt;Bun comme moteur d'exécution, Node.js conservé comme repli&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#dbe4ff;strokeColor=#4263eb;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="40" y="372" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c25" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/02/12&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#4263eb;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="376" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c26" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="410" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c27" value="Le moteur d'exécution engage la vitesse du cycle de développement, la stabilité en production et le risque de dépendance à un éditeur." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="410" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c28" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="462" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c29" value="Exécuter le backend et les images de conteneur sous Bun 1.3, qui réunit runtime, gestionnaire de paquets et lanceur de tests dans un seul binaire." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="462" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c30" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="514" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c31" value="Node.js LTS, écosystème le plus large et comportement en production abondamment documenté, mais installation et suite de tests plus lentes et outillage éclaté. Deno, dont le bénéfice de sécurité par permissions explicites ne compense pas la distance à l'écosystème NestJS." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="514" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c32" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="570" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c33" value="Le gain de cycle se constate à chaque exécution du pipeline et les images sont plus légères. Le risque est borné, le code NestJS reste exécutable sous Node.js sans modification, ce qui constitue une trajectoire de repli documentée. Point de vigilance, gouvernance portée par une seule société." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="570" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c34" value="&lt;b&gt;ADR-004&lt;/b&gt;  ·  &lt;b&gt;Monolithe modulaire plutôt que microservices&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#dbe4ff;strokeColor=#4263eb;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="832" y="372" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c35" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/02/13&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#4263eb;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="1432" y="376" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c36" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="410" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c37" value="Le domaine compte cinq entités et six périmètres fonctionnels, opérés par une équipe réduite. Le style architectural commande le coût d'exploitation autant que la structure du code." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="410" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c38" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="462" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c39" value="Adopter un monolithe modulaire déployé en conteneurs, décomposé par domaine (un contrôleur par périmètre, trois services injectables transverses), dont les parties sont séparées par des réseaux cloisonnés." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="462" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c40" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="514" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c41" value="Microservices, écartés pour un surcoût opérationnel et énergétique disproportionné (cohérence distribuée, latence réseau, observabilité plus lourde). Architecture sans serveur, incompatible avec le téléversement de médias volumineux en flux et porteuse d'un verrouillage fournisseur marqué. Architecture orientée événements, pertinente en cible pour le post-traitement des médias, non pour le cœur transactionnel." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="514" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c42" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#4263eb;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="570" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c43" value="Déploiement unitaire simple, transactions ACID natives, empreinte de ressources minimale. Le couplage est neutralisé par la décomposition par domaine et l'injection de dépendances, la mise à l'échelle par bloc est absorbée par la réplication horizontale des nœuds sans état. Le choix reste réversible, extraire un domaine ne demanderait pas de refonte." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="570" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c44" value="&lt;b&gt;ADR-005&lt;/b&gt;  ·  &lt;b&gt;Docker Swarm plutôt que Kubernetes&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="40" y="626" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c45" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/02/14&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#7048e8;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="630" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c46" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="664" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c47" value="Le cluster compte quatre nœuds et l'équipe est réduite. Kubernetes est le standard de l'industrie, ce qui rend la question intéressante, le standard n'est pas toujours proportionné au besoin." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="664" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c48" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="716" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c49" value="Orchestrer avec Docker Swarm, intégré au moteur Docker, placement par contraintes, mise à jour progressive avec retour arrière automatique, secrets et configs natifs, réseaux overlay cloisonnables, sondes de santé et mise à l'échelle horizontale." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="716" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c50" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="768" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c51" value="Kubernetes, écarté à cette échelle pour le coût permanent, humain et matériel, de son plan de contrôle, sans contrepartie fonctionnelle décisive, conservé comme cible si le trafic ou l'équipe croissent. k3s, écarté parce qu'il allège la machine et non le travail. Nomad, écarté pour un risque de licence (BSL depuis 2023) au regard d'un gain marginal." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="768" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c52" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="824" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c53" value="Couverture du besoin réel pour une surcharge d'exploitation minimale. Absence de mise à l'échelle automatique et écosystème plus étroit, assumés. La réversibilité est préservée, la pile reste décrite dans un fichier Compose déclaratif et les images sont conformes à l'OCI." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="824" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c54" value="&lt;b&gt;ADR-006&lt;/b&gt;  ·  &lt;b&gt;Terraform pour le provisionnement, Ansible pour la configuration&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="832" y="626" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c55" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/02/14&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#7048e8;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="1432" y="630" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c56" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="664" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c57" value="Provisionner des ressources cloud et configurer des systèmes relèvent de deux logiques distinctes, l'une déclarative et convergente, l'autre procédurale et idempotente." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="664" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c58" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="716" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c59" value="Séparer strictement les deux responsabilités, Terraform crée et détruit les ressources (Hetzner, Cloudflare, AWS) avec un état distant chiffré et verrouillé, Ansible configure les nœuds, initialise le Swarm et déploie la pile." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="716" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c60" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="768" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c61" value="Tout confier à Ansible (modules cloud), écarté pour l'absence de plan et de gestion d'état. Tout confier à Terraform (provisioners), écarté parce que les provisioners sont explicitement déconseillés et non idempotents." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="768" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c62" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="824" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c63" value="Lisibilité et reproductibilité améliorées, le plan Terraform devient un instrument de revue avant application. L'inventaire Ansible est dérivé de l'état Terraform, ce qui supprime tout inventaire statique à maintenir. Le suivi de la licence Terraform (BSL depuis 2023) a conduit à documenter OpenTofu comme trajectoire de repli, à syntaxe compatible." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="824" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c64" value="&lt;b&gt;ADR-007&lt;/b&gt;  ·  &lt;b&gt;Hébergement multi-fournisseurs européen&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="40" y="880" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c65" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/02/17&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#7048e8;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="884" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c66" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="918" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c67" value="Le Cloud Act américain autorise un accès extraterritorial aux données détenues par un fournisseur de droit américain. Le RGPD impose par ailleurs de maîtriser la localisation des données personnelles. Le coût de calcul des hyperscalers pèse lourd sur un budget contraint." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="918" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c68" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="970" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c69" value="Répartir, Hetzner Cloud (Allemagne) pour le calcul, Cloudflare pour la périphérie réseau, AWS région eu-west-3 (Paris) pour le stockage objet, la diffusion et les sauvegardes." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="970" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c70" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="1022" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c71" value="Hyperscaler unique de bout en bout, écarté pour un coût de calcul nettement supérieur, une souveraineté floue et un verrouillage fort. Plateforme managée (PaaS), écartée pour une maîtrise des coûts faible à la croissance et un apprentissage DevOps réduit à néant." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="1022" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c72" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#7048e8;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="1078" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c73" value="Chaque besoin est traité par le fournisseur le plus compétitif, le calcul reste européen à faible coût et l'exposition aux services américains se limite au stockage et à la diffusion, dans une région française. En contrepartie, les secrets sont répartis sur trois fournisseurs et trois consoles sont à surveiller, point de vigilance tracé, centralisation à prévoir." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="1078" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c74" value="&lt;b&gt;ADR-008&lt;/b&gt;  ·  &lt;b&gt;PostgreSQL avec un ORM à migrations explicites&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#c3fae8;strokeColor=#099268;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="832" y="880" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c75" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/02/18&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#099268;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="1432" y="884" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c76" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="918" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c77" value="Le domaine est relationnel et transactionnel. La sobriété du schéma et la maîtrise des index sont des leviers directs d'éco-conception." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="918" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c78" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="970" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c79" value="Retenir PostgreSQL 18, exploité via TypeORM avec des migrations versionnées et rejouées automatiquement au déploiement. La synchronisation automatique du schéma est désactivée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="970" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c80" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="1022" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c81" value="Base à schéma implicite (document), écartée pour la perte de contrôle sur les index, en particulier les index partiels, et sur l'intégrité référentielle. Migrations générées à la volée en production, écartées pour l'absence de revue et de reproductibilité." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="1022" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c82" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="1078" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c83" value="Le schéma est reproductible d'un environnement à l'autre et auditable dans l'historique Git. Les contraintes d'intégrité (cascade, CHECK, unicité partielle) sont portées par la base, pas seulement par le code. En contrepartie, toute évolution de schéma exige d'écrire une migration." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="1078" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c84" value="Sources, code et infrastructure du dépôt dropicture (apps/, infra/, .github/workflows/) · le statut « Acceptée » signifie que la décision est en vigueur. Une décision remplacée porterait le statut « Remplacée par ADR-xxx » et resterait au journal, car un journal dont on retire les entrées périmées perd sa raison d'être." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="1139" width="1574" height="18" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

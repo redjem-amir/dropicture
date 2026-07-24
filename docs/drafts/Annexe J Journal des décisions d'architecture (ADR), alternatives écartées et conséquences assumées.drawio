@@ -1,0 +1,289 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-1" name="Carte des décisions">
+    <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="c1" value="Annexe J, Journal des décisions d'architecture (ADR), alternatives écartées et conséquences assumées (BC1 C5 à C9)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="dropicture · vingt-quatre décisions structurantes au format Contexte, Décision, Alternatives écartées, Conséquences · toutes en vigueur et effectivement appliquées dans le dépôt" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+          <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="RNCP40573 · Expert en informatique et systèmes d'information, option DevOps · Amir Redjem · appelée en §11.1.1, §11.1.2 et §13.3.2 du mémoire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="78" width="1574" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="c4" value="Un journal de décisions d'architecture consigne le raisonnement, pas seulement son résultat. Chaque entrée énonce le contexte qui a rendu la décision nécessaire, la décision elle-même, les alternatives réellement examinées avec le motif de leur rejet, et les conséquences assumées, y compris quand elles sont défavorables. C'est cette forme qui rend une décision réexaminable plus tard, y compris par quelqu'un d'autre, et qui évite qu'un choix daté ne se transforme silencieusement en contrainte subie." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="112" width="1574" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="c5" value="1.  Carte thématique des vingt-quatre décisions, découpage de l'architecture en parties" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="170" width="900" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c6" value="FONDATIONS ET ORGANISATION DU CODE" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#dbe4ff;strokeColor=#4263eb;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#4263eb" parent="1" vertex="1">
+          <mxGeometry x="40" y="196" width="254" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="c7" value="&lt;b&gt;ADR-001&lt;/b&gt;&lt;br/&gt;Monorepo unique pour le code applicatif et l'infrastructure&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/10&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#4263eb;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="50" y="238" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c8" value="&lt;b&gt;ADR-002&lt;/b&gt;&lt;br/&gt;Pile TypeScript unifiée du backend au site vitrine&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/10&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#4263eb;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="50" y="300" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c9" value="&lt;b&gt;ADR-003&lt;/b&gt;&lt;br/&gt;Bun comme moteur d'exécution, Node.js conservé comme repli&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/12&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#4263eb;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="50" y="362" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c10" value="&lt;b&gt;ADR-004&lt;/b&gt;&lt;br/&gt;Monolithe modulaire plutôt que microservices&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/13&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#4263eb;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="50" y="424" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c11" value="PLATEFORME, ORCHESTRATION ET HÉBERGEMENT" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#7048e8" parent="1" vertex="1">
+          <mxGeometry x="304" y="196" width="254" height="238" as="geometry"/>
+        </mxCell>
+        <mxCell id="c12" value="&lt;b&gt;ADR-005&lt;/b&gt;&lt;br/&gt;Docker Swarm plutôt que Kubernetes&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/14&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#7048e8;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="314" y="238" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c13" value="&lt;b&gt;ADR-006&lt;/b&gt;&lt;br/&gt;Terraform pour le provisionnement, Ansible pour la configuration&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/14&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#7048e8;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="314" y="300" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c14" value="&lt;b&gt;ADR-007&lt;/b&gt;&lt;br/&gt;Hébergement multi-fournisseurs européen&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/17&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#7048e8;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="314" y="362" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c15" value="DONNÉES, PERSISTANCE ET ÉCO-CONCEPTION" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#c3fae8;strokeColor=#099268;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#099268" parent="1" vertex="1">
+          <mxGeometry x="568" y="196" width="254" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="c16" value="&lt;b&gt;ADR-008&lt;/b&gt;&lt;br/&gt;PostgreSQL avec un ORM à migrations explicites&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/18&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#099268;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="578" y="238" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c17" value="&lt;b&gt;ADR-009&lt;/b&gt;&lt;br/&gt;PgBouncer en mutualisation par transaction devant PostgreSQL&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/19&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#099268;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="578" y="300" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c18" value="&lt;b&gt;ADR-023&lt;/b&gt;&lt;br/&gt;Index partiels comme levier d'éco-conception&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/25&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#099268;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="578" y="362" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c19" value="&lt;b&gt;ADR-024&lt;/b&gt;&lt;br/&gt;La suppression en cascade est le socle du droit à l'effacement&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/25&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#099268;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="578" y="424" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c20" value="SÉCURITÉ, SESSIONS ET CLOISONNEMENT" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#e03131" parent="1" vertex="1">
+          <mxGeometry x="832" y="196" width="254" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="c21" value="&lt;b&gt;ADR-010&lt;/b&gt;&lt;br/&gt;Sessions opaques adossées à Redis plutôt que jetons JWT&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/20&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="842" y="238" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c22" value="&lt;b&gt;ADR-011&lt;/b&gt;&lt;br/&gt;Argon2id pour l'empreinte des mots de passe&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/20&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="842" y="300" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c23" value="&lt;b&gt;ADR-018&lt;/b&gt;&lt;br/&gt;Le socket Docker n'est jamais exposé directement&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/03/05&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="842" y="362" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c24" value="&lt;b&gt;ADR-019&lt;/b&gt;&lt;br/&gt;Certificat Cloudflare Origin CA et TLS strict de bout en bout&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/03/06&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="842" y="424" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c25" value="PRODUIT, PERFORMANCE ET SURFACE PUBLIQUE" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#1c7ed6" parent="1" vertex="1">
+          <mxGeometry x="1096" y="196" width="254" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="c26" value="&lt;b&gt;ADR-012&lt;/b&gt;&lt;br/&gt;Téléversement en flux vers le stockage objet, sans buffer mémoire&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/24&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#1c7ed6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1106" y="238" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c27" value="&lt;b&gt;ADR-013&lt;/b&gt;&lt;br/&gt;La publication est une date, pas une table&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/25&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#1c7ed6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1106" y="300" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c28" value="&lt;b&gt;ADR-014&lt;/b&gt;&lt;br/&gt;Pagination par curseur opaque plutôt que par décalage&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/02/26&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#1c7ed6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1106" y="362" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c29" value="&lt;b&gt;ADR-015&lt;/b&gt;&lt;br/&gt;Site vitrine en export statique, servi par une interface publique dédiée&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/03/03&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#1c7ed6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1106" y="424" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c30" value="LIVRAISON, OBSERVABILITÉ ET REPRISE" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#f76707" parent="1" vertex="1">
+          <mxGeometry x="1360" y="196" width="254" height="362" as="geometry"/>
+        </mxCell>
+        <mxCell id="c31" value="&lt;b&gt;ADR-016&lt;/b&gt;&lt;br/&gt;Observabilité auto-hébergée plutôt que service managé&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/03/13&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#f76707;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1370" y="238" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c32" value="&lt;b&gt;ADR-017&lt;/b&gt;&lt;br/&gt;Estimation logicielle de la consommation énergétique&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/03/17&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#f76707;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1370" y="300" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c33" value="&lt;b&gt;ADR-020&lt;/b&gt;&lt;br/&gt;Images étiquetées par le SHA du dernier commit touchant le service&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/03/10&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#f76707;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1370" y="362" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c34" value="&lt;b&gt;ADR-021&lt;/b&gt;&lt;br/&gt;Portes de sécurité bloquantes et nomenclature logicielle par artefact&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/03/11&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#f76707;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1370" y="424" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c35" value="&lt;b&gt;ADR-022&lt;/b&gt;&lt;br/&gt;Sauvegarde logique vers un stockage objet durci plutôt que réplication&lt;br/&gt;&lt;font style='font-size:8px'&gt;2025/03/24&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#f76707;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1370" y="486" width="234" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c36" value="2.  Comparaison des types d'architecture examinés, avantages et inconvénients priorisés" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="570" width="900" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c37" value="Type d'architecture" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="596" width="216" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c38" value="Cas d'usage caractéristique" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="256" y="596" width="224" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c39" value="Avantages" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="480" y="596" width="264" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c40" value="Inconvénients" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="744" y="596" width="300" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c41" value="Sécurité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1044" y="596" width="176" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c42" value="Scalabilité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1220" y="596" width="176" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c43" value="Coût et sobriété" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1396" y="596" width="130" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c44" value="Décision" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="1526" y="596" width="88" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c45" value="Monolithe modulaire conteneurisé" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="626" width="216" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c46" value="Domaine restreint (cinq entités, six périmètres), équipe réduite, forte exigence transactionnelle" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="256" y="626" width="224" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c47" value="Transactions ACID natives, déploiement unitaire, empreinte de ressources minimale, couplage neutralisé par la décomposition par domaine" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="480" y="626" width="264" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c48" value="Mise à l'échelle par bloc, un défaut de conception se propage à tout le processus" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="744" y="626" width="300" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c49" value="Surface réduite, cloisonnement porté par les réseaux overlay" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1044" y="626" width="176" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c50" value="Réplication horizontale des nœuds sans état" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1220" y="626" width="176" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c51" value="La plus faible des quatre" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1396" y="626" width="130" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c52" value="RETENUE (ADR-004)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#d3f9d8;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1526" y="626" width="88" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c53" value="Microservices" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="714" width="216" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c54" value="Domaines nombreux et indépendants, plusieurs équipes autonomes, cadences de livraison distinctes" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="256" y="714" width="224" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c55" value="Découplage fort, mise à l'échelle ciblée par service, autonomie d'équipe" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="480" y="714" width="264" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c56" value="Cohérence distribuée, latence réseau, observabilité plus lourde, surcoût opérationnel et énergétique disproportionné à cette échelle" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="744" y="714" width="300" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c57" value="Surface d'attaque démultipliée par le maillage" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1044" y="714" width="176" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c58" value="Excellente, mais inutile ici" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1220" y="714" width="176" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c59" value="Élevé, plan de contrôle permanent" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1396" y="714" width="130" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c60" value="ÉCARTÉE" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe3e3;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#e03131;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1526" y="714" width="88" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c61" value="Architecture sans serveur" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="802" width="216" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c62" value="Charges événementielles intermittentes, trafic très irrégulier" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="256" y="802" width="224" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c63" value="Aucun serveur à exploiter, facturation à l'usage" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="480" y="802" width="264" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c64" value="Incompatible avec le téléversement de médias volumineux en flux, verrouillage fournisseur marqué, démarrages à froid" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="744" y="802" width="300" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c65" value="Périmètre délégué au fournisseur" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1044" y="802" width="176" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c66" value="Automatique" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1220" y="802" width="176" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c67" value="Faible à trafic nul, imprévisible en pointe" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1396" y="802" width="130" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c68" value="ÉCARTÉE" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe3e3;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#e03131;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1526" y="802" width="88" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c69" value="Architecture orientée événements" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="890" width="216" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c70" value="Post-traitement asynchrone des médias (vignettes, transcodage)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="256" y="890" width="224" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c71" value="Découplage temporel, absorption des pics, reprise sur incident" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="480" y="890" width="264" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c72" value="Complexité de la cohérence à terme, pertinente en cible mais pas pour le cœur transactionnel" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="744" y="890" width="300" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c73" value="Traçabilité forte des flux" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1044" y="890" width="176" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c74" value="Bonne sur le post-traitement" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1220" y="890" width="176" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c75" value="Moyen, courtier à exploiter" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+          <mxGeometry x="1396" y="890" width="130" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c76" value="CIBLE PARTIELLE" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#fff3bf;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#f59f00;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+          <mxGeometry x="1526" y="890" width="88" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="c77" value="CRITÈRES DU RÉFÉRENTIEL COUVERTS" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ebfbee;strokeColor=#2f9e44;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#2f9e44" parent="1" vertex="1">
+          <mxGeometry x="40" y="934" width="1574" height="169" as="geometry"/>
+        </mxCell>
+        <mxCell id="c78" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="52" y="966" width="22" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c79" value="L'architecture est découpée en parties, chaque partie est expliquée et évaluée" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="76" y="966" width="860" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c80" value="Page 1, section 1 · six thèmes d'architecture · pages 2 à 4, une fiche par décision au format Contexte, Décision, Alternatives, Conséquences" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="938" y="966" width="664" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c81" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="52" y="991" width="22" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c82" value="tant sur les aspects techniques (vulnérabilités, performances, limitations) que les autres aspects (normes, audit, budget), avec les avantages et inconvénients priorisés" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="76" y="991" width="860" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c83" value="Page 1, section 2 · comparaison des quatre types d'architecture selon sécurité, scalabilité, coût et sobriété · conséquences défavorables énoncées dans chaque fiche" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="938" y="991" width="664" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c84" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="52" y="1016" width="22" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c85" value="Les schémas des interactions entre les composants permettant l'analyse et la critique de l'architecture sont clairs et détaillés" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="76" y="1016" width="860" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c86" value="Annexes B (topologie), C (conteneurisation et réseaux), F.2 (flux de données) et H (classes du backend), toutes rattachées aux décisions listées ici" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="938" y="1016" width="664" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c87" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="52" y="1041" width="22" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c88" value="Les descriptions des nouvelles solutions architecturales sont précises et comprennent les avantages et contraintes (économie de ressources, gestion des données, RGPD, sécurité d'accès, hébergement Cloud, IA)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="76" y="1041" width="860" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c89" value="Fiches ADR-007 (hébergement européen), ADR-016 (souveraineté de l'observabilité), ADR-017 (énergie), ADR-023 et ADR-024 (éco-conception et droit à l'effacement)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="938" y="1041" width="664" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c90" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="52" y="1066" width="22" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c91" value="Comprendre les avantages et inconvénients de chaque type d'architecture en analysant leur performance, leur scalabilité et leur sécurité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="76" y="1066" width="860" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c92" value="Page 1, section 2 · quatre types comparés colonne par colonne, avec le motif explicite du rejet des trois alternatives" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="938" y="1066" width="664" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="c93" value="Sources, code et infrastructure du dépôt dropicture (apps/, infra/, .github/workflows/) · mémoire §11.1 (veille), §11.3.4 (stratégie), §12 (implémentations), §14.1 (conception). Toutes les décisions consignées ici sont effectivement appliquées dans le dépôt." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="1139" width="1574" height="18" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

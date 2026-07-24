@@ -1,0 +1,268 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-2" name="2 — Données personnelles">
+        <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="n1" value="Annexe F.3 Flux de données à caractère personnel (registre simplifié)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n2" value="Catégories collectées, finalités, bases légales, localisation, durées et mesures de sécurité" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+                    <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+                </mxCell>
+                <mxCell id="n3" value="Catégorie de données" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="60" y="122" width="226" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="n4" value="Finalité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="290" y="122" width="206" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="n5" value="Base légale (RGPD)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="500" y="122" width="171" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="n6" value="Où" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="675" y="122" width="191" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="n7" value="Durée de conservation" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="870" y="122" width="186" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="n8" value="Mesure de sécurité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1060" y="122" width="296" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="n9" value="Identité, prénom, nom, pseudonyme" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;fontStyle=1;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="158" width="226" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n10" value="Identification du membre et de son profil public" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="290" y="158" width="206" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n11" value="Exécution du contrat (art. 6.1.b)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="500" y="158" width="171" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n12" value="PostgreSQL sur Hetzner (DE)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="675" y="158" width="191" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n13" value="Durée de vie du compte" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="870" y="158" width="186" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n14" value="Chiffrement en transit · accès applicatif uniquement" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1060" y="158" width="296" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n15" value="Adresse e-mail" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;fontStyle=1;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="220" width="226" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n16" value="Authentification et contact du titulaire" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="290" y="220" width="206" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n17" value="Exécution du contrat (art. 6.1.b)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="500" y="220" width="171" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n18" value="PostgreSQL sur Hetzner (DE)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="675" y="220" width="191" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n19" value="Durée de vie du compte" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="870" y="220" width="186" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n20" value="Unicité contrainte · jamais exposée par l&#39;API publique" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1060" y="220" width="296" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n21" value="Mot de passe" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;fontStyle=1;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="282" width="226" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n22" value="Authentification" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="290" y="282" width="206" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n23" value="Exécution du contrat (art. 6.1.b)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="500" y="282" width="171" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n24" value="PostgreSQL sur Hetzner (DE)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="675" y="282" width="191" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n25" value="Durée de vie du compte" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="870" y="282" width="186" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n26" value="&lt;b&gt;Empreinte Argon2id&lt;/b&gt; (19 Mio, t=2, p=1) · jamais en clair · exclue des lectures par défaut" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1060" y="282" width="296" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n27" value="Clé d&#39;API" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;fontStyle=1;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="344" width="226" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n28" value="Accès programmatique consenti par le titulaire" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="290" y="344" width="206" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n29" value="Exécution du contrat (art. 6.1.b)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="500" y="344" width="171" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n30" value="PostgreSQL sur Hetzner (DE)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="675" y="344" width="191" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n31" value="Jusqu&#39;à révocation ou rotation" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="870" y="344" width="186" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n32" value="Exclue des lectures par défaut · unicité partielle · révocable en un appel" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1060" y="344" width="296" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n33" value="Biographie et photo de profil" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;fontStyle=1;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="406" width="226" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n34" value="Présentation publique volontaire" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="290" y="406" width="206" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n35" value="Consentement (art. 6.1.a)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="500" y="406" width="171" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n36" value="PostgreSQL + S3 sur eu-west-3" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="675" y="406" width="191" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n37" value="Jusqu&#39;au retrait par le membre" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="870" y="406" width="186" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n38" value="Contenu déposé délibérément · suppression immédiate à la demande" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1060" y="406" width="296" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n39" value="Médias et métadonnées techniques" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;fontStyle=1;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="468" width="226" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n40" value="Fourniture du service de bibliothèque et de partage" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="290" y="468" width="206" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n41" value="Exécution du contrat (art. 6.1.b)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="500" y="468" width="171" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n42" value="S3 eu-west-3 + PostgreSQL" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="675" y="468" width="191" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n43" value="Jusqu&#39;à suppression par le membre" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="870" y="468" width="186" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n44" value="&lt;b&gt;Privé par défaut&lt;/b&gt; · bucket privé (OAC) · chiffrement AES-256 · versionné" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1060" y="468" width="296" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n45" value="Date de prise de vue" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e9fac8;strokeColor=#74b816;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;fontStyle=1;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="530" width="226" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n46" value="Classement chronologique de la bibliothèque" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="290" y="530" width="206" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n47" value="Exécution du contrat (art. 6.1.b)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="500" y="530" width="171" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n48" value="PostgreSQL sur Hetzner (DE)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="675" y="530" width="191" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n49" value="Jusqu&#39;à suppression du média" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="870" y="530" width="186" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n50" value="Minimisation, ni géolocalisation, ni modèle d&#39;appareil, ni EXIF complet" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1060" y="530" width="296" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n51" value="Abonnements (qui suit qui)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;fontStyle=1;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="592" width="226" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n52" value="Fil d&#39;actualité et compteurs sociaux" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="290" y="592" width="206" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n53" value="Exécution du contrat (art. 6.1.b)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="500" y="592" width="171" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n54" value="PostgreSQL sur Hetzner (DE)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="675" y="592" width="191" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n55" value="Jusqu&#39;au désabonnement" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="870" y="592" width="186" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n56" value="Clé composite sans identifiant technique · suppression en cascade" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1060" y="592" width="296" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n57" value="Adresse IP et agent utilisateur" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;fontStyle=1;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="654" width="226" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n58" value="Sécurité de la session, détection d&#39;usage anormal" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="290" y="654" width="206" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n59" value="Intérêt légitime (art. 6.1.f)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="500" y="654" width="171" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n60" value="Redis sur Hetzner (DE)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="675" y="654" width="191" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n61" value="&lt;b&gt;8 heures au maximum&lt;/b&gt; (durée absolue)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="870" y="654" width="186" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n62" value="Stockés dans l&#39;enregistrement de session · agent tronqué à 200 caractères" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1060" y="654" width="296" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n63" value="Journaux d&#39;accès HTTP" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;fontStyle=1;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="716" width="226" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n64" value="Exploitation, sécurité et diagnostic d&#39;incident" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="290" y="716" width="206" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n65" value="Intérêt légitime (art. 6.1.f)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="500" y="716" width="171" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n66" value="Loki sur Hetzner (DE)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="675" y="716" width="191" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n67" value="&lt;b&gt;30 jours&lt;/b&gt; (720 h, purge par compactor)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="870" y="716" width="186" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n68" value="Identifiant de compte technique (UUID), jamais d&#39;identité en clair" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1060" y="716" width="296" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n69" value="Dernière connexion" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;fontStyle=1;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="60" y="778" width="226" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n70" value="Détection des comptes inactifs" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="290" y="778" width="206" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n71" value="Intérêt légitime (art. 6.1.f)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="500" y="778" width="171" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n72" value="PostgreSQL sur Hetzner (DE)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="675" y="778" width="191" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n73" value="Durée de vie du compte" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="870" y="778" width="186" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n74" value="Écriture limitée à une fois toutes les 5 minutes (sobriété)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1060" y="778" width="296" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="n75" value="DROITS DES PERSONNES comment ils sont techniquement servis" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#c3fae8;strokeColor=#099268;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#099268" parent="1" vertex="1">
+                    <mxGeometry x="60" y="852" width="760" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="n76" value="&lt;b&gt;Accès&lt;/b&gt;, GET /api/settings et /api/profile restituent l&#39;intégralité des données du compte." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="82" y="888" width="716" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n77" value="&lt;b&gt;Rectification&lt;/b&gt;, PATCH sur l&#39;identité, le pseudonyme, l&#39;e-mail, la biographie et l&#39;avatar." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="82" y="928" width="716" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n78" value="&lt;b&gt;Effacement&lt;/b&gt;, DELETE /api/settings/account, vérification du mot de passe, suppression des objets S3, puis suppression en base propagée &lt;b&gt;en cascade&lt;/b&gt; sur médias, albums, placements et abonnements." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="82" y="968" width="716" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n79" value="&lt;b&gt;Portabilité&lt;/b&gt;, POST /api/library/download restitue les URL de téléchargement d&#39;un lot, la clé d&#39;API permet une extraction programmatique." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="82" y="1008" width="716" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n80" value="&lt;b&gt;Opposition / limitation&lt;/b&gt;, La dépublication ramène instantanément un contenu au domaine privé, sans perte ni duplication." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="82" y="1048" width="716" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n81" value="PRINCIPES APPLIQUÉS" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#2f9e44" parent="1" vertex="1">
+                    <mxGeometry x="850" y="852" width="750" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="n82" value="&lt;b&gt;Minimisation,&lt;/b&gt;&amp;nbsp;cinq tables suffisent au domaine. Aucune donnée n&#39;est collectée « au cas où », ni géolocalisation, ni EXIF complet, ni traceur publicitaire." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="888" width="706" height="44" as="geometry"/>
+                </mxCell>
+                <mxCell id="n83" value="&lt;b&gt;Protection dès la conception,&lt;/b&gt;&amp;nbsp;le privé est l&#39;état par défaut, la publication une action explicite et révocable. L&#39;empreinte du mot de passe et la clé d&#39;API sont exclues des lectures par défaut au niveau du modèle lui-même." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="938" width="706" height="44" as="geometry"/>
+                </mxCell>
+                <mxCell id="n84" value="&lt;b&gt;Localisation,&lt;/b&gt;&amp;nbsp;calcul chez un hébergeur européen (Hetzner, Allemagne), services AWS confinés à la région eu-west-3 (Paris). Aucun transfert hors Union européenne. Cloudflare n&#39;assure que la périphérie réseau, sans conservation de contenu." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="988" width="706" height="44" as="geometry"/>
+                </mxCell>
+                <mxCell id="n85" value="&lt;b&gt;Sécurité,&lt;/b&gt;&amp;nbsp;chiffrement au repos (AES-256) et en transit (TLS ≥ 1.2, HSTS 2 ans), politique de bucket refusant tout transport non sécurisé, sauvegardes verrouillées par Object Lock." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=10" parent="1" vertex="1">
+                    <mxGeometry x="872" y="1038" width="706" height="44" as="geometry"/>
+                </mxCell>
+                <mxCell id="n86" value="Sources, models/*.entity.ts · controllers/settings.controller.ts · services/auth.service.ts · infra/saas/terraform/main.tf · infra/saas/ansible/files/loki.yml, cf. aussi Annexe R" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+                    <mxGeometry x="60" y="1104" width="1300" height="18" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

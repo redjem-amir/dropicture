@@ -1,0 +1,160 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-2" name="Matrice de criticité">
+    <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="c1" value="Annexe O, Matrice de criticité probabilité × impact, codes couleurs et hiérarchisation (BC1 C4, BC2 C17)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="dropicture · position de chaque risque avant traitement (identifiant en gras) et après traitement (identifiant entre parenthèses)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+          <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="RNCP40573 · Expert en informatique et systèmes d'information, option DevOps · Amir Redjem · appelée en §11.3.3 et §13.2.2 du mémoire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="78" width="1574" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="c4" value="1.  Grille de cotation à cinq niveaux, criticité = probabilité × impact" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="112" width="900" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c5" value="&lt;b&gt;1&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Très improbable&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="190" y="150" width="178" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="c6" value="&lt;b&gt;2&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Improbable&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="368" y="150" width="178" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="c7" value="&lt;b&gt;3&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Possible&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="546" y="150" width="178" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="c8" value="&lt;b&gt;4&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Probable&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="724" y="150" width="178" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="c9" value="&lt;b&gt;5&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Très probable&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="902" y="150" width="178" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="c10" value="PROBABILITÉ (vraisemblance)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#495057;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="190" y="124" width="890" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c11" value="&lt;b&gt;IMPACT&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;(gravité)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=10;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="150" width="148" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="c12" value="&lt;b&gt;5&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Critique&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="190" width="148" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c13" value="&lt;b&gt;5&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Modéré&lt;/font&gt;&lt;br/&gt;&lt;font style='font-size:10px'&gt;(R2)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#fff9db;strokeColor=#f59f00;strokeWidth=2;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="190" y="190" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c14" value="&lt;b&gt;10&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Élevé&lt;/font&gt;&lt;br/&gt;&lt;b&gt;&lt;font color=&quot;#f76707&quot;&gt;R2  R5&lt;/font&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=2;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="368" y="190" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c15" value="&lt;b&gt;15&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Critique&lt;/font&gt;&lt;br/&gt;&lt;b&gt;&lt;font color=&quot;#e03131&quot;&gt;R1&lt;/font&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=2;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="546" y="190" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c16" value="&lt;b&gt;20&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Critique&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="724" y="190" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c17" value="&lt;b&gt;25&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Critique&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="902" y="190" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c18" value="&lt;b&gt;4&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Majeur&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="318" width="148" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c19" value="&lt;b&gt;4&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Faible&lt;/font&gt;&lt;br/&gt;&lt;font style='font-size:10px'&gt;(R3  R5  R8)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ebfbee;strokeColor=#2f9e44;strokeWidth=2;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="190" y="318" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c20" value="&lt;b&gt;8&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Modéré&lt;/font&gt;&lt;br/&gt;&lt;b&gt;&lt;font color=&quot;#f59f00&quot;&gt;R6  R8&lt;/font&gt;&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:10px'&gt;(R1)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#fff9db;strokeColor=#f59f00;strokeWidth=2;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="368" y="318" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c21" value="&lt;b&gt;12&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Élevé&lt;/font&gt;&lt;br/&gt;&lt;b&gt;&lt;font color=&quot;#f76707&quot;&gt;R3&lt;/font&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=2;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="546" y="318" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c22" value="&lt;b&gt;16&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Critique&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="724" y="318" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c23" value="&lt;b&gt;20&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Critique&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="902" y="318" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c24" value="&lt;b&gt;3&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Modéré&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="446" width="148" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c25" value="&lt;b&gt;3&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Faible&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ebfbee;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="190" y="446" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c26" value="&lt;b&gt;6&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Modéré&lt;/font&gt;&lt;br/&gt;&lt;font style='font-size:10px'&gt;(R6)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#fff9db;strokeColor=#f59f00;strokeWidth=2;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="368" y="446" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c27" value="&lt;b&gt;9&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Modéré&lt;/font&gt;&lt;br/&gt;&lt;b&gt;&lt;font color=&quot;#f59f00&quot;&gt;R7  R4&lt;/font&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#fff9db;strokeColor=#f59f00;strokeWidth=2;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="546" y="446" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c28" value="&lt;b&gt;12&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Élevé&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="724" y="446" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c29" value="&lt;b&gt;15&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Critique&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="902" y="446" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c30" value="&lt;b&gt;2&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Mineur&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="574" width="148" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c31" value="&lt;b&gt;2&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Faible&lt;/font&gt;&lt;br/&gt;&lt;font style='font-size:10px'&gt;(R7)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ebfbee;strokeColor=#2f9e44;strokeWidth=2;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="190" y="574" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c32" value="&lt;b&gt;4&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Faible&lt;/font&gt;&lt;br/&gt;&lt;font style='font-size:10px'&gt;(R4)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ebfbee;strokeColor=#2f9e44;strokeWidth=2;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="368" y="574" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c33" value="&lt;b&gt;6&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Modéré&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#fff9db;strokeColor=#f59f00;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="546" y="574" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c34" value="&lt;b&gt;8&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Modéré&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#fff9db;strokeColor=#f59f00;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="724" y="574" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c35" value="&lt;b&gt;10&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Élevé&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="902" y="574" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c36" value="&lt;b&gt;1&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Négligeable&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="702" width="148" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c37" value="&lt;b&gt;1&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Faible&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ebfbee;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="190" y="702" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c38" value="&lt;b&gt;2&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Faible&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ebfbee;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="368" y="702" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c39" value="&lt;b&gt;3&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Faible&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ebfbee;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="546" y="702" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c40" value="&lt;b&gt;4&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Faible&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ebfbee;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="724" y="702" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c41" value="&lt;b&gt;5&lt;/b&gt;&lt;br/&gt;&lt;font style='font-size:9px'&gt;Modéré&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#fff9db;strokeColor=#f59f00;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#495057;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="902" y="702" width="178" height="128" as="geometry"/>
+        </mxCell>
+        <mxCell id="c42" value="2.  Lecture de la matrice" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="850" width="900" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="c43" value="Un identifiant &lt;b&gt;en gras&lt;/b&gt; marque la position du risque avant traitement. Entre parenthèses, sa position après application des mesures en place. Le décalage vers le bas et vers la gauche mesure l'efficacité du traitement. Les quatre bandes de couleur suivent le produit probabilité × impact, faible de 1 à 4, modéré de 5 à 9, élevé de 10 à 14, critique de 15 à 25. Aucune information n'est portée par la seule couleur, chaque case porte aussi le libellé du niveau." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="876" width="760" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="c44" value="CONVERGENCE ENTRE LE REGISTRE ET LA FEUILLE DE ROUTE" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e9fac8;strokeColor=#74b816;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#74b816" parent="1" vertex="1">
+          <mxGeometry x="830" y="876" width="784" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="c45" value="Les deux actions prioritaires du plan d'amélioration continue, la haute disponibilité de la supervision et l'exercice de restauration périodique, répondent exactement aux deux risques les plus critiques du registre, R1 et R5. La feuille de route ne suit pas l'envie, elle suit le registre." style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="844" y="906" width="756" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c46" value="&lt;b&gt;Faible&lt;/b&gt;  ·  criticité 1 à 4" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ebfbee;strokeColor=#2f9e44;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="40" y="990" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c47" value="&lt;b&gt;Modéré&lt;/b&gt;  ·  criticité 5 à 9" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#fff9db;strokeColor=#f59f00;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="438" y="990" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c48" value="&lt;b&gt;Élevé&lt;/b&gt;  ·  criticité 10 à 14" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="836" y="990" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c49" value="&lt;b&gt;Critique&lt;/b&gt;  ·  criticité 15 à 25" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="1234" y="990" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c50" value="Sources, mémoire §11.3.3 et §13.2.2 · EBIOS Risk Manager (ANSSI), atelier 4, scénarios opérationnels · ISO/IEC 27005 · Annexe Y (provision pour aléas adossée à cinq de ces risques) · Annexe Z (plan de maintenance, revue semestrielle du registre)." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="1139" width="1574" height="18" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

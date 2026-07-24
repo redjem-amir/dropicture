@@ -1,0 +1,166 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-2" name="Contrôles et couverture">
+        <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="c1" value="Annexe L bis, Contrôles de cohérence de la matrice RACI (BC2 C15, C19)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="c2" value="dropicture · cinq règles de construction vérifiées une à une, et correspondance avec les critères d&#39;évaluation du référentiel" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+                    <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+                </mxCell>
+                <mxCell id="c3" value="RNCP40573 · Expert en informatique et systèmes d&#39;information, option DevOps · Amir Redjem · appelée en §13.1.2 et §13.4.1 du mémoire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#adb5bd" parent="1" vertex="1">
+                    <mxGeometry x="40" y="78" width="1574" height="18" as="geometry"/>
+                </mxCell>
+                <mxCell id="c4" value="1.  Règles de construction et vérification" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="112" width="700" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="c5" value="Règle de construction" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="138" width="420" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="c6" value="Vérifié" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="460" y="138" width="78" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="c7" value="Détail de la vérification" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="538" y="138" width="1076" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="c8" value="Un et un seul décideur redevable (A) par lot" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                    <mxGeometry x="40" y="166" width="420" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c9" value="Oui" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+                    <mxGeometry x="460" y="166" width="78" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c10" value="Huit lots, huit A distincts en position. Sponsor sur les lots 1 et 2, ingénieur DevOps sur les lots 3, 4, 5 et 6 (dont deux en A/R), référent sécurité sur le lot 7, référent pédagogique sur le lot 8." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                    <mxGeometry x="538" y="166" width="1076" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c11" value="Au moins un responsable (R) par lot" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                    <mxGeometry x="40" y="220" width="420" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c12" value="Oui" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+                    <mxGeometry x="460" y="220" width="78" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c13" value="Le chef de projet ou l&#39;ingénieur DevOps porte la réalisation sur six lots, les développeurs applicatifs sur les lots 3 et 4. Aucun lot n&#39;est décidé sans être exécuté." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                    <mxGeometry x="538" y="220" width="1076" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c14" value="Répartition des décisions entre plusieurs acteurs" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                    <mxGeometry x="40" y="274" width="420" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c15" value="Oui" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+                    <mxGeometry x="460" y="274" width="78" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c16" value="Quatre acteurs distincts portent au moins un A, ce qui évite la concentration de la décision sur une seule personne, risque majeur dans une équipe de cette taille." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                    <mxGeometry x="538" y="274" width="1076" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c17" value="Cohérence avec le chemin critique (cf. Annexe M)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                    <mxGeometry x="40" y="328" width="420" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c18" value="Oui" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+                    <mxGeometry x="460" y="328" width="78" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c19" value="Les lots du chemin critique (1, 3, 5, 6 et 8) portent tous un responsable identifié et un décideur unique, condition d&#39;un arbitrage rapide en cas de tension sur les délais." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                    <mxGeometry x="538" y="328" width="1076" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c20" value="Accessibilité de la participation" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                    <mxGeometry x="40" y="382" width="420" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c21" value="Oui" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+                    <mxGeometry x="460" y="382" width="78" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c22" value="Les consultations produisent des comptes rendus écrits et les supports respectent les référentiels WCAG 2.2 et RGAA 4, afin que la contribution de chaque partie prenante soit recueillie sans discrimination (cf. Annexe O bis)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                    <mxGeometry x="538" y="382" width="1076" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c23" value="Aucune case laissée vide" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                    <mxGeometry x="40" y="436" width="420" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c24" value="Oui" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
+                    <mxGeometry x="460" y="436" width="78" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c25" value="Les quarante-huit croisements sont renseignés, y compris par le symbole de non-implication. Une case vide se lit comme un oubli, pas comme une décision." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                    <mxGeometry x="538" y="436" width="1076" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="c26" value="2.  Limites assumées de la répartition" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#1c7ed6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="500" width="700" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="c27" value="CONCENTRATION SUR UN ACTEUR" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#f76707" parent="1" vertex="1">
+                    <mxGeometry x="40" y="526" width="508" height="118" as="geometry"/>
+                </mxCell>
+                <mxCell id="c28" value="Le chef de projet et ingénieur DevOps intervient sur les huit lots, dont six en réalisation. La matrice le montre au lieu de le masquer. Le traitement est décrit en Annexe O bis (PP2), programmation en binôme, décisions d&#39;architecture écrites et runbooks d&#39;exploitation." style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="54" y="556" width="480" height="76" as="geometry"/>
+                </mxCell>
+                <mxCell id="c29" value="ÉQUIPE RECONSTITUÉE" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#1c7ed6" parent="1" vertex="1">
+                    <mxGeometry x="573" y="526" width="508" height="118" as="geometry"/>
+                </mxCell>
+                <mxCell id="c30" value="La situation professionnelle est reconstituée, les six acteurs ne sont pas six personnes à plein temps. La matrice décrit des rôles, pas des postes, et c&#39;est à ce titre qu&#39;elle reste transposable." style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="587" y="556" width="480" height="76" as="geometry"/>
+                </mxCell>
+                <mxCell id="c31" value="UTILISATEURS BÊTA PEU SOLLICITÉS" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#fff3bf;strokeColor=#f59f00;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#f59f00" parent="1" vertex="1">
+                    <mxGeometry x="1106" y="526" width="508" height="118" as="geometry"/>
+                </mxCell>
+                <mxCell id="c32" value="Cinq lots sur huit ne les impliquent pas, ce qui est cohérent avec leur nature technique, mais limite le retour terrain aux seuls lots produit. L&#39;écart est tracé en Annexe O bis (PP7)." style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="1120" y="556" width="480" height="76" as="geometry"/>
+                </mxCell>
+                <mxCell id="c33" value="CRITÈRES DU RÉFÉRENTIEL COUVERTS" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ebfbee;strokeColor=#2f9e44;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#2f9e44" parent="1" vertex="1">
+                    <mxGeometry x="40" y="672" width="1574" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="c34" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="52" y="704" width="22" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c35" value="Une matrice RACI pour définir les rôles et responsabilités de chaque partie prenante (responsible, accountable, consulted, informed)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="76" y="704" width="760" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c36" value="Page 1, section 2 · huit lots de la structure de découpage croisés avec les six acteurs, quarante-huit croisements renseignés" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="838" y="704" width="764" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c37" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="52" y="730" width="22" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c38" value="La matrice RACI est clairement annotée avec les abréviations" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="76" y="730" width="760" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c39" value="Page 1, section 1 · légende des six symboles R, A, C, I, A/R et non impliqué, avec le sens retenu pour chacun" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="838" y="730" width="764" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c40" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="52" y="756" width="22" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c41" value="Les catégories (R, A, C, I) sont remplies avec une distribution équilibrée" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="76" y="756" width="760" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c42" value="Page 1, section 3 · distribution comptée par acteur, quatre acteurs porteurs d&#39;au moins un A, aucun lot sans R" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="838" y="756" width="764" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c43" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="52" y="782" width="22" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c44" value="Les outils collaboratifs utilisés permettent une communication fluide entre toutes les parties prenantes et un management inclusif" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="76" y="782" width="760" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c45" value="Page 2, section 1, règle 5 · comptes rendus écrits systématiques · outillage détaillé en Annexe T" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="838" y="782" width="764" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c46" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="52" y="808" width="22" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c47" value="La matrice d&#39;engagement répertorie les causes du niveau d&#39;engagement et les actions à entreprendre, en prenant en compte les situations de handicap" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="76" y="808" width="760" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c48" value="Annexe O bis · WCAG 2.2 et RGAA 4 appliqués aux supports de pilotage, rappelés ici par la règle 5" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="838" y="808" width="764" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c49" value="✓" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#2f9e44;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#2f9e44;align=center;verticalAlign=middle;spacing=6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="52" y="834" width="22" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c50" value="La planification contient les objectifs, les tâches, les ressources et les échéances du projet" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="76" y="834" width="760" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c51" value="Page 2, section 1, règle 4 · cohérence vérifiée avec le chemin critique de l&#39;Annexe M et la structure de découpage de l&#39;Annexe L" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                    <mxGeometry x="838" y="834" width="764" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="c52" value="Sources, mémoire §13.1.2 (allocation des ressources), §13.3 (management de l&#39;équipe), §13.4.1 (plan de communication) · Annexe L (structure de découpage) · Annexe M (PERT) · Annexe O bis (engagement et accessibilité) · Annexe T (outils collaboratifs)." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1139" width="1574" height="18" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

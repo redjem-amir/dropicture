@@ -1,0 +1,202 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-4" name="4 — Infrastructure">
+        <mxGraphModel dx="1422" dy="798" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0" background="#ffffff">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="n1" value="Annexe A.4 Cartographie du SI · niveau infrastructure" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n2" value="Fournisseurs, machines, réseaux et chaîne d&#39;outillage" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" vertex="1" parent="1">
+                    <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+                </mxCell>
+                <mxCell id="n3" value="PÉRIPHÉRIE, Cloudflare" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#f76707;dashed=1;dashPattern=8 4" vertex="1" parent="1">
+                    <mxGeometry x="60" y="110" width="480" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="n4" value="DNS zone dropicture.com&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;app · grafana (proxied) · cdn (CNAME direct)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="82" y="150" width="436" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="n5" value="WAF · anti-DDoS · TLS strict (mode « full strict »)&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;TLS ≥ 1.2 · Always Use HTTPS · certificat Origin CA 15 ans&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="82" y="210" width="436" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="n6" value="Le pare-feu Hetzner n&#39;ouvre 80/443 qu&#39;aux plages d&#39;adresses Cloudflare&lt;br/&gt;(récupérées dynamiquement par Terraform)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="82" y="270" width="436" height="44" as="geometry"/>
+                </mxCell>
+                <mxCell id="n7" value="CALCUL, Hetzner Cloud · région fsn1 (Falkenstein, DE) · réseau privé 10.0.0.0/16" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#1c7ed6;dashed=1;dashPattern=8 4" vertex="1" parent="1">
+                    <mxGeometry x="60" y="350" width="830" height="620" as="geometry"/>
+                </mxCell>
+                <mxCell id="n8" value="proxy-1 · cpx32" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e5dbff;strokeColor=#7048e8;strokeWidth=1.6;fontFamily=Helvetica;fontSize=12;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="84" y="392" width="378" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n9" value="10.0.0.10, 4 vCPU / 8 Go · MANAGER" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#868e96" vertex="1" parent="1">
+                    <mxGeometry x="90" y="426" width="372" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="n10" value="Traefik v3 · socket-proxy · Redis&lt;br/&gt;Prometheus · Alertmanager · Loki · Grafana" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="84" y="448" width="378" height="62" as="geometry"/>
+                </mxCell>
+                <mxCell id="n11" value="db-1 · cpx32" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#c3fae8;strokeColor=#099268;strokeWidth=1.6;fontFamily=Helvetica;fontSize=12;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="484" y="392" width="378" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n12" value="10.0.0.20, 4 vCPU / 8 Go · worker" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#868e96" vertex="1" parent="1">
+                    <mxGeometry x="490" y="426" width="372" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="n13" value="PostgreSQL 18 (bind /opt/dropicture/data)&lt;br/&gt;PgBouncer" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="484" y="448" width="378" height="62" as="geometry"/>
+                </mxCell>
+                <mxCell id="n14" value="backend-1 · cpx12" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dbe4ff;strokeColor=#4263eb;strokeWidth=1.6;fontFamily=Helvetica;fontSize=12;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="84" y="570" width="378" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n15" value="10.0.0.30, 1 vCPU / 2 Go · worker" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#868e96" vertex="1" parent="1">
+                    <mxGeometry x="90" y="604" width="372" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="n16" value="dropicture-saas-backend&lt;br/&gt;&lt;i&gt;réplicas dérivés du nombre de nœuds&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="84" y="626" width="378" height="62" as="geometry"/>
+                </mxCell>
+                <mxCell id="n17" value="frontend-1 · cpx12" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#c5f6fa;strokeColor=#0c8599;strokeWidth=1.6;fontFamily=Helvetica;fontSize=12;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="484" y="570" width="378" height="34" as="geometry"/>
+                </mxCell>
+                <mxCell id="n18" value="10.0.0.40, 1 vCPU / 2 Go · worker" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#868e96" vertex="1" parent="1">
+                    <mxGeometry x="490" y="604" width="372" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="n19" value="dropicture-saas-frontend&lt;br/&gt;&lt;i&gt;réplicas dérivés du nombre de nœuds&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="484" y="626" width="378" height="62" as="geometry"/>
+                </mxCell>
+                <mxCell id="n20" value="&lt;b&gt;Right-sizing&lt;/b&gt;, chaque service Swarm déclare un couple réservations / limites, PostgreSQL 1 vCPU / 2 Go réservés pour 3,4 vCPU / 6 Go de plafond, backend 384 Mo → 1 280 Mo, frontend 256 Mo → 960 Mo, Traefik / PgBouncer / agents d&#39;observabilité en empreinte minimale. La capacité provisionnée suit le besoin réel, pas une marge de confort, le même levier agit sur la facture Hetzner et sur la consommation électrique induite." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e9fac8;strokeColor=#74b816;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="84" y="758" width="778" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="n21" value="Sur chaque nœud (services Swarm en mode &lt;b&gt;global&lt;/b&gt;), node-exporter :9100 · cAdvisor :8080 · Alloy" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="84" y="850" width="778" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="n22" value="Plan de contrôle Swarm sur le réseau privé (2377) · réseaux overlay MTU 1400 · pool d&#39;adresses 10.100.0.0/16" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="84" y="886" width="778" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="n23" value="Étiquette de placement &lt;b&gt;node.labels.dropicture.role&lt;/b&gt;, chaque service est épinglé à sa classe de nœud" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d0ebff;strokeColor=#1c7ed6;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="84" y="922" width="778" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="n24" value="STOCKAGE &amp; DIFFUSION, AWS eu-west-3 (Paris)" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#2f9e44;dashed=1;dashPattern=8 4" vertex="1" parent="1">
+                    <mxGeometry x="910" y="350" width="350" height="620" as="geometry"/>
+                </mxCell>
+                <mxCell id="n25" value="S3 dropicture-cdn-prod" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="932" y="390" width="306" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n26" value="médias · versionné · AES-256&lt;br/&gt;préfixe media/ seul exposé" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="932" y="420" width="306" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n27" value="CloudFront + WAFv2" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#d3f9d8;strokeColor=#2f9e44;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="932" y="468" width="306" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n28" value="cdn.dropicture.com · PriceClass_100&lt;br/&gt;rate-limit IP · IP reputation · common rules" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="932" y="498" width="306" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n29" value="ACM (us-east-1)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e9fac8;strokeColor=#74b816;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="932" y="546" width="306" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n30" value="certificat cdn, validation DNS" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="932" y="576" width="306" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n31" value="SSM Parameter Store" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e9fac8;strokeColor=#74b816;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="932" y="624" width="306" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n32" value="/dropicture/cloudfront/*&lt;br/&gt;/dropicture/backup/*" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="932" y="654" width="306" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n33" value="S3 dropicture-db-backups-prod" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#c3fae8;strokeColor=#099268;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="932" y="702" width="306" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n34" value="daily/ → STANDARD_IA J+30 → exp. J+35&lt;br/&gt;monthly/ → GLACIER_IR → exp. J+365" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="932" y="732" width="306" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n35" value="S3 dropicture-tfstate-prod" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="932" y="780" width="306" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n36" value="état Terraform · versionné · verrou" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="932" y="810" width="306" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n37" value="AWS Budgets" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#fff3bf;strokeColor=#f59f00;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="932" y="858" width="306" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n38" value="seuils 50 / 80 / 100 % · alerte courriel" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="932" y="888" width="306" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n39" value="CHAÎNE D&#39;OUTILLAGE" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#ae3ec9;dashed=1;dashPattern=8 4" vertex="1" parent="1">
+                    <mxGeometry x="1280" y="350" width="320" height="620" as="geometry"/>
+                </mxCell>
+                <mxCell id="n40" value="GitHub, monorepo" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="388" width="282" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n41" value="source unique de vérité (GitOps)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="418" width="282" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n42" value="GitHub Actions" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="466" width="282" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n43" value="7 workflows, deploy, cdn, backup,&lt;br/&gt;recovery, destroy (×2), website" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="496" width="282" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n44" value="GHCR" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="544" width="282" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n45" value="ghcr.io/redjem-amir/dropicture/saas/*&lt;br/&gt;images étiquetées par SHA de commit" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="574" width="282" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n46" value="Terraform ≥ 1.10" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="622" width="282" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n47" value="hcloud · cloudflare · aws · http&lt;br/&gt;état distant S3 + verrou" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="652" width="282" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n48" value="Ansible core ≥ 2.16" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="700" width="282" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n49" value="playbook · deploy · backup · restore" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="730" width="282" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n50" value="Trivy v0.58.2" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="778" width="282" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n51" value="dépendances · secrets · IaC · images&lt;br/&gt;SBOM CycloneDX par image" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="808" width="282" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n52" value="Task + Husky" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3d9fa;strokeColor=#ae3ec9;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="856" width="282" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n53" value="tâches locales · pre-commit lint-staged" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="886" width="282" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="n54" value="SITE VITRINE, pile dédiée, sans serveur" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e9fac8;strokeColor=#74b816;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#74b816;dashed=1;dashPattern=8 4" vertex="1" parent="1">
+                    <mxGeometry x="560" y="110" width="700" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="n55" value="S3 dropicture-website-prod&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;export statique Next.js, privé (OAC)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="584" y="152" width="320" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n56" value="CloudFront + WAFv2 + fonction de réécriture&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;dropicture.com · www, ACM · budget 20 $/mois&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="584" y="218" width="320" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="n57" value="État Terraform séparé&lt;br/&gt;dropicture-website-tfstate-prod&lt;br/&gt;&lt;br/&gt;Déploiement déclenché par un &lt;b&gt;push&lt;/b&gt;&lt;br/&gt;sur apps/website/**" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e9fac8;strokeColor=#74b816;strokeWidth=1.6;fontFamily=Helvetica;fontSize=10;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" vertex="1" parent="1">
+                    <mxGeometry x="920" y="152" width="320" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="n58" value="EXPOSITION PUBLIQUE" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#e03131;dashed=1;dashPattern=8 4" vertex="1" parent="1">
+                    <mxGeometry x="1280" y="110" width="320" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="n59" value="app.dropicture.com → Traefik (frontend + /api)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="148" width="282" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n60" value="grafana.dropicture.com → Grafana" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="184" width="282" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n61" value="cdn.dropicture.com → CloudFront (médias)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="220" width="282" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n62" value="dropicture.com / www → CloudFront (vitrine)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="256" width="282" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n63" value="22/tcp → SSH par clé seulement (mot de passe interdit)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#adb5bd;strokeWidth=1.6;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="292" width="282" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="n64" value="Sources, infra/saas/terraform · infra/website/terraform · infra/saas/ansible · .github/workflows" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" vertex="1" parent="1">
+                    <mxGeometry x="60" y="1110" width="1000" height="20" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

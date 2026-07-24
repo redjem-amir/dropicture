@@ -1,0 +1,262 @@
+<mxfile host="65bd71144e">
+  <diagram id="page-4" name="Fiches ADR-017 à ADR-024">
+    <mxGraphModel dx="888" dy="621" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="c1" value="Annexe J, Fiches de décision ADR-017 à ADR-024 (BC1 C5 à C9)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="dropicture · format Contexte, Décision, Alternatives écartées avec le motif du rejet, Conséquences assumées y compris défavorables" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+          <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="RNCP40573 · Expert en informatique et systèmes d'information, option DevOps · Amir Redjem · appelée en §11.1.1, §11.1.2 et §13.3.2 du mémoire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="78" width="1574" height="18" as="geometry"/>
+        </mxCell>
+        <mxCell id="c4" value="&lt;b&gt;ADR-017&lt;/b&gt;  ·  &lt;b&gt;Estimation logicielle de la consommation énergétique&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="40" y="118" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c5" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/03/17&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#f76707;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="122" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c6" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="156" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c7" value="L'éco-responsabilité n'est pilotable que si elle est mesurée. Or les compteurs matériels (RAPL) ne sont pas exposés sur des machines virtuelles louées, ce qui rend inopérants les outils de mesure directe." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="156" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c8" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="208" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c9" value="Intégrer à Prometheus un modèle d'estimation documenté, dérivé de l'utilisation processeur, nombre de cœurs × (1,5 W au repos + 4,5 W × taux d'utilisation), agrégé en puissance de cluster, énergie projetée sur 24 h et empreinte carbone estimée, avec un tableau de bord et une alerte dédiés." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="208" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c10" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="260" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c11" value="Ne rien mesurer, écarté, une éco-responsabilité non mesurée est une éco-responsabilité affichée. Attendre un déploiement sur matériel dédié, écarté car il repousse indéfiniment la mise en place de l'instrumentation." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="260" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c12" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="316" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c13" value="L'éco-responsabilité devient pilotable, avec un seuil d'alerte et un historique. La limite est assumée et documentée, il s'agit d'une estimation, non d'une mesure. Le passage à une mesure réelle par RAPL sur matériel dédié figure au plan d'amélioration continue." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="316" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c14" value="&lt;b&gt;ADR-018&lt;/b&gt;  ·  &lt;b&gt;Le socket Docker n'est jamais exposé directement&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="832" y="118" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c15" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/03/05&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#e03131;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="1432" y="122" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c16" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#e03131;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="156" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c17" value="Traefik doit découvrir les services Swarm, ce qui suppose un accès à l'API Docker. Monter le socket dans un conteneur exposé à Internet équivaut à lui confier le contrôle du nœud." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="156" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c18" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#e03131;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="208" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c19" value="Interposer un mandataire (socket-proxy) sur un réseau overlay interne dédié, n'autorisant que les points de lecture strictement nécessaires (SWARM, SERVICES, TASKS, NETWORKS, NODES, INFO). Traefik interroge le mandataire en TCP, jamais le socket." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="208" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c20" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#e03131;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="260" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c21" value="Montage direct du socket dans Traefik, écarté pour l'élévation de privilège qu'il autorise en cas de compromission. Exposition de l'API Docker en TCP avec TLS mutuel, écartée pour la complexité de gestion des certificats au regard du gain." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="260" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c22" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#e03131;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="316" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c23" value="Une compromission de Traefik ne donne pas le contrôle du démon Docker. En contrepartie, un composant supplémentaire à maintenir, dont la moindre régression casse la découverte de services." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="316" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c24" value="&lt;b&gt;ADR-019&lt;/b&gt;  ·  &lt;b&gt;Certificat Cloudflare Origin CA et TLS strict de bout en bout&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffe3e3;strokeColor=#e03131;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="40" y="372" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c25" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/03/06&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#e03131;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#e03131;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="376" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c26" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#e03131;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="410" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c27" value="Le trafic entre Cloudflare et l'origine doit être chiffré et authentifié, sans quoi la terminaison TLS en périphérie n'offrirait qu'une protection partielle." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="410" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c28" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#e03131;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="462" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c29" value="Générer la clé et la demande de signature sur le nœud manager, obtenir un certificat Cloudflare Origin CA (validité longue, couvrant le domaine et ses sous-domaines), le stocker en config Swarm et la clé en secret Swarm, et régler la zone en mode « full strict », TLS 1.2 minimum, redirection HTTPS systématique." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="462" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c30" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#e03131;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="514" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c31" value="Let's Encrypt avec renouvellement automatique, écarté ici parce que l'origine n'est joignable que depuis les plages Cloudflare, ce qui complique la validation HTTP-01, conservé comme alternative via DNS-01. Certificat auto-signé, incompatible avec le mode strict." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="514" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c32" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#e03131;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="570" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c33" value="Chiffrement et authentification de bout en bout, sans renouvellement fréquent à automatiser. En contrepartie, une config Swarm étant immuable, la rotation du certificat impose un changement de nom d'objet, procédure explicitement documentée et vérifiée par une assertion du playbook." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="570" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c34" value="&lt;b&gt;ADR-020&lt;/b&gt;  ·  &lt;b&gt;Images étiquetées par le SHA du dernier commit touchant le service&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="832" y="372" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c35" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/03/10&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#f76707;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="1432" y="376" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c36" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="410" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c37" value="Une étiquette mouvante (« latest ») rend impossible de savoir ce qui tourne réellement, et provoque des reconstructions inutiles quand un service n'a pas changé." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="410" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c38" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="462" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c39" value="Dériver, pour chaque service, l'étiquette d'image du SHA du dernier commit ayant touché son répertoire. Si l'image existe déjà dans le registre, la construction est sautée." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="462" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c40" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="514" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c41" value="Étiquetage par numéro de version sémantique, écarté pour la charge de gestion sur un mono-dépôt à livraison continue. Étiquetage par numéro de run, écarté car il ne permet pas de remonter au code." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="514" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c42" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="570" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c43" value="Ce qui tourne en production est rattachable sans ambiguïté à une ligne de code, et les constructions inutiles disparaissent. En contrepartie, l'historique du dépôt doit être complet lors du calcul, ce qui impose une extraction non superficielle dans le pipeline." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="570" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c44" value="&lt;b&gt;ADR-021&lt;/b&gt;  ·  &lt;b&gt;Portes de sécurité bloquantes et nomenclature logicielle par artefact&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="40" y="626" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c45" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/03/11&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#f76707;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="630" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c46" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="664" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c47" value="Une vulnérabilité connue coûte beaucoup moins cher à traiter avant la mise en production qu'après. Encore faut-il que le contrôle empêche réellement le déploiement." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="664" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c48" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="716" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c49" value="Exécuter Trivy en portes bloquantes à trois endroits, dépendances et secrets du dépôt, configuration d'infrastructure (Terraform, Ansible, Dockerfile), puis image publiée. Seuils CRITICAL et HIGH, vulnérabilités sans correctif exclues. Produire une SBOM CycloneDX par image et publier les rapports SARIF dans GitHub Code Scanning." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="716" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c50" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="768" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c51" value="Analyses non bloquantes, écartées car un avertissement que rien n'arrête finit par être ignoré. Analyse à la seule construction, écartée car elle laisse passer les vulnérabilités du système de base de l'image." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="768" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c52" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="824" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c53" value="Aucun artefact vulnérable de manière connue et corrigeable n'atteint la production. Les exceptions sont centralisées dans un fichier dédié et doivent porter identifiant, motif et date de revue. En contrepartie, une vulnérabilité amont peut bloquer une livraison urgente, le dispositif d'exception est donc explicitement prévu et tracé." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="824" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c54" value="&lt;b&gt;ADR-022&lt;/b&gt;  ·  &lt;b&gt;Sauvegarde logique vers un stockage objet durci plutôt que réplication&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#ffe8cc;strokeColor=#f76707;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="832" y="626" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c55" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/03/24&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#f76707;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="1432" y="630" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c56" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="664" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c57" value="Il fallait distinguer deux protections souvent confondues, les données contre la perte, et l'infrastructure contre la destruction. Sauvegarder des serveurs qu'on sait recréer coûte cher pour rien, savoir recréer des serveurs ne remplace jamais une sauvegarde de base." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="664" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c58" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="716" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c59" value="Sauvegarder uniquement la base, par cliché logique compressé toutes les six heures, vérifié par empreinte SHA-256 et par contrôle de taille de l'objet déposé, vers un bucket S3 versionné, chiffré, à verrouillage d'objet et cycle de vie (quotidiennes 35 jours, mensuelles 365 jours en archivage froid). L'infrastructure, elle, est reconstruite par le code." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="716" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c60" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="768" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c61" value="Réplication en continu vers un second serveur, écartée pour le coût d'un nœud supplémentaire au regard d'un objectif de point de reprise de six heures jugé acceptable. Instantanés de volume, écartés car ils sauvegardent la machine plutôt que la donnée et se restaurent moins finement." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="768" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c62" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#f76707;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="824" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c63" value="Coût de stockage maîtrisé et protection contre l'altération volontaire, y compris par rançongiciel. L'objectif de point de reprise est de six heures au plus, assumé. Un exercice de restauration périodique en conditions réelles reste à formaliser, c'est la limite explicite du dispositif." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="824" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c64" value="&lt;b&gt;ADR-023&lt;/b&gt;  ·  &lt;b&gt;Index partiels comme levier d'éco-conception&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#c3fae8;strokeColor=#099268;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="40" y="880" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c65" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/02/25&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#099268;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="640" y="884" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c66" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="918" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c67" value="Les brouillons privés sont majoritaires en volume. Un index complet sur la visibilité indexerait massivement des lignes qui ne seront jamais lues par le chemin public." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="918" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c68" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="970" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c69" value="Restreindre les index aux lignes réellement concernées, l'index du fil public ne référence que les médias publiés de rôle « contenu », et l'unicité de la clé d'API ne s'applique qu'aux comptes qui en possèdent une." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="970" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c70" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="1022" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c71" value="Index complets, écartés pour l'empreinte de stockage et le coût de maintenance à l'écriture. Absence d'index avec tri applicatif, écartée pour la dégradation des lectures les plus fréquentes." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="1022" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c72" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="40" y="1078" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c73" value="Empreinte de stockage réduite et lectures publiques accélérées, performance et sobriété vont ici dans le même sens. En contrepartie, le planificateur n'utilise l'index que si la requête reprend exactement le prédicat partiel, ce qui contraint la formulation des requêtes." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="208" y="1078" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c74" value="&lt;b&gt;ADR-024&lt;/b&gt;  ·  &lt;b&gt;La suppression en cascade est le socle du droit à l'effacement&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#c3fae8;strokeColor=#099268;strokeWidth=1.6;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=12" parent="1" vertex="1">
+          <mxGeometry x="832" y="880" width="782" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="c75" value="&lt;font style='font-size:9px'&gt;Statut Acceptée  ·  2025/02/25&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#099268;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
+          <mxGeometry x="1432" y="884" width="176" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="c76" value="&lt;b&gt;Contexte&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="918" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c77" value="Le droit à l'effacement ne peut pas reposer sur une procédure applicative qu'un oubli de code suffirait à rendre incomplète." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="918" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c78" value="&lt;b&gt;Décision&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="970" width="168" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c79" value="Porter la sémantique d'effacement par les contraintes de la base, suppression en cascade d'un compte vers ses médias, albums, placements et liens d'abonnement, références douces (avatar, couverture) ramenées à NULL plutôt que bloquantes. Le service supprime en parallèle les objets du stockage." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="970" width="614" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="c80" value="&lt;b&gt;Alternatives écartées&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="1022" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c81" value="Suppression logique par indicateur, écartée car elle conserve les données et contredit l'esprit du règlement. Suppression applicative sans contrainte en base, écartée pour le risque d'oubli lors de l'ajout d'une future table." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="1022" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c82" value="&lt;b&gt;Conséquences&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#099268;align=left;verticalAlign=top;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="832" y="1078" width="168" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c83" value="Supprimer un compte fait mécaniquement disparaître l'ensemble de ses données, en base comme sur le stockage objet. La conservation d'un pointeur n'empêche jamais un effacement. En contrepartie, toute nouvelle table référençant un compte devra déclarer explicitement son comportement de suppression." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+          <mxGeometry x="1000" y="1078" width="614" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="c84" value="Sources, code et infrastructure du dépôt dropicture (apps/, infra/, .github/workflows/) · le statut « Acceptée » signifie que la décision est en vigueur. Une décision remplacée porterait le statut « Remplacée par ADR-xxx » et resterait au journal, car un journal dont on retire les entrées périmées perd sa raison d'être." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fontColor=#adb5bd" parent="1" vertex="1">
+          <mxGeometry x="40" y="1139" width="1574" height="18" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
