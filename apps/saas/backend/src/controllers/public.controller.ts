@@ -9,8 +9,19 @@ import { Account } from '../models/account.entity';
 import { Media } from '../models/media.entity';
 import { Follow } from '../models/follow.entity';
 
+/**
+ * Motif autorisé pour un nom d'utilisateur reçu dans un chemin public, de un à trente caractères
+ * alphanumériques, point, tiret bas ou tiret. Il rejette les segments hostiles avant toute lecture
+ * en base, ce qui évite de payer une requête pour un identifiant qui ne peut pas exister.
+ */
 const USERNAME = /^[a-zA-Z0-9._-]{1,30}$/;
 
+/**
+ * Bornes de pagination et de recherche de l'API publique. Elles plafonnent le travail qu'un appel
+ * anonyme peut déclencher, cent vingt médias par page au maximum, vingt-quatre profils en vedette
+ * avec trois aperçus chacun, dix résultats de recherche et trente caractères de terme, ce qui rend
+ * le coût des requêtes agrégées et fenêtrées prévisible.
+ */
 export const PUBLIC_LIMITS = {
   PAGE_MAX: 120,
   PAGE_DEFAULT: 48,
@@ -23,9 +34,25 @@ export const PUBLIC_LIMITS = {
   SEARCH_TERM_MAX: 30,
 } as const;
 
+/**
+ * Contrôleur de l'API publique. Expose sans authentification les statistiques de la plateforme, la
+ * recherche de profils, les profils en vedette, le fil global des publications ainsi que le profil
+ * détaillé d'un compte et ses médias, sous le préfixe /api/public.
+ *
+ * @remarks Toute lecture de médias filtre sur le rôle `content` et sur `publishedAt` non nul, ce qui
+ * cantonne l'exposition aux seuls médias explicitement publiés, les avatars étant résolus à part
+ * depuis `avatarMediaId` du compte. Chaque route porte sa propre limitation de débit, cent vingt
+ * requêtes par minute pour les agrégats et deux cent quarante pour les lectures paginées. Les routes
+ * à segment fixe sont déclarées avant `/:username` pour que le paramètre dynamique ne les capture
+ * pas. Les valeurs venant du client sont bornées côté serveur et injectées en paramètres liés.
+ */
 @ApiTags('API publique')
 @Controller('/api/public')
 export class PublicController {
+  /**
+   * Injecte le service média qui construit les vues publiques et les dépôts TypeORM des comptes, des
+   * médias et des abonnements.
+   */
   constructor(
     private readonly media: MediaService,
     @InjectRepository(Account)
@@ -36,6 +63,16 @@ export class PublicController {
     private readonly followRepository: Repository<Follow>,
   ) {}
 
+  /**
+   * Compte les médias publiés de la plateforme et le nombre d'auteurs distincts qui les ont publiés.
+   *
+   * @remarks `GET /api/public/stats`. Route publique, aucun garde. Limitée à cent vingt requêtes par
+   * minute. L'agrégat ne retient que les médias de rôle `content` dont `publishedAt` est renseigné,
+   * donc ni les avatars ni les médias importés mais non publiés.
+   * @returns Objet à deux champs, `media` le nombre total de médias publiés et `authors` le nombre de
+   * comptes propriétaires distincts, les deux convertis en nombres et ramenés à zéro si l'agrégat ne
+   * retourne aucune ligne.
+   */
   @Throttle({ default: { limit: 120, ttl: 60000 } })
   @ApiOperation({ summary: 'Statistiques publiques de la plateforme' })
   @Get('/stats')
@@ -50,6 +87,24 @@ export class PublicController {
     return { media: Number(row?.media ?? 0), authors: Number(row?.authors ?? 0) };
   }
 
+  /**
+   * Recherche des profils publics par nom d'utilisateur, prénom ou nom, et retourne les meilleures
+   * correspondances avec leur nombre de médias publiés.
+   *
+   * @remarks `GET /api/public/search`. Route publique, aucun garde. Limitée à deux cent quarante
+   * requêtes par minute. Le terme est débarrassé de ses espaces de bord, mis en minuscules, privé d'un
+   * arobase de tête et tronqué à trente caractères, puis les métacaractères `\`, `%` et `_` sont
+   * échappés avant d'alimenter les clauses `LIKE ... ESCAPE '\'`, ce qui empêche un motif fourni par
+   * le client de balayer toute la table. Le classement place d'abord l'égalité exacte sur le nom
+   * d'utilisateur, puis la correspondance de préfixe, puis le nombre de médias publiés décroissant.
+   * Les avatars des résultats sont chargés en une seule requête `IN`.
+   * @param q - Terme de recherche brut passé en chaîne de requête, optionnel.
+   * @param limit - Nombre de résultats demandé, borné entre un et dix, six par défaut.
+   * @returns Objet à deux champs, `term` le terme normalisé et `profiles` la liste des
+   * correspondances. Chaque correspondance porte `username`, `name` composé du prénom et du nom,
+   * `bio`, `avatar` sous forme de vue média ou `null`, et `photos` le nombre de médias publiés. La
+   * liste est vide quand le terme normalisé est vide ou qu'aucun compte ne correspond.
+   */
   @Throttle({ default: { limit: 240, ttl: 60000 } })
   @ApiOperation({ summary: 'Rechercher des profils publics' })
   @Get('/search')
@@ -118,6 +173,22 @@ export class PublicController {
     };
   }
 
+  /**
+   * Liste les profils publiant le plus récemment, avec leurs compteurs et un aperçu de leurs derniers
+   * médias publiés.
+   *
+   * @remarks `GET /api/public/profiles`. Route publique, aucun garde. Limitée à cent vingt requêtes
+   * par minute. Le classement retient la date de publication la plus récente par propriétaire, et
+   * l'ordre initial est réappliqué après la lecture des comptes. Les aperçus proviennent d'une unique
+   * requête fenêtrée `ROW_NUMBER` bornée à trois médias par profil et les compteurs d'abonnés d'une
+   * agrégation lancée en parallèle, ce qui évite une requête par profil. Les identifiants de
+   * propriétaires sont passés en paramètre lié `ANY($1)`.
+   * @param limit - Nombre de profils demandé, borné entre un et vingt-quatre, six par défaut.
+   * @returns Objet à un champ `profiles`. Chaque entrée porte `username`, `name` composé du prénom et
+   * du nom, `bio`, `avatar` en vue média ou `null`, `counts.photos` le nombre de médias publiés,
+   * `counts.followers` le nombre d'abonnés, `lastPublishedAt` au format ISO ou `null`, et `preview` la
+   * liste des vues média des derniers publiés. La liste est vide quand aucun média n'est publié.
+   */
   @Throttle({ default: { limit: 120, ttl: 60000 } })
   @ApiOperation({ summary: 'Profils en vedette (avec aperçus)' })
   @Get('/profiles')
@@ -197,6 +268,26 @@ export class PublicController {
     };
   }
 
+  /**
+   * Pagine le fil global des médias publiés, du plus récent au plus ancien, en rattachant l'auteur à
+   * chaque média.
+   *
+   * @remarks `GET /api/public/feed`. Route publique, aucun garde. Limitée à deux cent quarante
+   * requêtes par minute. La pagination repose sur un curseur opaque encodé en base64url qui porte la
+   * date de publication et l'identifiant du dernier élément servi, comparés en clé composée, ce qui
+   * garde un parcours stable et sans doublon même si des médias sont publiés pendant la navigation.
+   * Une ligne de plus que la page demandée est lue pour détecter la page suivante sans compter la
+   * table, et les auteurs sont résolus en une seule requête `IN` sur les propriétaires dédupliqués.
+   * @param cursor - Curseur opaque base64url de la forme date ISO puis barre verticale puis
+   * identifiant, optionnel.
+   * @param limit - Taille de page demandée, bornée entre un et cent vingt, vingt-quatre par défaut.
+   * @returns Objet à deux champs, `items` et `nextCursor`. Chaque élément étale la vue média (`id`,
+   * `kind`, `width`, `height`, `durationMs`, `url`) puis ajoute `publishedAt` au format ISO ou `null`
+   * et `author` porteur de `username` et `name`, ou `null` si le compte n'est plus résolvable.
+   * `nextCursor` vaut `null` sur la dernière page.
+   * @throws BadRequestException `BAD_CURSOR` avec le statut 400 si le curseur décodé ne fournit pas
+   * une date valide et un identifiant non vide.
+   */
   @Throttle({ default: { limit: 240, ttl: 60000 } })
   @ApiOperation({ summary: 'Galerie publique (fil global)' })
   @Get('/feed')
@@ -248,6 +339,24 @@ export class PublicController {
     };
   }
 
+  /**
+   * Retourne la fiche publique d'un compte désigné par son nom d'utilisateur, avec ses compteurs de
+   * médias et d'abonnés.
+   *
+   * @remarks `GET /api/public/:username`. Route publique, aucun garde. Limitée à cent vingt requêtes
+   * par minute. Le nom d'utilisateur est confronté au motif autorisé avant toute lecture, et un format
+   * invalide renvoie la même erreur qu'un compte inexistant afin de ne rien révéler sur les
+   * identifiants acceptés. Le comptage des médias, celui des abonnés et la recherche de la première
+   * publication sont lancés en parallèle. L'avatar n'est chargé que si son `ownerId` correspond au
+   * compte demandé, ce qui interdit d'exposer le média d'un autre compte via un `avatarMediaId`
+   * incohérent.
+   * @param username - Nom d'utilisateur extrait du chemin.
+   * @returns Objet portant `username`, `name` composé du prénom et du nom, `bio`, `avatar` en vue
+   * média ou `null`, `counts.photos` le nombre de médias publiés, `counts.followers` le nombre
+   * d'abonnés, et `firstPublishedAt` au format ISO ou `null`.
+   * @throws NotFoundException `ACCOUNT_NOT_FOUND` avec le statut 404 si le nom d'utilisateur ne
+   * respecte pas le motif autorisé ou si aucun compte ne le porte.
+   */
   @Throttle({ default: { limit: 120, ttl: 60000 } })
   @ApiOperation({ summary: "Profil public d'un utilisateur" })
   @Get('/:username')
@@ -280,6 +389,27 @@ export class PublicController {
     };
   }
 
+  /**
+   * Pagine les médias publiés d'un compte donné, du plus récent au plus ancien.
+   *
+   * @remarks `GET /api/public/:username/media`. Route publique, aucun garde. Limitée à deux cent
+   * quarante requêtes par minute. Le nom d'utilisateur est validé contre le motif autorisé avant la
+   * résolution du compte, et la requête est ensuite contrainte au propriétaire résolu, au rôle
+   * `content` et à `publishedAt` non nul. Le curseur opaque base64url est comparé en clé composée
+   * comme sur le fil global, et une ligne de plus que la page demandée est lue pour savoir s'il reste
+   * une page suivante.
+   * @param username - Nom d'utilisateur extrait du chemin.
+   * @param cursor - Curseur opaque base64url de la forme date ISO puis barre verticale puis
+   * identifiant, optionnel.
+   * @param limit - Taille de page demandée, bornée entre un et cent vingt, quarante-huit par défaut.
+   * @returns Objet à deux champs, `items` et `nextCursor`. Chaque élément étale la vue média (`id`,
+   * `kind`, `width`, `height`, `durationMs`, `url`) puis ajoute `publishedAt` au format ISO ou `null`.
+   * `nextCursor` vaut `null` sur la dernière page.
+   * @throws NotFoundException `ACCOUNT_NOT_FOUND` avec le statut 404 si le nom d'utilisateur ne
+   * respecte pas le motif autorisé ou si aucun compte ne le porte.
+   * @throws BadRequestException `BAD_CURSOR` avec le statut 400 si le curseur décodé ne fournit pas
+   * une date valide et un identifiant non vide.
+   */
   @Throttle({ default: { limit: 240, ttl: 60000 } })
   @ApiOperation({ summary: "Médias publiés d'un utilisateur (pagination curseur)" })
   @Get('/:username/media')
