@@ -69,13 +69,13 @@ Matrice de couverture du référentiel par le mémoire, les annexes et le code. 
 | C10, étude d'opportunité non formalisée | `docs/livrables/etude-opportunite.md` créée |
 | Annexe F.1 (maquettes) sans planche | maquettes SVG importables Figma et PNG, calquées sur le code réel |
 | IA non branchée dans la chaîne | workflow `ai-rightsizing.yml` (analyse de right-sizing assistée par IA) |
-| Receiver Alertmanager vide | receiver e-mail configuré, secret SMTP hors dépôt |
+| Receiver Alertmanager vide | deux canaux configurés, courriel en SMTP authentifié et webhook Slack, secrets hors dépôt |
+| Code source peu commenté | backend documenté en JSDoc, 46 routes sur 46 et toutes les fonctions publiques des services, convention décrite en §14.1.6 du mémoire |
 
 ## Écarts résiduels mineurs
 
 - **Annexe K** ne comporte qu'un schéma détaillé (Pipeline SaaS Deploy). Les six autres workflows sont documentés et schématisés dans `docs/wiki/09-cicd.md`, un second schéma d'annexe reste optionnel.
-- Le terme **Trivy** n'apparaît pas dans le corps du mémoire alors que l'outil est décrit et nommé en Annexe S.
-- Le mémoire numérote la partie option **17** en sautant 15 et 16, réservées aux options non retenues (cybersécurité, big data et IA). À conserver tel quel ou à renuméroter selon la préférence du jury.
+- Le mémoire numérote la partie option **17** en sautant 15 et 16, réservées aux options non retenues (cybersécurité, big data et IA). Cette numérotation suit le modèle de dossier du candidat et est donc conservée.
 - Les dépendances et incohérences techniques du code sont suivies dans `docs/wiki/14-amelioration-continue.md`.
 
 ## Verdict
