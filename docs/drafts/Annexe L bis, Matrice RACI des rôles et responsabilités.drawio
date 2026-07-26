@@ -7,7 +7,7 @@
                 <mxCell id="c1" value="Annexe L bis, Matrice RACI des rôles et responsabilités (BC2 C15, C19)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=20;fontColor=#212529;fontStyle=1" parent="1" vertex="1">
                     <mxGeometry x="40" y="26" width="1574" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="c2" value="dropicture · huit lots de travail de la structure de découpage croisés avec les six acteurs du projet · un seul décideur redevable par lot" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
+                <mxCell id="c2" value="dropicture · huit lots de travail de la structure de découpage croisés avec les six acteurs porteurs d&#39;un lot · un seul décideur redevable par lot" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#868e96" parent="1" vertex="1">
                     <mxGeometry x="40" y="56" width="1574" height="22" as="geometry"/>
                 </mxCell>
                 <mxCell id="c3" value="RNCP40573 · Expert en informatique et systèmes d&#39;information, option DevOps · Amir Redjem · appelée en §13.1.2 et §13.4.1 du mémoire" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=9.5;fontColor=#adb5bd" parent="1" vertex="1">
@@ -31,7 +31,7 @@
                 <mxCell id="c9" value="&lt;b&gt;Redevable (Accountable)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9.5;fontColor=#212529;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
                     <mxGeometry x="616" y="138" width="200" height="34" as="geometry"/>
                 </mxCell>
-                <mxCell id="c10" value="Décide et répond du résultat devant le sponsor. Un seul A par lot, sans exception." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                <mxCell id="c10" value="Décide et répond du résultat du lot. Un seul A par lot, sans exception." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=8.5;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
                     <mxGeometry x="816" y="138" width="262" height="34" as="geometry"/>
                 </mxCell>
                 <mxCell id="c11" value="&lt;b&gt;C&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#fff3bf;strokeColor=#f59f00;strokeWidth=1.6;fontFamily=Helvetica;fontSize=13;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
@@ -82,10 +82,10 @@
                 <mxCell id="c26" value="Sponsor" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
                     <mxGeometry x="280" y="254" width="88" height="44" as="geometry"/>
                 </mxCell>
-                <mxCell id="c27" value="Chef de projet&lt;br/&gt;Ingénieur DevOps" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+                <mxCell id="c27" value="Chef de projet&lt;br/&gt;et ingénieur DevOps" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
                     <mxGeometry x="368" y="254" width="88" height="44" as="geometry"/>
                 </mxCell>
-                <mxCell id="c28" value="Développeur&lt;br/&gt;applicatif" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
+                <mxCell id="c28" value="Développeurs&lt;br/&gt;applicatifs" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
                     <mxGeometry x="456" y="254" width="88" height="44" as="geometry"/>
                 </mxCell>
                 <mxCell id="c29" value="Référent&lt;br/&gt;sécurité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3;fontStyle=1" parent="1" vertex="1">
@@ -124,7 +124,7 @@
                 <mxCell id="c40" value="&lt;b&gt;C&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#fff3bf;strokeColor=#f59f00;strokeWidth=1;fontFamily=Helvetica;fontSize=13;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
                     <mxGeometry x="720" y="298" width="88" height="66" as="geometry"/>
                 </mxCell>
-                <mxCell id="c41" value="Le sponsor arbitre le périmètre et les objectifs, le chef de projet produit la cartographie, les décisions d&#39;architecture et les modèles. Le référent sécurité et le référent pédagogique sont consultés sur les exigences et sur le cadre de certification." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
+                <mxCell id="c41" value="Le sponsor arbitre le périmètre et les objectifs, le chef de projet et ingénieur DevOps produit la cartographie, les décisions d&#39;architecture et les modèles. Le référent sécurité et le référent pédagogique sont consultés sur les exigences et sur le cadre de certification." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#495057;align=left;verticalAlign=middle;spacing=6;spacingLeft=8" parent="1" vertex="1">
                     <mxGeometry x="808" y="298" width="806" height="66" as="geometry"/>
                 </mxCell>
                 <mxCell id="c42" value="&lt;b&gt;2&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f1f3f5;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=11;fontColor=#212529;align=center;verticalAlign=middle;spacing=6" parent="1" vertex="1">
@@ -346,7 +346,7 @@
                 <mxCell id="c114" value="Lecture de la répartition" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#dee2e6;strokeColor=#495057;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6;fontStyle=1" parent="1" vertex="1">
                     <mxGeometry x="682" y="870" width="932" height="26" as="geometry"/>
                 </mxCell>
-                <mxCell id="c115" value="Sponsor" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                <mxCell id="c115" value="Sponsor (PP1)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
                     <mxGeometry x="40" y="896" width="212" height="28" as="geometry"/>
                 </mxCell>
                 <mxCell id="c116" value="0" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
@@ -373,7 +373,7 @@
                 <mxCell id="c123" value="Décide sur les deux lots qui engagent le périmètre et la dépense, informé ou consulté partout ailleurs." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
                     <mxGeometry x="682" y="896" width="932" height="28" as="geometry"/>
                 </mxCell>
-                <mxCell id="c124" value="Chef de projet, ingénieur DevOps" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                <mxCell id="c124" value="Chef de projet et ingénieur DevOps (PP2)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
                     <mxGeometry x="40" y="924" width="212" height="28" as="geometry"/>
                 </mxCell>
                 <mxCell id="c125" value="4" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
@@ -400,7 +400,7 @@
                 <mxCell id="c132" value="Porte la réalisation sur les huit lots. C&#39;est la charge la plus lourde du projet, et le point de concentration à traiter." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
                     <mxGeometry x="682" y="924" width="932" height="28" as="geometry"/>
                 </mxCell>
-                <mxCell id="c133" value="Développeur applicatif" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                <mxCell id="c133" value="Développeurs applicatifs (PP3)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
                     <mxGeometry x="40" y="952" width="212" height="28" as="geometry"/>
                 </mxCell>
                 <mxCell id="c134" value="2" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
@@ -427,7 +427,7 @@
                 <mxCell id="c141" value="Réalise les deux lots applicatifs, informé sur les lots d&#39;infrastructure dont il consomme le résultat." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
                     <mxGeometry x="682" y="952" width="932" height="28" as="geometry"/>
                 </mxCell>
-                <mxCell id="c142" value="Référent sécurité" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                <mxCell id="c142" value="Référent sécurité (PP4)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
                     <mxGeometry x="40" y="980" width="212" height="28" as="geometry"/>
                 </mxCell>
                 <mxCell id="c143" value="0" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
@@ -454,7 +454,7 @@
                 <mxCell id="c150" value="Consulté sur six lots sur huit, redevable de la conformité. La sécurité intervient en amont, pas en arbitre tardif." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
                     <mxGeometry x="682" y="980" width="932" height="28" as="geometry"/>
                 </mxCell>
-                <mxCell id="c151" value="Référent pédagogique" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                <mxCell id="c151" value="Référent pédagogique (PP5)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
                     <mxGeometry x="40" y="1008" width="212" height="28" as="geometry"/>
                 </mxCell>
                 <mxCell id="c152" value="0" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">
@@ -481,7 +481,7 @@
                 <mxCell id="c159" value="Redevable de la conformité au référentiel de certification, informé du reste." style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#ffffff;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
                     <mxGeometry x="682" y="1008" width="932" height="28" as="geometry"/>
                 </mxCell>
-                <mxCell id="c160" value="Utilisateurs bêta" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
+                <mxCell id="c160" value="Utilisateurs bêta (PP7)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=left;verticalAlign=middle;spacing=3;spacingLeft=6" parent="1" vertex="1">
                     <mxGeometry x="40" y="1036" width="212" height="28" as="geometry"/>
                 </mxCell>
                 <mxCell id="c161" value="0" style="rounded=1;whiteSpace=wrap;html=1;arcSize=0;fillColor=#f8f9fa;strokeColor=#dee2e6;strokeWidth=1;fontFamily=Helvetica;fontSize=9;fontColor=#212529;align=center;verticalAlign=middle;spacing=3" parent="1" vertex="1">

@@ -43,9 +43,29 @@ Estimation à trois niveaux détaillée en Annexe Y. Charge de 207 jours-homme, 
 
 ## 6. Ressources
 
-- **Internes** · profil DevOps assurant conception, développement, infrastructure et exploitation.
-- **Externes** · fournisseurs d'hébergement certifiés (Hetzner, AWS, Cloudflare), dont la couverture contractuelle est prise en compte dans la cartographie de conformité (Annexe R).
-- **Outillage** · dépôt Git unique, GitHub Actions, registre GHCR, Trello, tableaux de bord Grafana.
+La mise en situation professionnelle est reconstituée. Les rôles ci-dessous décrivent des fonctions, pas des postes à temps plein, et c'est à ce titre que la répartition reste transposable. Huit parties prenantes sont recensées, dont six portent un lot de travail et figurent à ce titre dans la matrice RACI (Annexe L bis). Le positionnement des huit est décrit en Annexe O bis.
+
+**Ressources humaines internes**
+
+| Rôle | Périmètre | Lots dont le rôle est redevable |
+|---|---|---|
+| Sponsor du projet (PP1) | objectifs, périmètre, enveloppe budgétaire, arbitrages de dépense | 1 Cadrage et conception, 2 Infrastructure IaC |
+| Chef de projet et ingénieur DevOps référent (PP2) | conception, infrastructure, chaîne de livraison, observabilité, exploitation | 3 Backend API, 4 Frontend et site, 5 Chaîne CI/CD, 6 Observabilité |
+| Développeurs applicatifs (PP3) | réalisation des lots applicatifs, backend et frontend | aucun |
+| Référent sécurité et protection des données (PP4) | durcissement, conformité RGPD et ISO/IEC 27001:2022 | 7 Sécurité et conformité |
+
+**Ressources humaines externes**
+
+| Rôle | Périmètre |
+|---|---|
+| Référent pédagogique, Joris VERGULDEZOONE (PP5) | conformité au référentiel de certification, redevable du lot 8 Documentation et soutenance |
+| Référent en entreprise, Philippe AMERIO (PP6) | transposabilité des pratiques, confrontation aux contraintes d'une production réelle |
+| Utilisateurs bêta (PP7) | validation des maquettes et des parcours avant développement (Annexe F.1) |
+| Fournisseurs d'hébergement, Hetzner, AWS, Cloudflare (PP8) | couverture contractuelle prise en compte dans la cartographie de conformité (Annexe R) |
+
+Le taux journalier moyen de 500 € retenu au budget est une moyenne pondérée d'un profil d'ingénieur DevOps confirmé et d'un profil de développeur applicatif (Annexe Y).
+
+**Outillage** · dépôt Git unique, GitHub Actions, registre GHCR, Trello, tableaux de bord Grafana.
 
 ## 7. Contraintes
 

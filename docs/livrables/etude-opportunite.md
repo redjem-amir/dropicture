@@ -37,7 +37,7 @@ Les besoins fonctionnels sont détaillés en personas et user stories (Annexe X)
 
 ## 5. Parties prenantes impactées
 
-Le sponsor et pilote du projet, les utilisateurs finaux (membres et visiteurs), le référent sécurité, et les fournisseurs d'hébergement. Leur positionnement et le plan d'engagement sont décrits en Annexe O bis, la répartition des responsabilités en Annexe L bis.
+Huit parties prenantes sont recensées, quatre internes et quatre externes. En interne, le sponsor du projet, le chef de projet et ingénieur DevOps référent, les développeurs applicatifs et le référent sécurité et protection des données. En externe, le référent pédagogique, le référent en entreprise, les utilisateurs bêta et les fournisseurs d'hébergement. Les utilisateurs finaux du produit, membres et visiteurs, sont représentés dans le dispositif par le panel d'utilisateurs bêta. Leur positionnement et le plan d'engagement sont décrits en Annexe O bis, la répartition des responsabilités entre les six acteurs porteurs d'un lot de travail en Annexe L bis.
 
 ## 6. Analyse externe et interne
 
