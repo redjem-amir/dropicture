@@ -1,0 +1,705 @@
+==============================================================================
+  FICHE ORALE · SOUTENANCE dropicture · Amir REDJEM
+  30 diapositives · 29 min 47 s · puis 30 min de questions
+==============================================================================
+
+  Pour chaque diapositive, ce que vous dites en la décrivant simplement.
+  Un paragraphe, une idée. Vous lisez, vous regardez l’écran, vous racontez.
+  Le chiffre à droite du titre, c’est le temps à ne pas dépasser.
+
+
+  PARTIE 1 · INTRODUCTION
+  ──────────────────────────────────────────────────────────────────────────
+
+
+01 · COUVERTURE                                                           40 s
+
+  Bonjour, je m’appelle Amir Redjem, j’ai 28 ans et je suis ingénieur DevOps
+  en alternance chez FDJ United.
+
+  Je passe aujourd’hui le titre Expert en informatique et systèmes
+  d’information, avec l’option DevOps.
+
+  Le projet s’appelle dropicture. C’est une plateforme de partage de photos et
+  de vidéos, où tout ce que vous déposez reste privé tant que vous n’avez pas
+  décidé de le publier.
+
+  Et ma question de départ, c’est celle qui est affichée. Comment construire
+  une infrastructure DevOps automatisée, sécurisée et sobre, qui livre en
+  continu cette plateforme, sans sacrifier la qualité, l’observabilité ni les
+  coûts.
+
+
+02 · SOMMAIRE                                                             45 s
+
+  Voilà comment je vais avancer, en six parties.
+
+  D’abord je pose le contexte et la question. Ensuite j’analyse le système
+  d’information et je choisis une architecture. Puis je montre comment j’ai
+  cadré et piloté le projet.
+
+  Ensuite la conception et le développement de l’application. Puis l’option
+  DevOps, qui est la partie la plus longue parce que c’est celle que vous
+  évaluez. Et je finis par les résultats et la conclusion.
+
+  Un détail pratique, en bas à gauche de chaque diapositive il y a un petit
+  repère avec la compétence concernée, la section du mémoire et l’annexe. Si
+  vous voulez vérifier quelque chose, vous savez tout de suite où regarder.
+
+
+03 · PRÉSENTATION PERSONNELLE                                             45 s
+
+  Un mot rapide sur mon parcours, c’est la frise au milieu.
+
+  J’ai eu mon Bac+2 à Aix-Marseille en juin 2022. Depuis, j’ai enchaîné quatre
+  ans sans interruption.
+
+  Un an en CDI chez IT Remote comme développeur full stack. Puis une
+  alternance chez Altares pour la licence, toujours en développement. Et
+  depuis deux ans, une alternance chez FDJ United comme ingénieur DevOps,
+  c’est celle qui valide ce master.
+
+  En bas, la raison pour laquelle j’ai choisi ce sujet. À force de développer
+  et d’exploiter en même temps, je me suis rendu compte que le plus dur n’est
+  pas d’écrire l’application, c’est de construire la chaîne qui l’amène en
+  production sans casse.
+
+
+04 · CONTEXTE ET PROBLÉMATIQUE                                            65 s
+
+  Tout en haut, ma problématique, telle qu’elle est écrite dans le mémoire. Je
+  la lis, parce que c’est elle qui va tenir tout l’oral.
+
+  Juste en dessous, ses six termes. L’automatisation, la sécurité,
+  l’éco-responsabilité, la qualité, l’observabilité et les coûts. Ce sont eux
+  que je dois tenir ensemble, et je les reprendrai un par un à la fin.
+
+  À gauche, le contexte. Ce que fait le produit, quel est le besoin, et
+  surtout avec quelle méthode j’ai analysé la problématique. Un SWOT et un
+  PESTEL, formalisés dans une étude d’opportunité.
+
+  À droite, le cadrage. Ce qui est dans le périmètre, ce qui n’y est pas, les
+  contraintes qui s’imposent à moi, et les acteurs du projet.
+
+  Et en bas, la vraie difficulté. Ces six exigences ne s’opposent pas par
+  accident. Chiffrer et journaliser coûte, tout observer consomme, contrôler
+  ralentit. C’est dans ces arbitrages que se joue la valeur du travail.
+
+
+05 · OBJECTIFS ET HYPOTHÈSES                                              55 s
+
+  Cinq objectifs, et pour chacun un critère de réussite écrit à droite.
+
+  Ce qui compte, c’est que ces critères sont binaires. Aucune ressource en
+  dehors du code, c’est vrai ou c’est faux. Aucun déploiement si une porte
+  échoue, pareil. Vous pouvez trancher sans avoir à interpréter.
+
+  En bas, mes trois hypothèses de travail. L’infrastructure en code fiabilise
+  et accélère en même temps. Un orchestrateur proportionné suffit, pour
+  beaucoup moins cher. Et une estimation de l’énergie suffit à piloter la
+  sobriété.
+
+  Je les confirmerai ou je les nuancerai à la diapositive 28, avec des faits.
+
+
+  PARTIE 2 · ANALYSE ET STRATÉGIE DU SI
+  ──────────────────────────────────────────────────────────────────────────
+
+
+06 · VEILLE TECHNOLOGIQUE ET RÉGLEMENTAIRE                                64 s
+
+  À gauche, mon dispositif de veille, ça se lit de haut en bas.
+
+  Quatre familles de sources. Les documentations officielles, les sources
+  normatives comme l’ANSSI et l’OWASP, les sources prospectives et les sources
+  communautaires.
+
+  Elles passent toutes par la même grille, huit critères, avec une règle
+  simple, je ne retiens rien qui ne soit pas confirmé par deux sources
+  indépendantes.
+
+  En bas, ce que cette grille a réellement tranché. Bun et Swarm retenus.
+  OpenTofu et Valkey inscrits en repli quand Terraform et Redis ont changé de
+  licence. Datadog écarté à cause du coût total.
+
+  À droite, la veille réglementaire, et son effet concret sur mes choix. Le
+  Cloud Act a déplacé mon hébergement en Europe. Le RGPD et NIS 2 ont imposé
+  la minimisation des données. Et l’IA Act encadre l’usage que je fais de
+  l’IA.
+
+
+07 · CARTOGRAPHIE DU SYSTÈME D’INFORMATION                                45 s
+
+  Là c’est simple, j’ai cartographié le système d’information sur quatre
+  niveaux, du plus abstrait au plus concret.
+
+  Le métier, ce que la plateforme fait. Le fonctionnel, les grandes fonctions.
+  L’applicatif, les briques logicielles. Et l’infrastructure, ce qui tourne
+  réellement.
+
+  Chaque niveau a sa propre planche en annexe, parce qu’un schéma qui essaie
+  de tout montrer ne montre plus rien.
+
+  Et à droite, l’essentiel. Ce n’est pas un joli dessin, c’est mon inventaire
+  d’actifs. C’est de là que part l’analyse de risques de la diapositive
+  suivante, parce qu’on ne peut pas coter un risque sur quelque chose qu’on
+  n’a pas identifié.
+
+
+08 · DIAGNOSTIC ET ANALYSE DES RISQUES                                    65 s
+
+  Deux choses sur cette diapositive.
+
+  À gauche, mon diagnostic. Un SWOT pour regarder l’intérieur, les forces et
+  les points de vigilance, et un PESTEL pour regarder l’extérieur, la
+  réglementation et la pression économique.
+
+  À droite, mon registre de risques, coté avec la méthode EBIOS Risk Manager
+  et la norme ISO 27005. L’axe horizontal c’est la gravité, l’axe vertical la
+  probabilité, et la couleur donne le niveau.
+
+  Le plus critique, c’est R1 en haut à droite, la perte du nœud de périphérie.
+  Ce nœud porte le proxy, le cache et toute la supervision, donc s’il tombe je
+  perds la visibilité au pire moment.
+
+  Les deux barres en dessous montrent l’effet des mesures. La criticité totale
+  passe de 81 à 37, et plus aucun risque n’est en zone critique.
+
+  Et le point que je veux vraiment faire passer, c’est que les deux priorités
+  de mon plan d’amélioration sont exactement ces deux risques-là. La feuille
+  de route sort du registre, elle n’a pas été inventée à côté.
+
+
+09 · CHOIX DE L’ARCHITECTURE                                              65 s
+
+  J’ai comparé quatre façons de construire l’application, sur cinq critères.
+  Trois pastilles pleines, c’est la meilleure note.
+
+  Le monolithe modulaire, en vert, c’est celui que j’ai retenu. Pas parce
+  qu’il gagne partout, mais parce qu’il ne perd nulle part, et qu’il gagne là
+  où ça compte pour un service de cette taille, le coût d’exploitation et
+  l’empreinte.
+
+  Les microservices gagnent en scalabilité, mais ils coûtent beaucoup plus
+  cher à exploiter et consomment davantage. C’est disproportionné ici.
+
+  Le serverless, je l’ai écarté pour une raison produit, il ne sait pas gérer
+  un téléversement en flux. L’orienté événements, je ne l’écarte pas, je le
+  garde en cible pour le post-traitement des médias.
+
+  En bas, chaque arbitrage écarté est écrit dans une fiche de décision, il y
+  en a vingt-quatre. Et la stratégie se traduit en sept actions chiffrées,
+  vingt-neuf jours-homme, quatorze mille cinq cents euros.
+
+
+  PARTIE 3 · GESTION DE PROJET
+  ──────────────────────────────────────────────────────────────────────────
+
+
+10 · BESOINS ET PRIORISATION                                              65 s
+
+  À gauche, ma priorisation MoSCoW. La barre du haut montre la répartition.
+
+  Ce qui saute aux yeux, c’est que les Must font 78 % des points. Autrement
+  dit, j’avais déjà réduit le périmètre à l’essentiel avant même de prioriser.
+  Mon seul amortisseur, ce sont les marges du planning.
+
+  À droite, j’ai croisé la valeur perçue et l’effort estimé. Chaque case donne
+  le nombre de fonctionnalités. La case entourée en vert, valeur forte et
+  effort faible, c’est ce que je livre en premier.
+
+  En bas, mes cinq contraintes. Je ne les ai pas laissées à l’état
+  d’intention, je les ai transformées en exigences qu’on peut vérifier. La
+  confidentialité par défaut, le RGPD, l’ISO 27001, l’accessibilité pour les
+  personnes en situation de handicap, et l’éco-responsabilité mesurable.
+
+  Le tout validé en trois revues avec quatre parties prenantes, et les
+  décisions écrites au journal d’architecture.
+
+
+11 · DÉCOUPAGE DU PROJET ET BUDGET                                        60 s
+
+  En haut, la découpe du projet. Huit lots, avec la charge de chacun en
+  jours-homme. Au total 207 jours-homme, 103 500 euros au taux journalier de
+  500 euros.
+
+  La couleur donne le type. Violet pour le fonctionnel, orange pour le non
+  fonctionnel, gris pour le support.
+
+  Et c’est ce que montre la barre en bas à gauche. Le non fonctionnel pèse
+  plus lourd que le fonctionnel, 46 % contre 45 %. Sur un projet DevOps c’est
+  normal, mais il faut la décomposition pour s’en apercevoir.
+
+  À droite, le chiffrage aux trois niveaux demandés, le global, la conception
+  et le déploiement.
+
+  Et en bas à droite, l’exploitation. Environ 71 euros par mois. Avec une
+  alerte budgétaire à 50, 80 et 100 % du seuil, donc je suis prévenu avant le
+  dépassement et pas après.
+
+
+12 · PLANIFICATION, PERT ET GANTT                                         65 s
+
+  En haut, le PERT. Les cases violettes pleines, c’est le chemin critique.
+  Cadrage, backend, chaîne CI/CD, observabilité, documentation. 122 jours
+  ouvrés. Si l’un de ces cinq lots prend du retard, la date de fin bouge.
+
+  Les cases blanches en pointillés, ce sont les lots qui ont de la marge. Six
+  jours sur l’infrastructure, vingt-cinq sur le frontend, trente-quatre sur la
+  sécurité.
+
+  Ça, c’est l’information la plus utile du diagramme. Le jour où il faut
+  arbitrer dans l’urgence, je sais exactement où j’ai du jeu.
+
+  En bas, le Gantt donne les dates. Cinq phases et cinq jalons, de janvier à
+  juin 2026.
+
+  Une précision, la charge et la durée ne sont pas la même chose. La charge
+  mesure l’effort, la durée mesure le délai. Elles diffèrent quand deux
+  personnes travaillent en parallèle sur le même lot.
+
+
+13 · MATRICE RACI ET PARTIES PRENANTES                                    68 s
+
+  À gauche, ma matrice RACI. Les huit lots en ligne, les six acteurs en
+  colonne.
+
+  La règle que je me suis fixée, c’est un seul A par lot. Un seul décideur
+  redevable, jamais deux, pour que personne ne puisse se renvoyer la balle.
+
+  Si je lis une ligne, prenons le lot sécurité. Le référent sécurité est A,
+  c’est lui qui décide et qui répond du résultat. Moi je suis R, je réalise le
+  durcissement.
+
+  Si je lis une colonne, la mienne porte quatre R, deux A et deux A slash R.
+  C’est la charge la plus lourde du projet. Je préfère que la matrice le
+  montre plutôt que de le cacher.
+
+  À droite, la grille pouvoir et intérêt. Elle me dit qui je dois associer aux
+  décisions, et qui je dois simplement tenir informé.
+
+  Et en dessous, un point sur l’accessibilité. Aucune information de pilotage
+  n’est donnée uniquement à l’oral, tout est aussi écrit, pour que personne ne
+  soit écarté.
+
+
+  PARTIE 4 · CONCEPTION ET DÉVELOPPEMENT
+  ──────────────────────────────────────────────────────────────────────────
+
+
+14 · MAQUETTES DES INTERFACES                                             55 s
+
+  Voilà les six écrans réels de l’application. Connexion, inscription,
+  bibliothèque, profil, réglages, et le profil public.
+
+  Une précision de méthode, ces maquettes sont tirées du code du frontend, pas
+  l’inverse. Elles ne peuvent donc pas raconter autre chose que ce qui existe.
+
+  Deux détails que je veux vous montrer. Sur l’écran de connexion, le badge
+  privé par défaut est déjà là. La promesse du produit est visible dans
+  l’interface, pas seulement dans mon discours.
+
+  Et sur l’écran de réglages, on voit la clé d’API, la suppression de compte
+  et l’avertissement que c’est irréversible. Le RGPD, il est là, dans l’écran.
+
+  Les maquettes servent surtout à valider avant de coder. Discuter un écran,
+  ça prend quelques minutes. Le refaire, ça prend des jours.
+
+
+15 · ARCHITECTURE APPLICATIVE                                             60 s
+
+  Ce schéma se lit de haut en bas.
+
+  En haut, les deux publics, un membre connecté et un visiteur. En dessous,
+  Traefik, le point d’entrée unique, c’est lui qui termine le TLS et qui
+  route. Ensuite les trois applications, et en bas les trois dépendances, la
+  base, le cache et le stockage des médias.
+
+  Le cadre en pointillés, c’est le cœur du sujet. L’API est un monolithe
+  modulaire, six domaines avec un contrôleur chacun, testables séparément. Les
+  frontières sont déjà tracées, donc si un jour il faut extraire un service,
+  c’est possible sans tout réécrire.
+
+  À droite, le monorepo. Le code de l’application, l’infrastructure et les
+  pipelines sont dans le même dépôt. Un commit décrit donc l’état complet du
+  système.
+
+  Et la carte du bas, l’éco-conception du socle. Cloud européen,
+  dimensionnement au plus juste service par service, et rien qui m’enferme
+  chez un fournisseur.
+
+
+16 · PROCESSUS MÉTIER ET PATTERNS                                         60 s
+
+  J’ai modélisé trois processus métier en diagrammes de séquence. Celui-ci,
+  c’est le téléversement d’un média.
+
+  Ça se lit de haut en bas. Le membre choisit un fichier. Le frontend appelle
+  l’API. L’API vérifie la taille et le quota. Puis elle pousse le fichier vers
+  le stockage objet, en mémoire bornée, sans jamais charger le fichier entier.
+
+  Et seulement après, elle écrit la ligne en base, avec une date de
+  publication vide.
+
+  C’est ce dernier point qui compte. Le média existe et il est privé. Publier,
+  c’est une action séparée, que l’utilisateur fait plus tard s’il le veut.
+
+  En bas à gauche, les deux autres processus, la publication et la session
+  sécurisée avec la détection de rejeu. Et à droite mes patterns, séparés en
+  deux, les patterns logiciels d’un côté, les patterns de conception de
+  l’autre, et pour chacun j’explique à quel besoin il répond.
+
+
+17 · MODÈLE DE DONNÉES                                                    60 s
+
+  Cinq tables, et c’est volontaire. Moins on stocke de données personnelles,
+  moins on a de risque. C’est une exigence RGPD avant d’être une élégance
+  technique.
+
+  Les comptes à gauche, les médias, les albums, les placements qui relient les
+  deux, et les abonnements qui sont une relation d’un compte vers un autre.
+
+  La flèche rouge en bas, c’est le point important. Quand un compte est
+  supprimé, tout part en cascade. Les médias, les albums, les placements, les
+  abonnements, en base et sur le stockage des fichiers.
+
+  Le droit à l’effacement n’est donc pas une procédure que quelqu’un doit
+  exécuter à la main, il est dans le schéma.
+
+  À droite, deux cartes. Les index partiels, qui n’indexent que les lignes
+  publiées, donc l’index reste petit, les lectures sont plus rapides et on
+  consomme moins. Et la gestion du gros volume, flux borné, pagination par
+  curseur, CDN et cycle de vie du stockage.
+
+
+18 · SÉCURITÉ ET STRATÉGIE DE TESTS                                       65 s
+
+  La chaîne en haut, c’est la seule route vers la production. Quatre portes
+  bloquantes, et on ne peut pas les contourner.
+
+  En bas à droite, les mesures de sécurité. Argon2id pour les mots de passe,
+  des sessions opaques qui ne contiennent rien d’exploitable, une rotation
+  avec détection de rejeu, une limitation de débit, et des en-têtes stricts.
+  Tout ça a été pensé dès la conception, pas ajouté à la fin.
+
+  En bas à gauche, mes tests. 218 cas, huit suites, zéro échec. Ils tournent
+  en environnement isolé, avec la base et le cache doublés.
+
+  Le point que je souligne, c’est que le vol de session est un scénario testé
+  explicitement. La sécurité, je la teste comme une fonctionnalité, je ne me
+  contente pas de la déclarer.
+
+  Et le bandeau noir, la documentation du code. 46 routes sur 46, 228 blocs de
+  commentaire. Chacun dit le contrat HTTP, le garde d’authentification, la
+  limitation appliquée et les erreurs possibles.
+
+
+  PARTIE 5 · OPTION DEVOPS
+  ──────────────────────────────────────────────────────────────────────────
+
+
+19 · STRATÉGIE DEVOPS                                                     65 s
+
+  Six principes, et je ne les ai pas choisis par mode. Chacun répond à un
+  problème que j’avais constaté sur l’existant avant de commencer.
+
+  Le plus structurant, c’est le deuxième, le GitOps. C’est Git qui fait
+  autorité sur l’état du système. Donc si quelque chose dérive, je le vois, et
+  je peux revenir en arrière.
+
+  Le quatrième explique tout le reste de cette partie. Rien ne part en
+  production si un contrôle échoue, et on ne peut pas contourner.
+
+  Et en bas, le green IT et l’accessibilité. Ce ne sont pas deux chapitres que
+  j’ai ajoutés à la fin, ce sont deux critères qui ont pesé sur les choix.
+
+
+20 · INFRASTRUCTURE AS CODE                                               65 s
+
+  À gauche, le code. Terraform déclare ce qui doit exister, Ansible le
+  configure, et les deux sont dans le même dépôt que l’application.
+
+  À droite, ce qui existe réellement. Les quatre serveurs chez Hetzner en
+  Europe, le stockage et la diffusion chez AWS à Paris, et Cloudflare en
+  périphérie.
+
+  Et le lien entre les deux, c’est tout le sujet. Rien n’existe à droite qui
+  ne soit pas déclaré à gauche. Aucune console cliquée, aucune ressource créée
+  à la main.
+
+  Les trois chiffres du bas le résument. Six modules Terraform, quatre
+  playbooks Ansible, zéro opération manuelle pour reconstruire
+  l’environnement.
+
+  Un détail qui a l’air technique mais qui ne l’est pas, l’état est stocké à
+  distance, chiffré et verrouillé. C’est ça qui empêche deux personnes de
+  déployer en même temps, et c’est ça qui rend mon plan de reprise réellement
+  exécutable.
+
+
+21 · CHAÎNE CI/CD ET DEVSECOPS                                            65 s
+
+  En haut, mon pipeline de déploiement. Six étapes, et deux portes bloquantes,
+  celle de la qualité et celle de la sécurité.
+
+  En bas à gauche, ce qui arrête vraiment une livraison. Une dépendance
+  vulnérable, un secret oublié dans le dépôt, une infrastructure non conforme,
+  une image vulnérable. Ce ne sont pas des avertissements, ce sont des arrêts.
+
+  En bas à droite, le point auquel on pense moins, ce qui protège la chaîne
+  elle-même. Le garde-fou le plus utile, c’est le ciblage strict. Le pipeline
+  du CDN ne peut pas toucher les serveurs, même si je me trompe.
+
+  Les exceptions ne sont pas interdites, mais elles sont écrites, justifiées
+  et datées. C’est ce qui fait la différence entre une chaîne qu’on utilise et
+  une chaîne qu’on contourne.
+
+  Et pour répondre à la question qu’on me pose souvent, non, les portes ne
+  ralentissent pas la livraison. Elles évitent le retour arrière, qui coûte
+  beaucoup plus cher.
+
+
+22 · ORCHESTRATION DES CONTENEURS                                         65 s
+
+  Voilà mon cluster. Quatre serveurs, un manager et trois workers, avec les
+  services placés dessus.
+
+  Le premier, le proxy, porte l’entrée, le cache et toute la supervision.
+  C’est aussi mon risque numéro un, celui dont je parlais tout à l’heure. Il
+  concentre beaucoup, et sa mise en haute disponibilité est le prochain
+  palier.
+
+  Les trois autres sont spécialisés, la base, l’API, le frontend. Le placement
+  se fait par étiquette de rôle, pas au hasard.
+
+  En bas à gauche, les cinq réseaux. Deux sont strictement internes. Celui qui
+  s’appelle socket mérite un mot, l’API Docker n’est jamais exposée
+  directement, elle passe par un proxy en lecture seule.
+
+  À droite, deux points. Pendant une mise à jour le service ne s’arrête pas,
+  et si le déploiement échoue il revient en arrière tout seul.
+
+  Et le choix de Swarm plutôt que Kubernetes, c’est une décision de
+  proportionnalité. J’ai les fonctions dont j’ai besoin, pour beaucoup moins
+  de complexité à exploiter. Kubernetes reste la cible si le trafic augmente.
+
+
+23 · OBSERVABILITÉ ET ALERTING                                            60 s
+
+  En haut, la chaîne. Les sources qui produisent les mesures, Prometheus qui
+  les collecte toutes les quinze secondes, le stockage, et Grafana pour la
+  restitution avec trois tableaux de bord.
+
+  Tout ça est décrit dans le code. Je ne clique rien dans Grafana.
+
+  En dessous, mes dix règles d’alerte, rangées en quatre familles. Le mot
+  important, c’est anticipation. Le disque ne m’alerte pas quand il est plein,
+  il m’alerte sur une projection de saturation. La latence m’alerte avant que
+  le service devienne indisponible.
+
+  Elles convergent vers Alertmanager qui les regroupe, puis partent sur deux
+  canaux, un courriel et un webhook Slack.
+
+  Et vous voyez une famille dédiée à l’énergie. C’est ce qui m’amène à la
+  diapositive suivante.
+
+
+24 · GREEN IT ET OPTIMISATION PAR IA                                      70 s
+
+  Je commence par le problème, en rouge en haut. Les compteurs électriques du
+  processeur ne sont pas accessibles dans une machine virtuelle louée. Je ne
+  peux donc pas mesurer directement.
+
+  Ma réponse est dans le bandeau noir. J’assume un modèle d’estimation, dérivé
+  de l’utilisation du processeur. La formule est écrite, elle est simple,
+  vérifiable et contestable. C’est exactement ce qu’on attend d’une
+  estimation, pas qu’elle soit parfaite mais qu’elle soit explicite.
+
+  Elle produit trois indicateurs, la puissance de chaque serveur, l’énergie du
+  cluster et l’empreinte carbone. Plus une alerte si on dépasse deux cents
+  watts pendant un quart d’heure.
+
+  Et en bas, la boucle se referme. Je mesure, j’alerte, un modèle d’IA analyse
+  les courbes de consommation et me propose au maximum cinq optimisations
+  chiffrées, en euros et en énergie. Je valide, j’applique, et je remesure.
+
+  C’est la partie du travail dont je suis le plus content, parce qu’une
+  supervision énergétique sur un projet de cette taille, c’est rare.
+
+
+25 · DOCUMENTATION ET AMÉLIORATION CONTINUE                               65 s
+
+  À gauche, ma documentation, en trois niveaux qui ne se répètent pas. OpenAPI
+  dit ce que l’API expose. Les commentaires du code disent comment chaque
+  route se comporte. Et les fiches de décision disent pourquoi j’ai tranché
+  comme ça.
+
+  C’est le pourquoi qui est le plus cher à reconstituer quand quelqu’un quitte
+  le projet.
+
+  À droite, le wiki technique, seize pages versionnées avec le code. Je l’ai
+  organisé par lecteur et pas par outil. Celui qui exploite trouve les
+  procédures, celui qui développe trouve les conventions, celui qui décide
+  trouve la synthèse.
+
+  Et la forme compte aussi. Du texte structuré plutôt que des captures
+  d’écran, et chaque schéma accompagné d’une description, pour que ce soit
+  lisible par un lecteur d’écran.
+
+  En bas, mon plan d’amélioration. Court, moyen et long terme, priorisé, et
+  chiffré à vingt-neuf jours-homme. Rien de ce que je sais imparfait n’est
+  laissé de côté.
+
+
+  PARTIE 6 · RÉSULTATS ET CONCLUSION
+  ──────────────────────────────────────────────────────────────────────────
+
+
+26 · INDICATEURS DE PILOTAGE                                              65 s
+
+  Douze indicateurs, rangés en quatre familles. La performance, la sécurité,
+  la conformité, et la sobriété avec les coûts.
+
+  Chaque barre montre où j’en suis, et la valeur à droite c’est la cible.
+
+  Mais le plus important n’est pas sur les barres, c’est écrit en dessous.
+  Chaque indicateur a une cible, un seuil qui déclenche une alerte, et une
+  source de mesure identifiée. Un indicateur sans source de mesure, ce n’est
+  pas un indicateur, c’est une intention.
+
+  Les indicateurs techniques sont relevés en continu par la supervision. Ceux
+  de conformité, à date fixe pendant les revues.
+
+  Et le bandeau noir, ce sont les quatre métriques DORA, la référence du
+  secteur pour juger une chaîne de livraison. À quelle fréquence je déploie,
+  combien de temps met un changement pour arriver en production, quel
+  pourcentage échoue, et en combien de temps je remets le service.
+
+
+27 · SÉCURITÉ, CONFORMITÉ ET CONTINUITÉ                                   60 s
+
+  À gauche, ma défense en profondeur, quatre couches emboîtées.
+
+  La périphérie avec le pare-feu applicatif. Le réseau avec le cloisonnement.
+  L’application avec les sessions et la limitation de débit. Et au centre les
+  données, hachées et chiffrées.
+
+  L’idée est simple, aucune couche ne suppose que la précédente a tenu. Si le
+  pare-feu tombe, le cloisonnement réseau tient. Si le réseau est franchi, les
+  sessions restent inexploitables.
+
+  En haut à droite, la conformité. J’ai cartographié l’ISO 27001 et le RGPD,
+  avec ce qui est couvert, ce qui l’est partiellement, et ce qui est hors de
+  mon périmètre. Un dossier qui prétend tout couvrir n’est pas crédible.
+
+  Et en bas, la continuité. Sauvegardes toutes les six heures, vérifiées par
+  empreinte, restauration testée, et un plan de reprise qui reconstruit à
+  partir du code. C’est possible uniquement parce que toute l’infrastructure
+  est déclarée.
+
+
+28 · RÉSULTATS ET RETOUR D’EXPÉRIENCE                                     70 s
+
+  Je reviens à la grille que j’avais posée au début.
+
+  À gauche, mes cinq objectifs. Ils sont tous atteints, et chacun a une preuve
+  à côté, pas une affirmation. Zéro ressource hors du code. Quatre portes
+  bloquantes. Un déploiement sans coupure. Dix règles d’alerte. Douze
+  indicateurs suivis.
+
+  En dessous, mes trois hypothèses de départ, confirmées en une phrase
+  chacune.
+
+  À droite en haut, ce qui a bien marché. La cohérence de bout en bout, la
+  sécurité intégrée dès le début, et la supervision énergétique.
+
+  À droite en dessous, ce qui reste à faire, et je le dis clairement. Le nœud
+  proxy concentre trop. Mon énergie est estimée et pas mesurée. L’escalade des
+  alertes doit être affinée. Ces trois points sont dans mon plan
+  d’amélioration, avec leur charge et leur coût.
+
+  Et le bandeau rouge, une réserve que je pose moi-même. Tous ces résultats
+  sont obtenus en conditions de validation, pas sous une charge réelle
+  prolongée. C’est l’étape suivante.
+
+
+29 · CONCLUSION                                                           70 s
+
+  Ma réponse est oui, mais à trois conditions.
+
+  À gauche, je reprends les six exigences de ma question, une par une, avec ce
+  qui les démontre et le numéro de la diapositive où c’est montré.
+  L’automatisation, la sécurité, l’éco-responsabilité, la qualité,
+  l’observabilité et les coûts.
+
+  À droite, les trois conditions. La première, l’automatisation doit être
+  pensée de bout en bout. Un seul maillon resté manuel suffit à casser la
+  chaîne.
+
+  La deuxième, la sécurité et la sobriété doivent être là dès la conception.
+  Ajoutées après, elles coûtent dix fois plus cher et elles tiennent mal.
+
+  La troisième, l’observabilité doit rendre l’ensemble mesurable. Ce qu’on ne
+  mesure pas, on ne peut pas l’arbitrer.
+
+  Et pour finir, ce que ce travail m’a appris. Le métier d’un expert en
+  systèmes d’information, ce n’est pas de produire un logiciel. C’est de
+  construire et de maîtriser la chaîne sûre et sobre qui l’amène jusqu’à ses
+  utilisateurs.
+
+
+30 · REMERCIEMENTS                                                        20 s
+
+  Je remercie l’École La Plateforme et Joris Verguldezoone, mon référent de
+  formation.
+
+  FDJ United et Philippe Amerio, mon référent en entreprise.
+
+  Et toutes les personnes qui ont relu et testé ce travail.
+
+  Merci de votre attention. Je suis à votre disposition pour vos questions.
+
+
+==============================================================================
+  APRÈS · LES 30 MINUTES DE QUESTIONS
+==============================================================================
+
+  En bas à gauche de chaque diapositive il y a la compétence, la section du
+  mémoire et l’annexe. Citez l’annexe exacte, c’est plus solide que de
+  reformuler.
+
+  Ce qu’on va probablement vous demander, et où est la réponse
+
+    Pourquoi Swarm et pas Kubernetes                       diapo 22 · annexe C
+    Comment vous validez l’estimation énergétique          diapo 24 · annexe P
+    Si une porte bloque une livraison urgente              diapo 21 · annexe K
+    Comment le RGPD est implémenté en base                 diapo 17 · annexe R
+    Pourquoi le non fonctionnel pèse plus lourd            diapo 11 · annexe L
+    Qui décide quoi sur le projet                      diapo 13 · annexe L bis
+    Comment le risque le plus critique est traité          diapo 08 · annexe O
+    Ce qui n’est pas couvert, et pourquoi                  diapo 28 · annexe R
+
+  À montrer en direct si on vous le demande
+
+    le dépôt GitHub, un pipeline qui tourne, un tableau de bord Grafana et la
+    suite de tests au vert.
+
+
+==============================================================================
+  REPÈRE · QUELLE DIAPOSITIVE COUVRE QUELLE COMPÉTENCE
+==============================================================================
+
+  diapo 04   C10                      diapo 05   C10 · C11
+  diapo 06   C1 · C2 · C3             diapo 07   C4
+  diapo 08   C4 · C17                 diapo 09   C5 à C9
+  diapo 10   C10 à C13                diapo 11   C14 · C15
+  diapo 12   C15 · C16                diapo 13   C17 à C20
+  diapo 14   C11 · C21                diapo 15   C21 · C23
+  diapo 16   C22 · C24                diapo 17   C13 · C21
+  diapo 18   C25 · C26                diapo 19   C28
+  diapo 20   C28 · C29                diapo 21   C29
+  diapo 22   C30                      diapo 23   C31
+  diapo 24   C31 · C3 · C23           diapo 25   C2 · C20 · C28
+  diapo 26   C15 · C27 · C31          diapo 27   C25 · C29 · C31
+  diapo 28   C27
+
