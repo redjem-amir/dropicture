@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-const SITE = 'https://dropicture.com';
+const SITE = process.env.NEXT_PUBLIC_WEBSITE_URL ?? 'https://dropicture.com';
 const API = process.env.NEXT_PUBLIC_API_URL ?? '';
 const PAGE_SIZE = 40;
 

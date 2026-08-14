@@ -149,7 +149,7 @@ export default function Navbar() {
     await fetch(`${API}/api/auth/signout`, { method: 'POST', credentials: 'include' }).catch(
       () => undefined,
     );
-    window.location.href = '/signin';
+    window.location.href = '/';
   };
 
   const showPanel = open && !!q;

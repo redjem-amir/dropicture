@@ -9,7 +9,7 @@ const font = Roboto_Flex({
   display: "swap",
 });
 
-const SITE = "https://dropicture.com";
+const SITE = process.env.NEXT_PUBLIC_WEBSITE_URL ?? "https://dropicture.com";
 
 const HEADLINE = "Dropicture · Galeries photo et vidéo";
 
